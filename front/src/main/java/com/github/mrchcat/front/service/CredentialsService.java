@@ -6,8 +6,8 @@ import com.github.mrchcat.front.dto.UserDetailsDto;
 import com.github.mrchcat.front.mapper.FrontMapper;
 import com.github.mrchcat.front.security.OAuthHeaderGetter;
 import com.github.mrchcat.shared.accounts.UpdatePasswordRequestDto;
-//import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-//import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
@@ -39,8 +39,8 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     }
 
     @Override
-//    @CircuitBreaker(name = "accounts")
-//    @Retry(name = "accounts")
+    @CircuitBreaker(name = "accounts")
+    @Retry(name = "accounts")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             var oAuthHeader = oAuthHeaderGetter.getOAuthHeader();
@@ -65,8 +65,8 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     }
 
     @Override
-//    @CircuitBreaker(name = "accounts")
-//    @Retry(name = "accounts")
+    @CircuitBreaker(name = "accounts")
+    @Retry(name = "accounts")
     public UserDetails updatePassword(UserDetails user, String newPassword) {
         String passwordHash = encoder.encode(newPassword);
         try {
