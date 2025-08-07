@@ -189,7 +189,7 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     @CircuitBreaker(name = "cash")
-    @Retry(name = "cash")
+//    @Retry(name = "cash")
     public void processCashOperation(String username, FrontCashTransactionDto cashOperationDto, CashAction action) throws AuthException {
         CashTransactionDto requestDto = FrontMapper.toRequestDto(username, cashOperationDto, action);
         var oAuthHeader = oAuthHeaderGetter.getOAuthHeader();
@@ -204,7 +204,7 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     @CircuitBreaker(name = "transfer")
-    @Retry(name = "transfer")
+//    @Retry(name = "transfer")
     public void processNonCashOperation(NonCashTransfer nonCashTransfer) throws AuthException {
         NonCashTransferDto requestDto = FrontMapper.toRequestDto(nonCashTransfer);
         var oAuthHeader = oAuthHeaderGetter.getOAuthHeader();

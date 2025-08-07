@@ -15,6 +15,9 @@
         <module>notification</module>
         <module>exchange</module>
         <module>exchange-generator</module>
+        <module>blocker</module>
+        <module>cash</module>
+        <module>transfer</module>
     </modules>
 
     <parent>

@@ -1,0 +1,21 @@
+server.port: ${SERVER_PORT}
+
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+
+management.endpoints.web.exposure.include: info, health
+
+logging:
+  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
+  level:
+    root: ${LOG_LEVEL:DEBUG}
+    org.zalando.logbook: ${LOG_LEVEL:DEBUG}
+
+application:
+  CONFIRM_PROBABILITY: ${CONFIRM_PROBABILITY}
