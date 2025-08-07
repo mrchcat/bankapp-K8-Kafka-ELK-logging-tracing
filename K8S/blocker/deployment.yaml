@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blocker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blocker
+  template:
+    metadata:
+      labels:
+        app: blocker
+    spec:
+      containers:
+        - name: blocker
+          image: mcat1980/bank-blocker:1.0
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: blocker
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30 # 120s runs keycloak
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30 # 120s runs keycloak
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 30
+  strategy: { }
+status: { }

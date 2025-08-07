@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blocker
+data:
+  SERVER_PORT: "8080"
+  SPRING_APPLICATION_NAME: bankBlocker
+
+  KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+
+  LOG_LEVEL: DEBUG
+
+  CONFIRM_PROBABILITY: "0.97"
+
+immutable: true

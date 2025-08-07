@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notifications
+data:
+  SERVER_PORT: "8080"
+  SPRING_APPLICATION_NAME: bankNotifications
+
+  DATASOURCE_URL: jdbc:postgresql://notifications-db:5432/data
+  KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+
+  LOG_LEVEL: DEBUG
+
+immutable: true

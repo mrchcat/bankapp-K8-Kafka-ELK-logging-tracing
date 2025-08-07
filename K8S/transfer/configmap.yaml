@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: transfer
+data:
+  SERVER_PORT: "8080"
+  SPRING_APPLICATION_NAME: bankTransfer
+
+  DATASOURCE_URL: jdbc:postgresql://transfer-db:5432/data
+  KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+
+  LOG_LEVEL: DEBUG
+
+  SERVICE_URL_ACCOUNT: account:8080
+  SERVICE_URL_NOTIFICATIONS: notifications:8080
+  SERVICE_URL_BLOCKER: blocker:8080
+  SERVICE_URL_EXCHANGE: exchange:8080
+  SERVICE_URL_TRANSFER: transfer:8080
+
+immutable: true

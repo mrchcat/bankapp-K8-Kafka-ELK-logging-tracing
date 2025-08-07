@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cash
+  template:
+    metadata:
+      labels:
+        app: cash
+    spec:
+      containers:
+        - name: cash
+          image: mcat1980/bank-cash:1.0
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: cash
+            - secretRef:
+                name: cash
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30 # 120s runs keycloak
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30 # 120s runs keycloak
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 30
+  strategy: { }
+status: { }

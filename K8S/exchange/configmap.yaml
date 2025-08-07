@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exchange
+data:
+  SERVER_PORT: "8080"
+  SPRING_APPLICATION_NAME: bankExchange
+
+  DATASOURCE_URL: jdbc:postgresql://exchange-db:5432/data
+  KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+
+  LOG_LEVEL: DEBUG
+
+immutable: true
