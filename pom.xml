@@ -13,6 +13,8 @@
         <module>shared</module>
         <module>account</module>
         <module>notification</module>
+        <module>exchange</module>
+        <module>exchange-generator</module>
     </modules>
 
     <parent>

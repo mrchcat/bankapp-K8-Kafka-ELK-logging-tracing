@@ -23,6 +23,7 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     private final RestClient.Builder restClientBuilder;
     private final OAuthHeaderGetter oAuthHeaderGetter;
     private final PasswordEncoder encoder;
+    private final ServiceUrl serviceUrl;
 
     private final String ACCOUNT_SERVICE;
     private final String ACCOUNTS_GET_USER_DETAILS_API = "/credentials";
@@ -36,6 +37,7 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
         this.oAuthHeaderGetter = oAuthHeaderGetter;
         this.encoder = encoder;
         this.ACCOUNT_SERVICE = serviceUrl.getAccount();
+        this.serviceUrl=serviceUrl;
     }
 
     @Override

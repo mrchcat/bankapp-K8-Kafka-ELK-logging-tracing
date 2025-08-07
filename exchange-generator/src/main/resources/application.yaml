@@ -10,7 +10,7 @@ spring:
           keycloak:
             issuer-uri: ${KEYCLOAK_ISSUER_URI}
         registration:
-          bank_front:
+          bank_exchange_generator:
             provider: keycloak
             authorizationGrantType: client_credentials
             client-id: ${KEYCLOAK_CLIENT_ID}
@@ -25,29 +25,7 @@ logging:
     root: ${LOG_LEVEL:DEBUG}
     org.zalando.logbook: ${LOG_LEVEL:DEBUG}
 
-resilience4j:
-  circuitbreaker:
-    configs:
-      default:
-        sliding-window-type: TIME_BASED
-        slidingWindowSize: 100
-        permittedNumberOfCallsInHalfOpenState: 10
-        slowCallDurationThreshold: 4s
-        slowCallRateThreshold: 90
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
-        minimumNumberOfCalls: 10
-  retry:
-    configs:
-      default:
-        maxAttempts: 3
-        waitDuration: 100ms
-
 application:
   service:
     urls:
-      front: ${SERVICE_URL_FRONT}
-      account: ${SERVICE_URL_ACCOUNT}
-      cash: ${SERVICE_URL_CASH}
-      transfer: ${SERVICE_URL_TRANSFER}
       exchange: ${SERVICE_URL_EXCHANGE}

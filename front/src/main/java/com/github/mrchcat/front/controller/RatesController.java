@@ -17,7 +17,7 @@ public class RatesController {
     /**
      * контроллер для получения данных о курсах
      */
-    @GetMapping("/com/github/mrchcat/front/rates")
+    @GetMapping("/front/rates")
     List<FrontRate> getAllRates() throws AuthException {
         return frontService.getAllRates();
     }

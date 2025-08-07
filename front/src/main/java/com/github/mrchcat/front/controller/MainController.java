@@ -1,5 +1,6 @@
 package com.github.mrchcat.front.controller;
 
+import com.github.mrchcat.front.config.ServiceUrl;
 import com.github.mrchcat.front.dto.FrontAccountDto;
 import com.github.mrchcat.front.dto.FrontBankUserDto;
 import com.github.mrchcat.front.dto.FrontCashTransactionDto;
@@ -40,9 +41,16 @@ import java.util.Collections;
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
 public class MainController {
     private final FrontService frontService;
+    private final String FRONT_GET_FRONT_RATES = "/front/rates";
+    private final String ratesLink;
+
+    public MainController(FrontService frontService,
+                          ServiceUrl serviceUrl) {
+        this.frontService = frontService;
+        this.ratesLink = "http://" + serviceUrl.getFront() + FRONT_GET_FRONT_RATES;
+    }
 
     /**
      * после авторизации загружаются разные страницы в зависимости от роли
@@ -77,9 +85,7 @@ public class MainController {
 
         var clientsWithAccounts = frontService.getAllClientsWithActiveAccounts();
         model.addAttribute("clientsWithAccounts", clientsWithAccounts);
-
-        model.addAttribute("ratesLink", "http://localhost:8080/front/rates");
-//        model.addAttribute("ratesLink", frontService.getFrontExchangeUri());
+        model.addAttribute("ratesLink", ratesLink);
         return "main";
     }
 

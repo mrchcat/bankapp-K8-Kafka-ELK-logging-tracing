@@ -1,3 +1,3 @@
-docker build .  -t mcat1980/bank-front:8.0
+docker build .  -t mcat1980/bank-front:15.0
 
 docker push mcat1980/bank-front --all-tags
