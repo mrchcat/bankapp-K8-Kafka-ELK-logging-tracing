@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "account.fullname" . }}
+  labels:
+    {{- include "account.labels" . | nindent 4 }}
+data:
+  SERVER_PORT: "8080"
+  SPRING_APPLICATION_NAME: {{ .Values.SPRING_APPLICATION_NAME }}
+
+  DATASOURCE_URL: jdbc:postgresql://{{ include "account.fullname" . }}-db:5432/data
+  KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+
+  LOG_LEVEL: {{ .Values.LOG_LEVEL }}
+
+  SERVICE_URL_ACCOUNT: {{ .Values.SERVICE_URL_ACCOUNT }}
+  SERVICE_URL_NOTIFICATIONS: {{ .Values.SERVICE_URL_NOTIFICATIONS }}
+
+immutable: true

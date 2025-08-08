@@ -1,0 +1,40 @@
+apiVersion: v2
+name: bankapp
+description: bank application
+type: application
+version: 1.0.0
+appVersion: "1.0"
+
+dependencies:
+  - name: keycloak
+    version: "1.0.0"
+    repository: "file://./charts/keycloak"
+    condition: enableKeycloak
+
+  - name: account
+    version: "1.0.0"
+    repository: "file://./charts/account"
+
+  - name: blocker
+    version: "1.0.0"
+    repository: "file://./charts/blocker"
+
+  - name: cash
+    version: "1.0.0"
+    repository: "file://./charts/cash"
+
+  - name: transfer
+    version: "1.0.0"
+    repository: "file://./charts/transfer"
+
+  - name: exchange-generator
+    version: "1.0.0"
+    repository: "file://./charts/exchange-generator"
+
+  - name: exchange
+    version: "1.0.0"
+    repository: "file://./charts/exchange"
+
+  - name: front
+    version: "1.0.0"
+    repository: "file://./charts/front"

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "notifications.fullname" . }}
+  labels:
+    {{- include "notifications.labels" . | nindent 4 }}
+data:
+  SERVER_PORT: "8080"
+  SPRING_APPLICATION_NAME: {{ .Values.SPRING_APPLICATION_NAME }}
+
+  DATASOURCE_URL: jdbc:postgresql://{{ include "notifications.fullname" . }}-db:5432/data
+  KEYCLOAK_ISSUER_URI: {{ .Values.KEYCLOAK_ISSUER_URI }}
+
+  LOG_LEVEL: {{ .Values.LOG_LEVEL }}
+
+immutable: true

@@ -1,0 +1,26 @@
+replicaCount: 1
+
+SPRING_APPLICATION_NAME: bankExchangeGenerator
+
+KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+KEYCLOAK_CLIENT_ID: bank_exchange_generator
+KEYCLOAK_CLIENT_SECRET: N1VSP9EH3qUeGa98gzE4qxnFsTg7Q8eO
+
+SERVICE_URL_EXCHANGE: exchange:8080
+
+LOG_LEVEL: DEBUG
+
+INITIAL_DELAY_SEC: 120
+
+image:
+  repository: mcat1980/bank-exchange-generator
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080

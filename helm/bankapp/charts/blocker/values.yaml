@@ -1,0 +1,24 @@
+replicaCount: 1
+
+SPRING_APPLICATION_NAME: bankBlocker
+
+KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
+
+CONFIRM_PROBABILITY: "0.97"
+
+LOG_LEVEL: DEBUG
+
+INITIAL_DELAY_SEC: 120
+
+image:
+  repository: mcat1980/bank-blocker
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080

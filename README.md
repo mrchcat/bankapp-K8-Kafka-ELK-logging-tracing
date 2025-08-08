@@ -26,19 +26,15 @@ Externalized Config - Consul.
 * JUnit 5
 * Lombok
 
-Для запуска программы на локальном компьютере необходимы: Docker, Minikube, VirtualBox
-1) создайте узел: "minikube start --driver=virtualbox"
+Для запуска программы на локальном компьютере необходимы: Docker, Minikube (протестирован в связке с VirtualBox 7.1), 
+Helm. Приложение будет доступно по адресу <namespace>.bankapp.internal.com (например, "test.bankapp.internal.com") 
+
+1) создайте узел Kubernetes: "minikube start --driver=virtualbox" ("minikube start --driver=virtualbox --no-vtx-check")
 2) установите ingress: "minikube addons enable ingress"
-3) получите ip aдрес ноды: "minikube ip" внесите его в файл hosts по аналогии "192.168.59.107 bankapp.internal.com"   
-теперь приложение после запуска будет доступно по адресу "bankapp.internal.com" 
+3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
+4) получите ip aдрес ноды: "minikube ip" и внесите его в файл hosts (например, "192.168.59.107 test.bankapp.internal.com")   
+Теперь приложение после запуска будет доступно по адресу "test.bankapp.internal.com" 
  
-
-1) Перейдите в папку /bankapp и выполните команду "mvnw clean install". Дождитесь сборки приложения.
-2) Выполните команду "docker-compose up". 
-3) После запуска требуется некоторое время для того, чтобы consul обнаружил приложения (не более 1 минуты)   
-4) Магазин будет доступен по адресу http://localhost:8080
-   В случае конфликта портов внесите исправления в docker-compose.yaml. 
-
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
 Клиенты и менеджеры имеют доступ к главной странице, тогда как зарегистрировать нового пользователя может только
@@ -87,7 +83,3 @@ Externalized Config - Consul.
 Сервис проверки транзакций (blocker) подтверждает или отклоняет транзакции случайным образом.
 По умолчанию вероятность подтвердить транзакцию составляет CONFIRM_PROBABILITY = 0.90%  
 Контракты тестируются на примере сервиса "exchange".
-
-
-minikube start
-minikube addons enable ingress
