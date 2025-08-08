@@ -4,7 +4,7 @@
 пользовательских данных, создание и удаление банковских аккаунтов в 3 валютах, операции в наличной и безналичной форме, 
 просмотр динамики курсов валют.  
 Безопасность обмена сообщений между микросервисами обеспечивает Keycloak, а паттерн Service Discovery и 
-Externalized Config - Consul.   
+Externalized Config - Kubernetes.   
 ![](/readme/front.png)
 
 
@@ -15,11 +15,8 @@ Externalized Config - Consul.
 * Spring Security
 * Spring WebMVC
 * Spring Data
-* Spring Cloud
-* Spring Contract Verifier
 * Postgres
 * Keycloak
-* Consul
 * Resilience4j
 * Thymeleaf
 * Maven
@@ -27,14 +24,19 @@ Externalized Config - Consul.
 * Lombok
 
 Для запуска программы на локальном компьютере необходимы: Docker, Minikube (протестирован в связке с VirtualBox 7.1), 
-Helm. Приложение будет доступно по адресу <namespace>.bankapp.internal.com (например, "test.bankapp.internal.com") 
+Helm. Приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "test.bankapp.internal.com") 
 
-1) создайте узел Kubernetes: "minikube start --driver=virtualbox" ("minikube start --driver=virtualbox --no-vtx-check")
+Порядок запуска: 
+1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
+(при наличии ошибок попробуйте отключить проверку и увеличить ресурсы: "minikube start --driver=virtualbox --no-vtx-check"; "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
 2) установите ingress: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
-4) получите ip aдрес ноды: "minikube ip" и внесите его в файл hosts (например, "192.168.59.107 test.bankapp.internal.com")   
-Теперь приложение после запуска будет доступно по адресу "test.bankapp.internal.com" 
- 
+4) получите ip aдрес ноды: "minikube ip" и добавьте его в файл hosts вместе с адресом сайта
+(например, "192.168.59.107 prod.bankapp.internal.com") 
+При развертывании с соответствующими настройками, приложение будет доступно по адресу "prod.bankapp.internal.com"
+
+Значения параметров для настройки доступны в helm/values.yaml
+
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
 Клиенты и менеджеры имеют доступ к главной странице, тогда как зарегистрировать нового пользователя может только
@@ -81,5 +83,5 @@ Helm. Приложение будет доступно по адресу <namesp
 При коммуникации между сервисами Accounts, Cash и Transfer во избежание повторного проведения уже проведенных ранее 
 операций используется UUID номер транзакции. 
 Сервис проверки транзакций (blocker) подтверждает или отклоняет транзакции случайным образом.
-По умолчанию вероятность подтвердить транзакцию составляет CONFIRM_PROBABILITY = 0.90%  
+По умолчанию вероятность подтвердить транзакцию составляет CONFIRM_PROBABILITY = 0.97%  
 Контракты тестируются на примере сервиса "exchange".
