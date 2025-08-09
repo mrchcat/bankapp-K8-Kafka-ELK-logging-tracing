@@ -1,4 +1,5 @@
-helm delete keycloak -n prod
-helm delete bankapp -n prod
-helm delete keycloak -n test
-helm delete bankapp -n test
+#задайте название namespace
+nameOfNamespace="test"
+
+helm delete keycloak -n $nameOfNamespace
+helm delete bankapp -n $nameOfNamespace

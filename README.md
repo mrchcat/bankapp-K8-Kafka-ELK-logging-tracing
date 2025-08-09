@@ -16,12 +16,13 @@ Externalized Config - Kubernetes.
 * Spring WebMVC
 * Spring Data
 * Postgres
-* Keycloak
 * Resilience4j
 * Thymeleaf
 * Maven
 * JUnit 5
 * Lombok
+* Keycloak
+* Ingress
 
 Для запуска программы на локальном компьютере необходимы: Docker, Minikube (протестирован в связке с VirtualBox 7.1), 
 Helm. Приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "test.bankapp.internal.com") 
@@ -34,8 +35,10 @@ Helm. Приложение будет доступно по адресу \<names
 4) получите ip aдрес ноды: "minikube ip" и добавьте его в файл hosts вместе с адресом сайта
 (например, "192.168.59.107 prod.bankapp.internal.com") 
 При развертывании с соответствующими настройками, приложение будет доступно по адресу "prod.bankapp.internal.com"
+5) Варианты запуска:
+  * непосредственно через Helm: в файле helm/install.sh укажите название namespace и запустите его.
+  * Jenkins:
 
-Значения параметров для настройки доступны в helm/values.yaml
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'

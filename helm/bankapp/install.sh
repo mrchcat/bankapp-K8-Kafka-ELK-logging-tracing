@@ -1,5 +1,9 @@
-name="test"
+#задайте название namespace
+nameOfNamespace="test"
 
-helm install keycloak  ./charts/keycloak --namespace=$name --create-namespace
+echo "установка в 2 этапа: на первом развертываем keycloak, ждем его старта, а после этого стартуем микросервисы"
+helm install keycloak  ./charts/keycloak --namespace=$nameOfNamespace --create-namespace
+echo "разворачиваем keycloak"
 sleep 130
-helm install bankapp  . --set enableKeycloak=false --namespace=$name --create-namespace
+echo "устанавливаем все остальные микросервисы"
+helm install bankapp  . --set enableKeycloak=false --namespace=$nameOfNamespace --create-namespace
