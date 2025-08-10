@@ -1,28 +1,20 @@
 pipeline {
-  agent any
+    agent any
+    environment {
+        DOCKER_REGISTRY='mcat1980'
+        DOCKER_CREDENTIAL_ID='DOCKER'
 
-  environment {
-    commit_hash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-  }
+        FRONT_NAME='front'
+        FRONT_BUILD_NUMBER='1.0'
 
-  stages {
-    stage('build') {
-      steps {
-        sh './mvnw clean package'
-      }
+        KUBER_CREDENTIAL_ID='KUBER_CONGIG_YAML'
     }
-//
-//     stage('tag') {
-//       steps {
-//         sh "docker build -t bankapp-demo:${env.commit_hash} ."
-//         sh "docker tag bankapp-demo local/bankapp-demo:${env.commit_hash}"
-//       }
-//     }
-//
-//     stage('deploy') {
-//       steps {
-//         sh "kubectl create deployment spring-cicd-demo --image=local/spring-cicd-demo:${env.commit_hash} --port=8080"
-//       }
-//     }
-  }
+
+    stages {
+        stage('Build & Unit Tests') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+    }
 }

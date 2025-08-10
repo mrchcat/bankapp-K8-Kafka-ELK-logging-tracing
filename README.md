@@ -24,21 +24,47 @@ Externalized Config - Kubernetes.
 * Keycloak
 * Ingress
 
-Для запуска программы на локальном компьютере необходимы: Docker, Minikube (протестирован в связке с VirtualBox 7.1), 
-Helm. Приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "test.bankapp.internal.com") 
+Для запуска программы на локальном компьютере необходимы: 
+* Maven
+* Docker
+* Helm
+* Jenkins (плагины по умолчанию + дополнительно https://plugins.jenkins.io/kubernetes-cli/)
+* Minikube 
+* VirtualBox. 
+Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 на Windows 10.
+Все указанные программы установлены локально на хост.
 
 Порядок запуска: 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
-(при наличии ошибок попробуйте отключить проверку и увеличить ресурсы: "minikube start --driver=virtualbox --no-vtx-check"; "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
-2) установите ingress: "minikube addons enable ingress"
+(при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
+* "minikube start --driver=virtualbox --no-vtx-check";
+* "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
+2) установите в minikube ingress: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
 4) получите ip aдрес ноды: "minikube ip" и добавьте его в файл hosts вместе с адресом сайта
 (например, "192.168.59.107 prod.bankapp.internal.com") 
-При развертывании с соответствующими настройками, приложение будет доступно по адресу "prod.bankapp.internal.com"
-5) Варианты запуска:
-  * непосредственно через Helm: в файле helm/install.sh укажите название namespace и запустите его.
-  * Jenkins:
+При развертывании с соответствующими настройками, приложение станет доступно по адресу "prod.bankapp.internal.com"
+5) Клонируйте репозиторий на свой Github  
+6) Получите токен доступа на Github и сохраните его в Jenkins в раздел Credential с областью видимости "global" как 
+"secret text". В Jenkins в разделе System заполните группу настроек  GitHub: API URL:  https://api.github.com ; 
+credential - вставьте сохраненный токен. 
+7) Получите токен доступа на DockerHub и сохраните его в Jenkins раздел Credential с областью видимости "global" как
+   "secret text" с credentialsId="DOCKER"
+8) Найдите на хосте файл с настройкой Kubernetes (обычно находится по адресу ~/.kube/config). 
+Скопируйте его, переименуйте в config.yaml и сохраните в Credentials с областью видимости "global" 
+как "secret file " с credentialsId="KUBER_CONFIG_YAML"    
+9) В Jenkinsfile заполните блок environment 
+* DOCKER_REGISTRY - имя своего DockerHub 
+* 
+10) Сохраните изменения на Github
+11) Настройте pipeline в Jenkins:
+* создайте Item с типом Pipeline
+* В Definition указать "Pipeline script from SCM", SCM указать свой репозиторий на github, ветка: main
+12) Запустите задачу "build now"
 
+Приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
+
+13) Также можно развернуть приложение в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'

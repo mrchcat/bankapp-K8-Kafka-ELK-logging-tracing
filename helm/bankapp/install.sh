@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="test"
+nameOfNamespace="prod"
 
 echo "установка в 2 этапа: на первом развертываем keycloak, ждем его старта, а после этого стартуем микросервисы"
 helm install keycloak  ./charts/keycloak --namespace=$nameOfNamespace --create-namespace
