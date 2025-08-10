@@ -84,12 +84,17 @@ pipeline {
                     sh """
                     echo 'Deploy to PROD'
                     echo 'Устанавливаем keycloak'
-                    helm install keycloak  ./helm/bankapp/charts/keycloak --namespace=$PROD_NAMESPACE --create-namespace
+                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
                     echo 'Keycloak поднимается. Ожидание 2 минуты.'
                     sleep 130
 
-                    echo "Устанавливаем базы данных и микросервисы. Ожидание от 2 до 5 минут в зависимости от необходимости скачивать образы"
-                    helm install bankapp  ./helm/bankapp --set enableKeycloak=false --namespace=$PROD_NAMESPACE
+                    echo 'Устанавливаем базы данных и микросервисы.'
+                    helm upgrade --install bankapp  ./helm/bankapp \\
+                                 --set enableKeycloak=false \\
+                                 --namespace=$PROD_NAMESPACE
+                    echo 'Микросервисы полностью развернутся через 3-5 минут'
                     """
                 }
             }
