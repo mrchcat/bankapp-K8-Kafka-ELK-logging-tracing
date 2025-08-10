@@ -39,32 +39,46 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 (при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
 * "minikube start --driver=virtualbox --no-vtx-check";
 * "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
-2) установите в minikube ingress: "minikube addons enable ingress"
+2) установите в minikube Ingress Controller: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
-4) получите ip aдрес ноды: "minikube ip" и добавьте его в файл hosts вместе с адресом сайта
-(например, "192.168.59.107 prod.bankapp.internal.com"). Файл hosts в Windows находится в "C:\Windows\System32\drivers\etc"
-При развертывании с соответствующими настройками, приложение станет доступно по адресу "prod.bankapp.internal.com"
+4) получите ip aдрес ноды командой "minikube ip" и добавьте его в файл hosts вместе с будущим адресом сайта.
+Файл hosts в Windows находится в "C:\Windows\System32\drivers\etc".
+Адрес сайта будет представлен в виде \<namespace\>.bankapp.internal.com (например, "192.168.59.107 prod.bankapp.internal.com").
+При развертывании с настройками по умолчанию, приложение станет доступно 
+по адресам "prod.bankapp.internal.com" и "test.bankapp.internal.com", поэтому надо добавить строки
+"192.168.59.107 prod.bankapp.internal.com" и "192.168.59.107 test.bankapp.internal.com", где вместо 192.168.59.107 укажите 
+адрес "minikube ip"
 5) Клонируйте репозиторий на свой Github  
 6) Получите токен доступа на Github и сохраните его в Jenkins в раздел Credential с областью видимости "global" как 
-"secret text". В Jenkins в разделе System заполните группу настроек  GitHub: API URL:  https://api.github.com ; 
-credential - вставьте сохраненный токен. 
+"secret text". В Jenkins в разделе System заполните группу настроек  GitHub: 
+* API URL:  https://api.github.com ; 
+* credential - вставьте сохраненный токен. 
 7) Получите токен доступа на DockerHub и сохраните его в Jenkins раздел Credential с областью видимости "global" как
    "secret text" с credentialsId="DOCKER"
-8) Найдите на хосте файл с настройкой Kubernetes (обычно находится по адресу ~/.kube/config). 
-Скопируйте его, переименуйте в config.yaml и сохраните в Credentials с областью видимости "global" 
+8) Найдите на хосте файл с настройкой Kubernetes (обычно находится по адресу "~/.kube/config", "C:\Users\User\.kube"). 
+Скопируйте его, переименуйте в config.yaml и сохраните в Jenkins в Credentials с областью видимости "global" 
 как "secret file " с credentialsId="KUBER_CONFIG_YAML"    
 9) В Jenkinsfile заполните блок environment 
 * DOCKER_REGISTRY - имя своего DockerHub 
-* 
+* DOCKER_CREDENTIAL_ID - наименование credentialId в Jenkins, если отличается от указанных выше
+* KUBER_CREDENTIAL_ID- наименование credentialId в Jenkins, если отличается от указанных выше
 10) Сохраните изменения на Github
 11) Настройте pipeline в Jenkins:
-* создайте Item с типом Pipeline
+* создайте Item "BankApp" с типом Pipeline
 * В Definition указать "Pipeline script from SCM", SCM указать свой репозиторий на github, ветка: main
 12) Запустите задачу "build now"
+13) Зайдите в задачу и откройте Console Output 
+14) После развертывания микросервисов в тестовом пространстве, Jenkins запросит подтверждение на развертывание в продакшн. 
+Дождитесь запуска микросервисов в тестовом пространстве. Проверите можно командой "kubectl get pods -n test"
+- все сервисы должны быть RUN;  "kubectl get ingress -n test" - ingress должен быть запущен и ADDRESS должен быть присвоен.
+Если адрес не присвоен, то удостоверьтесь, что ранее вы запустили команду "minikube addons enable ingress" и "minikube tunnel"
+Зайдите по адресу http://test.bankapp.internal.com/ . Если он недоступен, то убедитесь, что вы внесли его в файл hosts. 
+Введите логин "anna", пароль "12345" и удостоверьтесь, что все работает. 
+Подтвердите в консоли Jenkins продолжение развертывания уже в production
 
 Приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
 
-13) Также можно развернуть приложение в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
+Также можно развернуть приложение в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
