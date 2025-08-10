@@ -83,11 +83,17 @@ pipeline {
                 withKubeConfig([credentialsId: 'KUBER_CONGIG_YAML']) {
                     sh """
                     echo 'Deploy to PROD'
+                    echo 'Удаляем существующие микросервисы, если развернуты'
+                    helm delete bankapp -n $PROD_NAMESPACE
+                    helm delete bankapp -n $PROD_NAMESPACE
+
                     echo 'Устанавливаем keycloak'
                     helm install keycloak  ./helm/bankapp/charts/keycloak --namespace=$PROD_NAMESPACE --create-namespace
+
                     echo 'Keycloak поднимается. Ожидание 130 секунд.'
                     sleep 130
-                    echo "Устанавливаем базы данных и микросервисы"
+
+                    echo "Устанавливаем базы данных и микросервисы. Ожидание от 2 до 5 минут в зависимости от необходимости скачивать образы"
                     helm install bankapp  ./helm/bankapp --set enableKeycloak=false --namespace=$PROD_NAMESPACE
                     """
                 }

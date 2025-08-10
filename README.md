@@ -42,7 +42,7 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 2) установите в minikube ingress: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
 4) получите ip aдрес ноды: "minikube ip" и добавьте его в файл hosts вместе с адресом сайта
-(например, "192.168.59.107 prod.bankapp.internal.com") 
+(например, "192.168.59.107 prod.bankapp.internal.com"). Файл hosts в Windows находится в "C:\Windows\System32\drivers\etc"
 При развертывании с соответствующими настройками, приложение станет доступно по адресу "prod.bankapp.internal.com"
 5) Клонируйте репозиторий на свой Github  
 6) Получите токен доступа на Github и сохраните его в Jenkins в раздел Credential с областью видимости "global" как 
