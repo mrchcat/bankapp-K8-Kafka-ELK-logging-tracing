@@ -37,29 +37,35 @@ pipeline {
 //                 sh 'mvn clean package'
 //             }
 //         }
-        stage('Build Docker Images') {
-            steps {
-                sh """
-                docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER
-                docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER
-                docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER
-                docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER
-                docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER
-                docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER
-                docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER
-                docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER
-                """
-            }
-        }
-//            stage('Push Docker Images') {
-//                steps {
-//                    withCredentials([string(credentialsId: 'DOCKER', variable: 'TOKEN')]) {
-//                        sh """
-//                        echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin
-//                        docker push $DOCKER_REGISTRY/$APP_NAME:$BUILD_NUMBER
-//
-//                    }
-//                }
-//            }
+//         stage('Build Docker Images') {
+//             steps {
+//                 sh """
+//                 docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER
+//                 docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER
+//                 docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER
+//                 docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER
+//                 docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER
+//                 docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER
+//                 docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER
+//                 docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER
+//                 """
+//             }
+//         }
+           stage('Push Docker Images') {
+               steps {
+                   withCredentials([string(credentialsId: 'DOCKER', variable: 'TOKEN')]) {
+                       sh """
+                       echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin
+                       docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER
+                       docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER
+                   }
+               }
+           }
     }
 }
