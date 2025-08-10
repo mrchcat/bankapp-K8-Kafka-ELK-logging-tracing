@@ -59,7 +59,7 @@ pipeline {
 //         }
 //         stage('Push Docker Images') {
 //             steps {
-//                 withCredentials([string(credentialsId: 'DOCKER', variable: 'TOKEN')]) {
+//                 withCredentials([string(credentialsId: $DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
 //                     sh """
 //                     echo 'Push Docker Images'
 //                     echo 'Начинаем аутентификацию на DockerHub'
@@ -80,7 +80,7 @@ pipeline {
 //         }
         stage('Deploy to PROD') {
             steps {
-                withKubeConfig([credentialsId: 'KUBER_CONGIG_YAML']) {
+                withKubeConfig([credentialsId: $KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to PROD'
                     echo 'Удаляем существующие микросервисы, если развернуты'
