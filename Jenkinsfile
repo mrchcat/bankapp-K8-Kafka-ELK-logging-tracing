@@ -1,8 +1,10 @@
 pipeline {
     agent any
     environment {
-        DOCKER_REGISTRY='mcat1980' //укажите свое имя
+        DOCKER_REGISTRY='mcat1980' //укажите наименование своего dockerhub
+
         DOCKER_CREDENTIAL_ID='DOCKER'
+        KUBER_CREDENTIAL_ID='KUBER_CONGIG_YAML'
 
         FRONT_IMAGE_NAME='bank-front'
         FRONT_BUILD_NUMBER='1.0'
@@ -27,8 +29,6 @@ pipeline {
 
         TRANSFER_IMAGE_NAME='bank-transfer'
         TRANSFER_BUILD_NUMBER='1.0'
-
-        KUBER_CREDENTIAL_ID='KUBER_CONGIG_YAML'
     }
 
     stages {
@@ -64,6 +64,7 @@ pipeline {
                        docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER
                        docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER
                        docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER
+                       """
                    }
                }
            }
