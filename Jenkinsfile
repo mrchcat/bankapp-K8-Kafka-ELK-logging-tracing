@@ -4,7 +4,7 @@ pipeline {
         DOCKER_REGISTRY='mcat1980' //укажите наименование своего dockerhub
 
         DOCKER_CREDENTIAL_ID='DOCKER'
-        KUBER_CREDENTIAL_ID='KUBER_CONGIG_YAML'
+        KUBER_CREDENTIAL_ID='KUBER_CONFIG_YAML'
 
         FRONT_IMAGE_NAME='bank-front'
         FRONT_BUILD_NUMBER='1.0'
