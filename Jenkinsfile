@@ -80,7 +80,7 @@ pipeline {
 //         }
         stage('Deploy to PROD') {
             steps {
-                withKubeConfig([credentialsId: $KUBER_CREDENTIAL_ID]) {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to PROD'
                     echo 'Удаляем существующие микросервисы, если развернуты'
