@@ -59,7 +59,7 @@ pipeline {
 //         }
 //         stage('Push Docker Images') {
 //             steps {
-//                 withCredentials([string(credentialsId: $DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
+//                 withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
 //                     sh """
 //                     echo 'Push Docker Images'
 //                     echo 'Начинаем аутентификацию на DockerHub'
