@@ -3,8 +3,11 @@ pipeline {
     environment {
         DOCKER_REGISTRY='mcat1980' //укажите наименование своего dockerhub
 
-        DOCKER_CREDENTIAL_ID='DOCKER'
-        KUBER_CREDENTIAL_ID='KUBER_CONFIG_YAML'
+        DOCKER_CREDENTIAL_ID='DOCKER' //скорректируйте, если вы присвоили другое имя
+        KUBER_CREDENTIAL_ID='KUBER_CONFIG_YAML' //скорректируйте, если вы присвоили другое имя
+
+        PROD_NAMESPACE='prod'
+        TEST_NAMESPACE='test'
 
         FRONT_IMAGE_NAME='bank-front'
         FRONT_BUILD_NUMBER='1.0'
@@ -29,8 +32,6 @@ pipeline {
 
         TRANSFER_IMAGE_NAME='bank-transfer'
         TRANSFER_BUILD_NUMBER='1.0'
-
-        PROD_NAMESPACE='prod'
     }
 
     stages {
@@ -78,6 +79,32 @@ pipeline {
 //                 }
 //             }
 //         }
+        stage('Deploy to TEST') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo 'Deploy to TEST'
+                    echo 'Устанавливаем keycloak'
+                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo 'Keycloak поднимается. Ожидание 2 минуты.'
+                    sleep 130
+
+                    echo 'Устанавливаем базы данных и микросервисы.'
+                    helm upgrade --install bankapp  ./helm/bankapp \\
+                                 --set enableKeycloak=false \\
+                                 --namespace=$TEST_NAMESPACE
+                    echo 'Микросервисы полностью развернутся через 3-5 минут'
+                    """
+                }
+            }
+        }
+        stage('Manual Approval for PROD') {
+            steps {
+                input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
+            }
+        }
         stage('Deploy to PROD') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
