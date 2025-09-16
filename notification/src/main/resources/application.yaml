@@ -3,7 +3,6 @@ server.port: ${SERVER_PORT}
 spring:
   application:
     name: ${SPRING_APPLICATION_NAME}
-
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
@@ -16,6 +15,14 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      group-id: bank-notifications
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
+      properties.spring.json.trusted.packages: com.github.mrchcat.notifications.*
 
 management.endpoints.web.exposure.include: info, health
 
@@ -24,3 +31,8 @@ logging:
   level:
     root: ${LOG_LEVEL:DEBUG}
     org.zalando.logbook: ${LOG_LEVEL:DEBUG}
+
+application:
+  kafka:
+    topic:
+      notifications: ${KAFKA_NOTIFICATION_TOPIC}
