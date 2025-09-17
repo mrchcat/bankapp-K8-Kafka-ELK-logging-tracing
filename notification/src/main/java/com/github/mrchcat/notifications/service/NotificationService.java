@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @KafkaListener(topics = {"#{'${application.kafka.topic.notifications}'.split(',')}"})
+    @Transactional("transactionManager")
     public void readNotifications(BankNotificationDto dto) {
         var notification = BankNotification.builder()
                 .service(dto.service())

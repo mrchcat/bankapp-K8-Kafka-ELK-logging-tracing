@@ -23,6 +23,11 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
       properties.spring.json.trusted.packages: com.github.mrchcat.notifications.*
+      enable-auto-commit: true
+      auto-offset-reset: earliest
+    producer:
+      transaction-id-prefix: bank-transaction-id
+
 
 management.endpoints.web.exposure.include: info, health
 
@@ -35,4 +40,4 @@ logging:
 application:
   kafka:
     topic:
-      notifications: ${KAFKA_NOTIFICATION_TOPIC}
+      notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
