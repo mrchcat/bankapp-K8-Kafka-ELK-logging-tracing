@@ -10,12 +10,23 @@ spring:
   sql.init:
     mode: ALWAYS
     schema-locations: classpath:schema.sql
-
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      group-id: bank-exchange
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties.spring.json.type.mapping: rates:com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto
+      properties.spring.json.trusted.packages: com.github.mrchcat.*
+      enable-auto-commit: true
+      auto-offset-reset: latest
+    producer:
+      transaction-id-prefix: bank-transaction-id
 
 management.endpoints.web.exposure.include: info, health
 
@@ -24,3 +35,8 @@ logging:
   level:
     root: ${LOG_LEVEL:DEBUG}
     org.zalando.logbook: ${LOG_LEVEL:DEBUG}
+
+application:
+  kafka:
+    topic:
+      rates: ${KAFKA_EXCHANGE_RATES_TOPIC}

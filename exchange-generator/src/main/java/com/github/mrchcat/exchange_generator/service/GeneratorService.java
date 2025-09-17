@@ -1,6 +1,57 @@
 package com.github.mrchcat.exchange_generator.service;
 
-public interface GeneratorService {
+import com.github.mrchcat.shared.enums.BankCurrency;
+import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
+import com.github.mrchcat.shared.exchange.CurrencyRate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-    void sendNewRates();
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Component
+public class GeneratorService {
+
+    private final BigDecimal AVERAGE_USD = BigDecimal.valueOf(80);
+    private final BigDecimal AVERAGE_CNY = BigDecimal.valueOf(11);
+
+    @Value("${application.kafka.topic.rates}")
+    private String ratesTopic;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    public GeneratorService(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    @Scheduled(fixedDelay = 1000L)
+    public void sendNewRates() {
+        kafkaTemplate.send(ratesTopic, new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates()));
+    }
+
+    private List<CurrencyRate> getRates() {
+        BigDecimal randomBuyUsd = BigDecimal.valueOf(1 - Math.random() / 10);
+        BigDecimal randomSellUsd = BigDecimal.valueOf(1 + Math.random() / 10);
+
+        BigDecimal randomBuyCNY = BigDecimal.valueOf(1 - Math.random() / 10);
+        BigDecimal randomSellCNY = BigDecimal.valueOf(1 + Math.random() / 10);
+
+        var USDrate = CurrencyRate.builder()
+                .currency(BankCurrency.USD)
+                .buyRate(AVERAGE_USD.multiply(randomBuyUsd).setScale(2, RoundingMode.HALF_UP))
+                .sellRate(AVERAGE_USD.multiply(randomSellUsd).setScale(2, RoundingMode.HALF_UP))
+                .time(LocalDateTime.now())
+                .build();
+        var CNYrate = CurrencyRate.builder()
+                .currency(BankCurrency.CNY)
+                .buyRate(AVERAGE_CNY.multiply(randomBuyCNY).setScale(2, RoundingMode.HALF_UP))
+                .sellRate(AVERAGE_CNY.multiply(randomSellCNY).setScale(2, RoundingMode.HALF_UP))
+                .time(LocalDateTime.now())
+                .build();
+        return List.of(USDrate, CNYrate);
+    }
 }

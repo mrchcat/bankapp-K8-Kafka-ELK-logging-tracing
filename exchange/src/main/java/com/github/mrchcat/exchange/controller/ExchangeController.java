@@ -34,9 +34,4 @@ public class ExchangeController {
         return exchangeService.getAllRates();
     }
 
-    @PostMapping("exchange")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void getAllRates(@RequestBody @Valid CurrencyExchangeRatesDto rates) {
-        exchangeService.saveRates(rates);
-    }
 }
