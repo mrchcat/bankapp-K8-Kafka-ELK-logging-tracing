@@ -23,8 +23,7 @@ public class Notifications {
     @Value("${application.kafka.topic.notifications}")
     private String notificationTopic;
 
-    public Notifications(KafkaTemplate<String, Object> kafkaTemplate,
-                         ServiceUrl serviceUrl) {
+    public Notifications(KafkaTemplate<String, Object> kafkaTemplate, ServiceUrl serviceUrl) {
         this.kafkaTemplate = kafkaTemplate;
         this.CASH_SERVICE = serviceUrl.getCash();
     }

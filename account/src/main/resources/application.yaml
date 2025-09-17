@@ -28,6 +28,13 @@ spring:
             client-id: ${KEYCLOAK_CLIENT_ID}
             client-secret: ${KEYCLOAK_CLIENT_SECRET}
             clientAuthenticationMethod: client_secret_post
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
+      acks: all
 
 management.endpoints.web.exposure.include: info, health
 
@@ -60,3 +67,6 @@ application:
     urls:
       account: ${SERVICE_URL_ACCOUNT}
       notifications: ${SERVICE_URL_NOTIFICATIONS}
+  kafka:
+    topic:
+      notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
