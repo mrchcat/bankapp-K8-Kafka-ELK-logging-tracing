@@ -8,7 +8,9 @@ import com.github.mrchcat.shared.exchange.CurrencyExchangeRateDto;
 import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
 import com.github.mrchcat.shared.exchange.CurrencyRate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -64,7 +66,8 @@ public class ExchangeServiceImpl implements ExchangeService {
         return exchangeRates.values();
     }
 
-    @Override
+    @KafkaListener(topics = {"#{'${application.kafka.topic.rates}'.split(',')}"})
+    @Transactional("transactionManager")
     public void saveRates(CurrencyExchangeRatesDto rates) {
         if (!rates.baseCurrency().equals(baseCurrencyByDefault)) {
             throw new ExchangeGeneratorServiceException("");

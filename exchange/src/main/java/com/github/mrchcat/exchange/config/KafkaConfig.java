@@ -1,4 +1,4 @@
-package com.github.mrchcat.notifications.config;
+package com.github.mrchcat.exchange.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.shaded.com.google.protobuf.Any;

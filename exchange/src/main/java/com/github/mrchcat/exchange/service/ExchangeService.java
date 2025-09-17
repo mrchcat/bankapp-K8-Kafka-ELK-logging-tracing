@@ -13,5 +13,4 @@ public interface ExchangeService {
 
     Collection<CurrencyRate> getAllRates();
 
-    void saveRates(CurrencyExchangeRatesDto rates);
 }
