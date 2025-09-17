@@ -67,7 +67,6 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @KafkaListener(topics = {"#{'${application.kafka.topic.rates}'.split(',')}"})
-    @Transactional("transactionManager")
     public void saveRates(CurrencyExchangeRatesDto rates) {
         if (!rates.baseCurrency().equals(baseCurrencyByDefault)) {
             throw new ExchangeGeneratorServiceException("");

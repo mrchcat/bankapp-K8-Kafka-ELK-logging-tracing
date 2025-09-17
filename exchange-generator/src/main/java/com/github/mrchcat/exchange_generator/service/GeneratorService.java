@@ -30,7 +30,9 @@ public class GeneratorService {
 
     @Scheduled(fixedDelay = 1000L)
     public void sendNewRates() {
-        kafkaTemplate.send(ratesTopic, new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates()));
+        kafkaTemplate.send(ratesTopic, 0, "rates",
+                new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates()));
+//        kafkaTemplate.send(ratesTopic, new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates()));
     }
 
     private List<CurrencyRate> getRates() {

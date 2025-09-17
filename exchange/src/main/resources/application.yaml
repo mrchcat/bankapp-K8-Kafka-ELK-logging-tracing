@@ -24,9 +24,7 @@ spring:
       properties.spring.json.type.mapping: rates:com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto
       properties.spring.json.trusted.packages: com.github.mrchcat.*
       enable-auto-commit: true
-      auto-offset-reset: latest
-    producer:
-      transaction-id-prefix: bank-transaction-id
+      auto-offset-reset: earliest
 
 management.endpoints.web.exposure.include: info, health
 
