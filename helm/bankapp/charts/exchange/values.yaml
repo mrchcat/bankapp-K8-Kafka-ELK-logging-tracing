@@ -9,11 +9,14 @@ DATASOURCE_PASSWORD: Inushing1980
 
 LOG_LEVEL: DEBUG
 
+KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
+
 INITIAL_DELAY_SEC: 120
 
 image:
   repository: mcat1980/bank-exchange
-  tag: "1.0"
+  tag: "2.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

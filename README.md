@@ -31,8 +31,8 @@ Externalized Config - Kubernetes.
 * Jenkins (плагины по умолчанию + дополнительно https://plugins.jenkins.io/kubernetes-cli/)
 * Minikube 
 * VirtualBox. 
-Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 на Windows 10.
-Все указанные программы установлены локально на хост.
+Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 на Windows 10. Запуск команд осуществлялся в Git Bash
+Все указанные программы установлены локально на хост. 
 
 Порядок запуска: 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
@@ -128,3 +128,5 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Сервис проверки транзакций (blocker) подтверждает или отклоняет транзакции случайным образом.
 По умолчанию вероятность подтвердить транзакцию составляет CONFIRM_PROBABILITY = 0.97%  
 Контракты тестируются на примере сервиса "exchange".
+
+

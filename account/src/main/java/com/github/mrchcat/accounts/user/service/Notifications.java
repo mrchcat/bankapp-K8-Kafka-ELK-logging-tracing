@@ -7,12 +7,15 @@ import com.github.mrchcat.shared.notification.BankNotificationDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.security.auth.message.AuthException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-@Component
+@Service
+@Slf4j
 public class Notifications {
     private final String ACCOUNT_SERVICE;
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -25,7 +28,7 @@ public class Notifications {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendNotification(BankUser client, String message) throws AuthException {
+    public void sendNotification(BankUser client, String message) {
         var notification = BankNotificationDto.builder()
                 .service(ACCOUNT_SERVICE)
                 .username(client.getUsername())
@@ -33,6 +36,12 @@ public class Notifications {
                 .email(client.getEmail())
                 .message(message)
                 .build();
-        kafkaTemplate.send(notificationTopic, notification);
+        kafkaTemplate
+                .send(notificationTopic, notification)
+                .whenComplete((result, e) -> {
+                    if (e != null) {
+                        log.error("Ошибка при отправке сообщения: {} ", e.getMessage());
+                    }
+                });
     }
 }

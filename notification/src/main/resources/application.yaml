@@ -21,13 +21,12 @@ spring:
       group-id: bank-notifications
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
-      properties.spring.json.trusted.packages: com.github.mrchcat.notifications.*
+      properties:
+        spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
+        spring.json.trusted.packages: com.github.mrchcat.*
+        isolation.level: read_committed
       enable-auto-commit: true
       auto-offset-reset: earliest
-    producer:
-      transaction-id-prefix: bank-transaction-id
-
 
 management.endpoints.web.exposure.include: info, health
 

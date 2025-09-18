@@ -3,17 +3,21 @@ package com.github.mrchcat.exchange_generator.service;
 import com.github.mrchcat.shared.enums.BankCurrency;
 import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
 import com.github.mrchcat.shared.exchange.CurrencyRate;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
+@Service
+@Slf4j
 public class GeneratorService {
 
     private final BigDecimal AVERAGE_USD = BigDecimal.valueOf(80);
@@ -30,9 +34,14 @@ public class GeneratorService {
 
     @Scheduled(fixedDelay = 1000L)
     public void sendNewRates() {
-        kafkaTemplate.send(ratesTopic, 0, "rates",
-                new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates()));
-//        kafkaTemplate.send(ratesTopic, new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates()));
+        var rates = new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates());
+        kafkaTemplate
+                .send(ratesTopic, 0, "rates", rates)
+                .whenComplete((result, e) -> {
+                    if (e != null) {
+                        log.error("Ошибка при отправке сообщения: {} ", e.getMessage());
+                    }
+                });
     }
 
     private List<CurrencyRate> getRates() {
