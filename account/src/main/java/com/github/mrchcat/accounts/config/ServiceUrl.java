@@ -11,5 +11,4 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix="application.service.urls")
 public class ServiceUrl {
     private String account;
-    private String notifications;
 }

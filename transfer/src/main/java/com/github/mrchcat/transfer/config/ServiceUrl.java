@@ -13,6 +13,5 @@ public class ServiceUrl {
     private String account;
     private String exchange;
     private String blocker;
-    private String notifications;
     private String transfer;
 }

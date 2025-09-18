@@ -12,6 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceUrl {
     private String account;
     private String blocker;
-    private String notifications;
     private String cash;
 }

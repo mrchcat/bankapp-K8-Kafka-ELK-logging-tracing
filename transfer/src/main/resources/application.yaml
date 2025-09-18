@@ -48,7 +48,6 @@ application:
       account: ${SERVICE_URL_ACCOUNT}
       exchange: ${SERVICE_URL_EXCHANGE}
       blocker: ${SERVICE_URL_BLOCKER}
-      notifications: ${SERVICE_URL_NOTIFICATIONS}
       transfer: ${SERVICE_URL_TRANSFER}
   kafka:
     topic:

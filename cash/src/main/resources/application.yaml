@@ -65,7 +65,6 @@ application:
     urls:
       account: ${SERVICE_URL_ACCOUNT}
       blocker: ${SERVICE_URL_BLOCKER}
-      notifications: ${SERVICE_URL_NOTIFICATIONS}
       cash: ${SERVICE_URL_CASH}
   kafka:
     topic:
