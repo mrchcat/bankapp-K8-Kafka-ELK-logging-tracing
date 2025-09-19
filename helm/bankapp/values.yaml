@@ -39,7 +39,9 @@ account:
   SPRING_APPLICATION_NAME: bankAccounts
 
   SERVICE_URL_ACCOUNT: account:8080
-  SERVICE_URL_NOTIFICATIONS: notifications:8080
+
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
   KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
   KEYCLOAK_CLIENT_ID: bank_accounts
@@ -54,7 +56,7 @@ account:
 
   image:
     repository: mcat1980/bank-account
-    tag: "1.0"
+    tag: "2.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -75,7 +77,7 @@ account:
 
 # Subchart for blocker
 blocker:
-  replicaCount: 1
+  replicaCount: 2
 
   SPRING_APPLICATION_NAME: bankBlocker
 
@@ -89,7 +91,7 @@ blocker:
 
   image:
     repository: mcat1980/bank-blocker
-    tag: "1.0"
+    tag: "2.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -114,20 +116,21 @@ cash:
   DATASOURCE_USERNAME: postgres
   DATASOURCE_PASSWORD: Inushing1980
 
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
+
   LOG_LEVEL: INFO
 
   INITIAL_DELAY_SEC: 170
 
   SERVICE_URL_ACCOUNT: account:8080
-  SERVICE_URL_NOTIFICATIONS: notifications:8080
   SERVICE_URL_BLOCKER: blocker:8080
   SERVICE_URL_CASH: cash:8080
 
   image:
     repository: mcat1980/bank-cash
-    tag: "1.0"
+    tag: "2.0"
     pullPolicy: IfNotPresent
-
 
   imagePullSecrets: [ ]
   nameOverride: ""
@@ -158,11 +161,14 @@ exchange:
 
   LOG_LEVEL: INFO
 
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
+
   INITIAL_DELAY_SEC: 170
 
   image:
     repository: mcat1980/bank-exchange
-    tag: "1.0"
+    tag: "2.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -195,11 +201,14 @@ exchange-generator:
 
   LOG_LEVEL: INFO
 
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
+
   INITIAL_DELAY_SEC: 170
 
   image:
     repository: mcat1980/bank-exchange-generator
-    tag: "1.0"
+    tag: "3.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -218,16 +227,20 @@ notifications:
 
   KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 
+  DATASOURCE_URL: jdbc:postgresql://notifications-db:5432/data
   DATASOURCE_USERNAME: postgres
   DATASOURCE_PASSWORD: Inushing1980
 
   LOG_LEVEL: INFO
 
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
+
   INITIAL_DELAY_SEC: 170
 
   image:
     repository: mcat1980/bank-notifications
-    tag: "1.0"
+    tag: "4.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -256,14 +269,17 @@ transfer:
   KEYCLOAK_CLIENT_ID: bank_transfer
   KEYCLOAK_CLIENT_SECRET: TBdc8HtAio8f0SXlvHPWS6Cbbz5i6yEf
 
+  DATASOURCE_URL: jdbc:postgresql://transfer-db:5432/data
   DATASOURCE_USERNAME: postgres
   DATASOURCE_PASSWORD: Inushing1980
 
   SERVICE_URL_ACCOUNT: account:8080
-  SERVICE_URL_NOTIFICATIONS: notifications:8080
   SERVICE_URL_BLOCKER: blocker:8080
   SERVICE_URL_EXCHANGE: exchange:8080
   SERVICE_URL_TRANSFER: transfer:8080
+
+  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
   LOG_LEVEL: INFO
 
@@ -271,7 +287,7 @@ transfer:
 
   image:
     repository: mcat1980/bank-transfer
-    tag: "1.0"
+    tag: "2.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -289,6 +305,49 @@ transfer:
       pullPolicy: IfNotPresent
     DB_USERNAME: postgres
     DB_PASSWORD: postgres
+
+# Subchart for Kafka
+kafka:
+  kafka:
+    enabled: true
+    controller:
+      enabled: true
+      replicaCount: 3
+      readinessProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        failureThreshold: 10
+      livenessProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        failureThreshold: 10
+    broker:
+      replicaCount: 0
+      persistence:
+        size: 1Gi
+      readinessProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        failureThreshold: 10
+    clusterId: a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6
+    provisioning:
+      enabled: true
+      topics:
+        - name: "bank-notifications"
+          partitions: 2
+          replicationFactor: 2
+        - name: "bank-exchange-rates"
+          partitions: 1
+          replicationFactor: 2
+    networkPolicy:
+      enabled: false
+    listeners:
+      client:
+        protocol: PLAINTEXT
+      controller:
+        protocol: PLAINTEXT
+      interbroker:
+        protocol: PLAINTEXT
 
 # Subchart for keycloak
 keycloak:

@@ -1,9 +1,12 @@
 #задайте название namespace
-nameOfNamespace="prod"
+nameOfNamespace="test"
 
-echo "установка в 2 этапа: на первом развертываем keycloak, ждем его старта, а после этого стартуем микросервисы"
-helm install keycloak  ./charts/keycloak --namespace=$nameOfNamespace --create-namespace
 echo "разворачиваем keycloak"
-sleep 130
+helm install keycloak  ./charts/keycloak --namespace=$nameOfNamespace --create-namespace
+echo "разворачиваем kafka"
+helm install kafka ./charts/kafka --namespace=$nameOfNamespace --create-namespace
+
+echo "ждем две минуты, пока приложения запускаются"
+sleep 120
 echo "устанавливаем все остальные микросервисы"
-helm install bankapp  . --set enableKeycloak=false --namespace=$nameOfNamespace --create-namespace
+helm install bankapp  . --set enableKeycloak=false --set enableKafka=false --namespace=$nameOfNamespace --create-namespace
