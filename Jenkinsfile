@@ -12,28 +12,28 @@ pipeline {
         TEST_NAMESPACE='test'
 
         FRONT_IMAGE_NAME='bank-front'
-        FRONT_BUILD_NUMBER='1.0'
+        FRONT_BUILD_NUMBER='10.0'
 
         ACCOUNT_IMAGE_NAME='bank-account'
-        ACCOUNT_BUILD_NUMBER='1.0'
+        ACCOUNT_BUILD_NUMBER='10.0'
 
         BLOCKER_IMAGE_NAME='bank-blocker'
-        BLOCKER_BUILD_NUMBER='1.0'
+        BLOCKER_BUILD_NUMBER='10.0'
 
         CASH_IMAGE_NAME='bank-cash'
-        CASH_BUILD_NUMBER='1.0'
+        CASH_BUILD_NUMBER='10.0'
 
         EXCHANGE_IMAGE_NAME='bank-exchange'
-        EXCHANGE_BUILD_NUMBER='1.0'
+        EXCHANGE_BUILD_NUMBER='10.0'
 
         EXCHANGE_GENERATOR_IMAGE_NAME='bank-exchange-generator'
-        EXCHANGE_GENERATOR_BUILD_NUMBER='1.0'
+        EXCHANGE_GENERATOR_BUILD_NUMBER='10.0'
 
         NOTIFICATIONS_IMAGE_NAME='bank-notifications'
-        NOTIFICATIONS_BUILD_NUMBER='1.0'
+        NOTIFICATIONS_BUILD_NUMBER='10.0'
 
         TRANSFER_IMAGE_NAME='bank-transfer'
-        TRANSFER_BUILD_NUMBER='1.0'
+        TRANSFER_BUILD_NUMBER='10.0'
     }
 
     stages {
@@ -90,7 +90,13 @@ pipeline {
                     helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
-                    echo 'Keycloak поднимается. Ожидание 2 минуты.'
+                    echo 'Keycloak поднимается.'
+                    echo 'Устанавливаем kafka'
+                    helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo 'Kafka поднимается.'
+                    echo 'Ожидание 2 минуты.'
                     sleep 130
 
                     echo 'Устанавливаем базы данных и микросервисы.'
@@ -111,12 +117,23 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
+                    echo 'Clean TEST'
+                    helm delete bankapp --namespace=$TEST_NAMESPACE
+                    helm delete keycloak --namespace=$TEST_NAMESPACE
+                    helm delete kafka --namespace=$TEST_NAMESPACE
+
                     echo 'Deploy to PROD'
                     echo 'Устанавливаем keycloak'
                     helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
-                                 --namespace=$PROD_NAMESPACE \\
+                                 --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
-                    echo 'Keycloak поднимается. Ожидание 2 минуты.'
+                    echo 'Keycloak поднимается.'
+                    echo 'Устанавливаем kafka'
+                    helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo 'Kafka поднимается.'
+                    echo 'Ожидание 2 минуты.'
                     sleep 130
 
                     echo 'Устанавливаем базы данных и микросервисы.'

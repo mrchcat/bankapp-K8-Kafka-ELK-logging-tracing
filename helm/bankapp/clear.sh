@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="prod"
+nameOfNamespace="test"
 
 helm delete keycloak -n $nameOfNamespace
 helm delete kafka -n $nameOfNamespace
