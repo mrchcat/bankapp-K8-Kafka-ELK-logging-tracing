@@ -1,6 +1,5 @@
 package com.github.mrchcat.shared.accounts;
 
-import com.github.mrchcat.shared.accounts.AccountDto;
 import lombok.Builder;
 
 import java.time.LocalDate;

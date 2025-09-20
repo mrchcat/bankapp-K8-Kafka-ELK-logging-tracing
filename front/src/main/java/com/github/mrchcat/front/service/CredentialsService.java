@@ -37,7 +37,7 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
         this.oAuthHeaderGetter = oAuthHeaderGetter;
         this.encoder = encoder;
         this.ACCOUNT_SERVICE = serviceUrl.getAccount();
-        this.serviceUrl=serviceUrl;
+        this.serviceUrl = serviceUrl;
     }
 
     @Override

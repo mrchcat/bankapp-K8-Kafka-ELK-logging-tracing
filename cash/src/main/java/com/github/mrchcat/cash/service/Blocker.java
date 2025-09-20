@@ -25,7 +25,7 @@ public class Blocker {
                    ServiceUrl serviceUrl) {
         this.restClientBuilder = restClientBuilder;
         this.oAuthHeaderGetter = oAuthHeaderGetter;
-        this.BLOCKER_SERVICE= serviceUrl.getBlocker();
+        this.BLOCKER_SERVICE = serviceUrl.getBlocker();
     }
 
     @CircuitBreaker(name = "blocker", fallbackMethod = "fallbackBlocker")

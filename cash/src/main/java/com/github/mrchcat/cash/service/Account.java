@@ -31,7 +31,7 @@ public class Account {
                    ServiceUrl serviceUrl) {
         this.restClientBuilder = restClientBuilder;
         this.oAuthHeaderGetter = oAuthHeaderGetter;
-        this.ACCOUNT_SERVICE=serviceUrl.getAccount();
+        this.ACCOUNT_SERVICE = serviceUrl.getAccount();
     }
 
     @CircuitBreaker(name = "accounts")

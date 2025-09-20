@@ -29,7 +29,7 @@ public class AccountController {
     private final UserService userService;
 
     /**
-     * получение информации о клиенте банка для фронта
+     * Получение информации о клиенте банка для фронта
      */
     @GetMapping("/account/{username}")
     BankUserDto getClientAccountsAndPersonalData(@PathVariable @NotNull @NotBlank String username,
@@ -43,7 +43,7 @@ public class AccountController {
     }
 
     /**
-     * получить список пользователей с активными аккаунтами
+     * Получить список пользователей с активными аккаунтами
      */
     @GetMapping("/account")
     List<BankUserDto> getAllActiveClientsAccountsAndPersonalData() {
@@ -51,7 +51,7 @@ public class AccountController {
     }
 
     /**
-     * корректировка информации о клиенте банка по запросу фронта
+     * Корректировка информации о клиенте банка по запросу фронта
      */
     @PatchMapping("/account/{username}")
     BankUserDto editClientAccountsAndPersonalData(@PathVariable @NotNull @NotBlank String username,
@@ -73,7 +73,7 @@ public class AccountController {
     }
 
     /**
-     * выполнение транзакции от сервиса выдачи денег
+     * Выполнение транзакции от сервиса выдачи денег
      */
     @PostMapping("/account/cash")
     TransactionConfirmation processCashTransaction(@RequestBody @Valid AccountCashTransactionDto cashTransactionDto) {
@@ -81,7 +81,7 @@ public class AccountController {
     }
 
     /**
-     * выполнение транзакции от сервиса переводов
+     * Выполнение транзакции от сервиса переводов
      */
     @PostMapping("/account/transfer")
     TransactionConfirmation processNonCashTransaction(@RequestBody @Valid AccountTransferTransactionDto accountTransferTransactionDto) {

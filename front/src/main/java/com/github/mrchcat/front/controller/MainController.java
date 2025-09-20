@@ -14,7 +14,6 @@ import jakarta.security.auth.message.AuthException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.Authentication;
@@ -53,7 +52,7 @@ public class MainController {
     }
 
     /**
-     * после авторизации загружаются разные страницы в зависимости от роли
+     * После авторизации загружаются разные страницы в зависимости от роли
      */
     @GetMapping("/defaultAfterLogin")
     String getDefaultUrlAfter(Authentication authentication) {
@@ -67,7 +66,7 @@ public class MainController {
     }
 
     /**
-     * основная страница
+     * Основная страница
      */
     @GetMapping(path = {"/main", "/"})
     String getMain(Model model, Principal principal) throws AuthException, ServiceUnavailableException {
@@ -90,7 +89,7 @@ public class MainController {
     }
 
     /**
-     * контроллер обновления пароля
+     * Контроллер обновления пароля
      */
     @PostMapping("/user/{username}/editPassword")
     RedirectView editClientPassword(@PathVariable @NotNull @NotBlank String username,
@@ -122,7 +121,7 @@ public class MainController {
     }
 
     /**
-     * контроллер обновления личных данных и данных об аккаунтах
+     * Контроллер обновления личных данных и данных об аккаунтах
      */
     @PostMapping("/user/{username}/editUserAccounts")
     RedirectView editUserAccounts(@PathVariable @NotNull @NotBlank String username,
@@ -188,7 +187,7 @@ public class MainController {
 
 
     /**
-     * контроллер для работы с наличными
+     * Контроллер для работы с наличными
      */
     @PostMapping(path = "/user/{username}/сash")
     RedirectView depositCash(@PathVariable @NotNull @NotBlank String username,
@@ -226,7 +225,7 @@ public class MainController {
 
 
     /**
-     * контроллер для перевода денег
+     * Контроллер для перевода денег
      */
     @PostMapping(path = "/user/{username}/transfer")
     RedirectView depositCash(@PathVariable @NotNull @NotBlank String username,

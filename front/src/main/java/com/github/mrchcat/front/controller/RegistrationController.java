@@ -29,7 +29,7 @@ public class RegistrationController {
     }
 
     /**
-     * контроллер для регистрации нового пользователя
+     * Контроллер для регистрации нового пользователя
      */
     @PostMapping("/registration")
     String registerNewClient(@ModelAttribute @Valid NewClientRegisterDto newClientRegisterDto,

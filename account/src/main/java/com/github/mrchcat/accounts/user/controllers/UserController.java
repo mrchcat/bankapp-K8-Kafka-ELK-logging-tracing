@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * аутентификация пользователя
+     * Аутентификация пользователя
      */
     @GetMapping("/credentials/{username}")
     UserDetails getUserDetails(@PathVariable @NotNull @NotBlank String username) {
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     /**
-     * обновление пароля
+     * Обновление пароля
      */
     @PostMapping("/credentials/{username}")
     UserDetails updateUserPassword(@PathVariable @NotNull @NotBlank String username,
@@ -37,7 +37,7 @@ public class UserController {
     }
 
     /**
-     * регистрация нового пользователя
+     * Регистрация нового пользователя
      */
     @PostMapping("/registration")
     UserDetails registerNewClient(@RequestBody @Valid CreateNewClientDto newClientDto) {

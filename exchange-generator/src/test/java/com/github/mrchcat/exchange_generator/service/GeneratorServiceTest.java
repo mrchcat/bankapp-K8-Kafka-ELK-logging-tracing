@@ -1,28 +1,5 @@
 package com.github.mrchcat.exchange_generator.service;
 
-import com.github.mrchcat.shared.enums.BankCurrency;
-import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
-import com.github.mrchcat.shared.exchange.CurrencyRate;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.context.ActiveProfiles;
-
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.springframework.kafka.test.hamcrest.KafkaMatchers.hasValue;
-
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@ActiveProfiles("test")
 //@EmbeddedKafka(topics = {"bank-exchange-rates"}, partitions = 1)

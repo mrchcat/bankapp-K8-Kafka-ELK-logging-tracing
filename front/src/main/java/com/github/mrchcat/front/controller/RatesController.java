@@ -15,7 +15,7 @@ public class RatesController {
     private final FrontService frontService;
 
     /**
-     * контроллер для получения данных о курсах
+     * Контроллер для получения данных о курсах
      */
     @GetMapping("/front/rates")
     List<FrontRate> getAllRates() throws AuthException {

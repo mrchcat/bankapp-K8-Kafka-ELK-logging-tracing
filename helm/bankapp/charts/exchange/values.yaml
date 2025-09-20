@@ -16,7 +16,7 @@ INITIAL_DELAY_SEC: 120
 
 image:
   repository: mcat1980/bank-exchange
-  tag: "2.0"
+  tag: "3.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

@@ -3,14 +3,9 @@ package com.github.mrchcat.transfer.service;
 import com.github.mrchcat.shared.accounts.BankUserDto;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
 import com.github.mrchcat.transfer.config.ServiceUrl;
-import com.github.mrchcat.transfer.security.OAuthHeaderGetter;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
-import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
 @Component
 public class Notifications {
@@ -26,7 +21,7 @@ public class Notifications {
     }
 
 
-    public void sendNotification(BankUserDto client, String message) throws AuthException {
+    public void sendNotification(BankUserDto client, String message){
         var notification = BankNotificationDto.builder()
                 .service(TRANSFER_SERVICE)
                 .username(client.username())

@@ -4,11 +4,9 @@ import com.github.mrchcat.shared.enums.BankCurrency;
 import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
 import com.github.mrchcat.shared.exchange.CurrencyRate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -51,18 +49,18 @@ public class GeneratorService {
         BigDecimal randomBuyCNY = BigDecimal.valueOf(1 - Math.random() / 10);
         BigDecimal randomSellCNY = BigDecimal.valueOf(1 + Math.random() / 10);
 
-        var USDrate = CurrencyRate.builder()
+        var USDRate = CurrencyRate.builder()
                 .currency(BankCurrency.USD)
                 .buyRate(AVERAGE_USD.multiply(randomBuyUsd).setScale(2, RoundingMode.HALF_UP))
                 .sellRate(AVERAGE_USD.multiply(randomSellUsd).setScale(2, RoundingMode.HALF_UP))
                 .time(LocalDateTime.now())
                 .build();
-        var CNYrate = CurrencyRate.builder()
+        var CNYRate = CurrencyRate.builder()
                 .currency(BankCurrency.CNY)
                 .buyRate(AVERAGE_CNY.multiply(randomBuyCNY).setScale(2, RoundingMode.HALF_UP))
                 .sellRate(AVERAGE_CNY.multiply(randomSellCNY).setScale(2, RoundingMode.HALF_UP))
                 .time(LocalDateTime.now())
                 .build();
-        return List.of(USDrate, CNYrate);
+        return List.of(USDRate, CNYRate);
     }
 }

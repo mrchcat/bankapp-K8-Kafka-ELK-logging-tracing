@@ -1,7 +1,6 @@
 package com.github.mrchcat.notifications.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.shaded.com.google.protobuf.Any;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
@@ -12,8 +11,8 @@ import org.springframework.util.backoff.FixedBackOff;
 @Slf4j
 public class KafkaConfig {
     @Bean
-    public AfterRollbackProcessor<Any, Any> afterRollbackProcessor() {
-        return new DefaultAfterRollbackProcessor<Any, Any>((record, exception) -> {
+    public AfterRollbackProcessor<String, Object> afterRollbackProcessor() {
+        return new DefaultAfterRollbackProcessor<>((record, exception) -> {
         }, new FixedBackOff(100L, 5L));
     }
 }

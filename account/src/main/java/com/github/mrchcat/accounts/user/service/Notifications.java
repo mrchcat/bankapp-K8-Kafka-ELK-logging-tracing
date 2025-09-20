@@ -1,18 +1,12 @@
 package com.github.mrchcat.accounts.user.service;
 
 import com.github.mrchcat.accounts.config.ServiceUrl;
-import com.github.mrchcat.accounts.security.OAuthHeaderGetter;
 import com.github.mrchcat.accounts.user.model.BankUser;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
-import jakarta.security.auth.message.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 @Service
 @Slf4j

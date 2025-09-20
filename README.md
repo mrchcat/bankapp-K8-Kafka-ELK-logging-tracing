@@ -38,11 +38,11 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Порядок запуска: 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
 (при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
-* "minikube start --driver=virtualbox --no-vtx-check";
-* "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
+  * "minikube start --driver=virtualbox --no-vtx-check";
+  * "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
 2) установите в minikube Ingress Controller: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
-4) получите ip aдрес ноды командой "minikube ip" и добавьте его в файл hosts вместе с будущим адресом сайта.
+4) получите ip-aдрес ноды командой "minikube ip" и добавьте его в файл hosts вместе с будущим адресом сайта.
 Файл hosts в Windows находится в "C:\Windows\System32\drivers\etc".
 Адрес сайта будет представлен в виде \<namespace\>.bankapp.internal.com (например, "192.168.59.107 prod.bankapp.internal.com").
 При развертывании с настройками по умолчанию, приложение станет доступно 
@@ -51,7 +51,7 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 адрес "minikube ip"
 5) Клонируйте репозиторий на свой Github  
 6) Получите токен доступа на Github и сохраните его в Jenkins в раздел Credential с областью видимости "global" как 
-"secret text". В Jenkins в разделе System заполните группу настроек  GitHub: 
+"secret text". В Jenkins в разделе System заполните группу настроек GitHub: 
 * API URL:  https://api.github.com ; 
 * credential - вставьте сохраненный токен. 
 7) Получите токен доступа на DockerHub и сохраните его в Jenkins раздел Credential с областью видимости "global" как
@@ -71,9 +71,9 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 13) Зайдите в задачу и откройте Console Output 
 14) После развертывания микросервисов в тестовом пространстве, Jenkins запросит подтверждение на развертывание в продакшн. 
 Дождитесь запуска микросервисов в тестовом пространстве. Проверите можно командой "kubectl get pods -n test"
-- все сервисы должны быть RUN;  "kubectl get ingress -n test" - ingress должен быть запущен и ADDRESS должен быть присвоен.
+- все сервисы должны быть RUN; "kubectl get ingress -n test" - ingress должен быть запущен и ADDRESS должен быть присвоен.
 Если адрес не присвоен, то удостоверьтесь, что ранее вы запустили команду "minikube addons enable ingress" и "minikube tunnel"
-Зайдите по адресу http://test.bankapp.internal.com/ . Если он недоступен, то убедитесь, что вы внесли его в файл hosts. 
+Зайдите по адресу http://test.bankapp.internal.com/. Если он недоступен, то убедитесь, что вы внесли его в файл hosts. 
 Введите логин "anna", пароль "12345" и удостоверьтесь, что все работает. 
 Подтвердите в консоли Jenkins продолжение развертывания уже в production
 

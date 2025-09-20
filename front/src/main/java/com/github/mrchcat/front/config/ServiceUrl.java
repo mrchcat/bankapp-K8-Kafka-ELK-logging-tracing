@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix="application.service.urls")
+@ConfigurationProperties(prefix = "application.service.urls")
 public class ServiceUrl {
     private String front;
     private String account;
