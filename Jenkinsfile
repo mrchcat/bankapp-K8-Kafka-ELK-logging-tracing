@@ -104,34 +104,36 @@ pipeline {
                                  --set enableKeycloak=false \\
                                  --namespace=$TEST_NAMESPACE
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
-                    """
+                    sleep 180
+                """
                 }
             }
         }
         stage('Manual Approval for PROD') {
             steps {
                 input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
+                    sh """
+                    echo 'Удаляем приложение из тестового окружения'
+                    helm delete bankapp --namespace=$TEST_NAMESPACE
+                    helm delete keycloak --namespace=$TEST_NAMESPACE
+                    helm delete kafka --namespace=$TEST_NAMESPACE
+                    sleep 60
+                    """
             }
         }
         stage('Deploy to PROD') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
-                    echo 'Clean TEST'
-                    helm delete bankapp --namespace=$TEST_NAMESPACE
-                    helm delete keycloak --namespace=$TEST_NAMESPACE
-                    helm delete kafka --namespace=$TEST_NAMESPACE
-                    sleep 60
-
                     echo 'Deploy to PROD'
                     echo 'Устанавливаем keycloak'
                     helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
-                                 --namespace=$TEST_NAMESPACE \\
+                                 --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
                     echo 'Keycloak поднимается.'
                     echo 'Устанавливаем kafka'
                     helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
-                                 --namespace=$TEST_NAMESPACE \\
+                                 --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
                     echo 'Kafka поднимается.'
                     echo 'Ожидание 2 минуты.'
@@ -142,6 +144,7 @@ pipeline {
                                  --set enableKeycloak=false \\
                                  --namespace=$PROD_NAMESPACE
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
+                    sleep 180
                     """
                 }
             }
