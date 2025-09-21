@@ -86,22 +86,23 @@ pipeline {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to TEST'
-                    echo 'Устанавливаем keycloak'
-                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace
-                    echo 'Keycloak поднимается.'
                     echo 'Устанавливаем kafka'
                     helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
                     echo 'Kafka поднимается.'
+                    echo 'Устанавливаем keycloak'
+                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo 'Keycloak поднимается.'
                     echo 'Ожидание 2 минуты.'
                     sleep 130
 
                     echo 'Устанавливаем базы данных и микросервисы.'
                     helm upgrade --install bankapp  ./helm/bankapp \\
                                  --set enableKeycloak=false \\
+                                 --set enableKafka=false \\
                                  --namespace=$TEST_NAMESPACE
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
                     sleep 180
@@ -126,22 +127,23 @@ pipeline {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to PROD'
-                    echo 'Устанавливаем keycloak'
-                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace
-                    echo 'Keycloak поднимается.'
                     echo 'Устанавливаем kafka'
                     helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
                                  --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
                     echo 'Kafka поднимается.'
+                    echo 'Устанавливаем keycloak'
+                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo 'Keycloak поднимается.'
                     echo 'Ожидание 2 минуты.'
                     sleep 130
 
                     echo 'Устанавливаем базы данных и микросервисы.'
                     helm upgrade --install bankapp  ./helm/bankapp \\
                                  --set enableKeycloak=false \\
+                                 --set enableKafka=false \\
                                  --namespace=$PROD_NAMESPACE
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
                     sleep 180

@@ -12,7 +12,7 @@ front:
 
   LOG_LEVEL: DEBUG
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   SERVICE_URL_ACCOUNT: account:8080
   SERVICE_URL_CASH: cash:8080
@@ -52,7 +52,7 @@ account:
 
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   image:
     repository: mcat1980/bank-account
@@ -87,7 +87,7 @@ blocker:
 
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   image:
     repository: mcat1980/bank-blocker
@@ -121,7 +121,7 @@ cash:
 
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   SERVICE_URL_ACCOUNT: account:8080
   SERVICE_URL_BLOCKER: blocker:8080
@@ -164,7 +164,7 @@ exchange:
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   image:
     repository: mcat1980/bank-exchange
@@ -204,7 +204,7 @@ exchange-generator:
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   image:
     repository: mcat1980/bank-exchange-generator
@@ -236,7 +236,7 @@ notifications:
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   image:
     repository: mcat1980/bank-notifications
@@ -283,7 +283,7 @@ transfer:
 
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 170
+  INITIAL_DELAY_SEC: 60
 
   image:
     repository: mcat1980/bank-transfer
