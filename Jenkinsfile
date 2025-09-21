@@ -121,6 +121,7 @@ pipeline {
                     helm delete bankapp --namespace=$TEST_NAMESPACE
                     helm delete keycloak --namespace=$TEST_NAMESPACE
                     helm delete kafka --namespace=$TEST_NAMESPACE
+                    sleep 60
 
                     echo 'Deploy to PROD'
                     echo 'Устанавливаем keycloak'

@@ -34,7 +34,7 @@ front:
 
 # Subchart for account
 account:
-  replicaCount: 2
+  replicaCount: 1
 
   SPRING_APPLICATION_NAME: bankAccounts
 
@@ -77,7 +77,7 @@ account:
 
 # Subchart for blocker
 blocker:
-  replicaCount: 2
+  replicaCount: 1
 
   SPRING_APPLICATION_NAME: bankBlocker
 
@@ -104,7 +104,7 @@ blocker:
 
 # Subchart for cash
 cash:
-  replicaCount: 2
+  replicaCount: 1
 
   SERVER_PORT: "8080"
   SPRING_APPLICATION_NAME: bankCash
@@ -221,7 +221,7 @@ exchange-generator:
 
 # Subchart for notifications
 notifications:
-  replicaCount: 3
+  replicaCount: 1
 
   SPRING_APPLICATION_NAME: bankNotifications
 
@@ -261,7 +261,7 @@ notifications:
 
 # Subchart for transfer
 transfer:
-  replicaCount: 2
+  replicaCount: 1
 
   SPRING_APPLICATION_NAME: bankTransfer
 
