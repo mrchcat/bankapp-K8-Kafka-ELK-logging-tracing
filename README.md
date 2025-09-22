@@ -42,7 +42,7 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
   * "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check")
 2) установите в minikube Ingress Controller: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
-(при возникновении ошибок может помочь смена языка по умолчанию на английский)
+(при возникновении ошибок в Windows может помочь смена языка по умолчанию на английский)
 4) получите ip-aдрес ноды командой "minikube ip" и добавьте его в файл hosts вместе с будущим адресом сайта.
 Файл hosts в Windows находится в "C:\Windows\System32\drivers\etc".
 Адрес сайта будет представлен в виде \<namespace\>.bankapp.internal.com (например, "192.168.59.107 prod.bankapp.internal.com").
