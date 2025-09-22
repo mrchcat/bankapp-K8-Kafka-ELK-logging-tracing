@@ -119,9 +119,9 @@ pipeline {
             steps {
                     sh """
                      echo 'Удаляем приложение из тестового окружения'
-                     helm delete bankapp --namespace=$TEST_NAMESPACE
-                     helm delete keycloak --namespace=$TEST_NAMESPACE
-                     helm delete kafka --namespace=$TEST_NAMESPACE
+                     helm uninstall bankapp --namespace $TEST_NAMESPACE
+                     helm uninstall keycloak --namespace $TEST_NAMESPACE
+                     helm uninstall kafka --namespace $TEST_NAMESPACE
                      sleep 60
                      """
            }
