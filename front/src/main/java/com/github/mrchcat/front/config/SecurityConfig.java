@@ -51,7 +51,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(strength, new SecureRandom());
     }
 
-    //    @LoadBalanced
     @Bean
     RestClient.Builder restClientBuilder() {
         return RestClient.builder();

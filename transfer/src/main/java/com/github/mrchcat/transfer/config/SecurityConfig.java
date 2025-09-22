@@ -26,7 +26,6 @@ public class SecurityConfig {
                 .build();
     }
 
-//    @LoadBalanced
     @Bean
     RestClient.Builder restClientBuilder() {
         return RestClient.builder();
