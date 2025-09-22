@@ -36,7 +36,7 @@ pipeline {
         TRANSFER_BUILD_NUMBER='10.0'
     }
 
-//     stages {
+    stages {
 //         stage('Build & Unit Tests') {
 //             steps {
 //                 sh """
