@@ -117,7 +117,9 @@ pipeline {
         }
         stage('CLear TEST') {
             steps {
-               ./helm/clear.sh
+               sh """
+                 ./helm/clear.sh
+               """
             }
         }
         stage('Deploy to PROD') {
