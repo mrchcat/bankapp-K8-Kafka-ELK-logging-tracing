@@ -32,6 +32,7 @@ Externalized Config - Kubernetes, коммуникация между микро
 * Maven
 * Helm
 * Jenkins (плагины по умолчанию + дополнительно https://plugins.jenkins.io/kubernetes-cli/)
+
 Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 на Windows 10. Запуск команд осуществлялся в Git Bash для Windows.
 Все указанные программы установлены локально на хост. 
 
@@ -87,8 +88,14 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 
 Также можно развернуть приложение 
 * в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
-* локально в целях отладки. docker-compose позволяет запустить Keycloak с необходимыми настройками. Также потребуется 
-установить локально Postgres и настроить к нему доступ через файлы env.   
+* локально в целях отладки. 1) docker-compose позволяет запустить Keycloak с необходимыми настройками. 2) потребуется 
+установить локально Postgres и настроить к нему доступ микросервисов через параметры в файлах env 3) скачать и установить Kafka
+набором команд 
+  KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
+  bin/kafka-storage.sh format --standalone -t "$KAFKA_CLUSTER_ID" -c config/server.properties
+  bin/kafka-server-start.sh config/server.properties
+  bin/kafka-topics.sh --create --topic bank-notifications --bootstrap-server localhost:9092
+  bin/kafka-topics.sh --create --topic bank-exchange-rates --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
