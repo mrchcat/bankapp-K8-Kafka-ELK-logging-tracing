@@ -4,8 +4,8 @@
 Сервис представляет собой группу микросервисов, реализующих регистрацию и авторизацию пользователей, изменение
 пользовательских данных, создание и удаление банковских аккаунтов в 3 валютах, операции в наличной и безналичной форме, 
 просмотр динамики курсов валют.  
-Безопасность обмена сообщений между микросервисами обеспечивает Keycloak, а паттерн Service Discovery и 
-Externalized Config - Kubernetes.   
+Безопасность обмена сообщений между микросервисами обеспечивает Keycloak, паттерн Service Discovery и 
+Externalized Config - Kubernetes, коммуникация между микросервисами происходит через REST-API и частично через Kafka   
 ![](/readme/front.png)
 
 
@@ -17,6 +17,7 @@ Externalized Config - Kubernetes.
 * Spring WebMVC
 * Spring Data
 * Postgres
+* Kafka
 * Resilience4j
 * Thymeleaf
 * Maven
@@ -26,23 +27,22 @@ Externalized Config - Kubernetes.
 * Ingress
 
 Для запуска программы на локальном компьютере необходимы: 
+* VirtualBox
+* Minikube
 * Maven
-* Docker
 * Helm
 * Jenkins (плагины по умолчанию + дополнительно https://plugins.jenkins.io/kubernetes-cli/)
-* Minikube 
-* VirtualBox. 
-Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 на Windows 10. Запуск команд осуществлялся в Git Bash
+Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 на Windows 10. Запуск команд осуществлялся в Git Bash для Windows.
 Все указанные программы установлены локально на хост. 
 
 Порядок запуска: 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
 (при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
   * "minikube start --driver=virtualbox --no-vtx-check";
-  * "minikube start --driver=virtualbox --cpus=4 --memory=30000 --no-vtx-check").
+  * "minikube start --driver=virtualbox --cpus=7 --memory=30000 --no-vtx-check")
 2) установите в minikube Ingress Controller: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
-(при возникновении ошибок в Windows может помочь смена языка по умолчанию на английский)
+(при возникновении ошибок в Windows смените язык по умолчанию на английский)
 4) получите ip-aдрес ноды командой "minikube ip" и добавьте его в файл hosts вместе с будущим адресом сайта.
 Файл hosts в Windows находится в "C:\Windows\System32\drivers\etc".
 Адрес сайта будет представлен в виде \<namespace\>.bankapp.internal.com (например, "192.168.59.107 prod.bankapp.internal.com").
@@ -76,11 +76,19 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Если адрес не присвоен, то удостоверьтесь, что ранее вы запустили команду "minikube addons enable ingress" и "minikube tunnel"
 Зайдите по адресу http://test.bankapp.internal.com/. Если он недоступен, то убедитесь, что вы внесли его в файл hosts. 
 Введите логин "anna", пароль "12345" и удостоверьтесь, что все работает. 
-Подтвердите в консоли Jenkins продолжение развертывания уже в production
+Подтвердите в консоли Jenkins продолжение развертывания уже в production. Если в момент развертывания в продакшн вы столкнулись
+с тем, что поду не хватает системных ресурсов, то либо увеличьте системные ресурсы, выделяемые minikube,
+либо перед развертыванием в продакшн удалите тестовое окружение:
+- helm delete keycloak -n test
+- helm delete kafka -n test
+- helm delete bankapp -n test
 
-Приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
+В итоге приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
 
-Также можно развернуть приложение в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
+Также можно развернуть приложение 
+* в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
+* локально в целях отладки. docker-compose позволяет запустить Keycloak с необходимыми настройками. Также потребуется 
+установить локально Postgres и настроить к нему доступ через файлы env.   
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
