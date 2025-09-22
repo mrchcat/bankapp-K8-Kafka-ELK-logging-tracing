@@ -1,5 +1,6 @@
 package com.github.mrchcat.front.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,15 +17,18 @@ import java.security.SecureRandom;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${application.security.maximumSessions:1}")
+    private int maximumSessions;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/actuator/**").permitAll()
-                                .requestMatchers("/login", "/logout/**").permitAll()
-                                .requestMatchers("/error").permitAll()
-                                .requestMatchers("/registration", "/signup").hasAuthority("MANAGER")
-                                .anyRequest().hasAnyAuthority("CLIENT", "MANAGER")
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/login", "/logout/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/registration", "/signup").hasAuthority("MANAGER")
+                        .anyRequest().hasAnyAuthority("CLIENT", "MANAGER")
                 )
                 .oauth2Client(Customizer.withDefaults())
                 .formLogin(cst -> cst
@@ -36,7 +40,7 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID"))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .maximumSessions(1)
+                        .maximumSessions(maximumSessions)
                 );
         return http.build();
     }
@@ -47,7 +51,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(strength, new SecureRandom());
     }
 
-//    @LoadBalanced
+    //    @LoadBalanced
     @Bean
     RestClient.Builder restClientBuilder() {
         return RestClient.builder();

@@ -44,6 +44,8 @@ resilience4j:
         waitDuration: 100ms
 
 application:
+  security:
+    maximumSessions: 1
   service:
     urls:
       front: ${SERVICE_URL_FRONT}
