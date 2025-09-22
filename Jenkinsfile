@@ -115,17 +115,17 @@ pipeline {
                 input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
             }
         }
-        stage('Clear TEST environment') {
-            steps {
-                    sh """
-                     echo 'Удаляем приложение из тестового окружения'
-                     helm delete bankapp --namespace=$TEST_NAMESPACE
-                     helm delete keycloak --namespace=$TEST_NAMESPACE
-                     helm delete kafka --namespace=$TEST_NAMESPACE
-                     sleep 60
-                     """
-           }
-        }
+//         stage('Clear TEST environment') {
+//             steps {
+//                     sh """
+//                      echo 'Удаляем приложение из тестового окружения'
+//                      helm delete bankapp --namespace=$TEST_NAMESPACE
+//                      helm delete keycloak --namespace=$TEST_NAMESPACE
+//                      helm delete kafka --namespace=$TEST_NAMESPACE
+//                      sleep 60
+//                      """
+//            }
+//         }
         stage('Deploy to PROD') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
