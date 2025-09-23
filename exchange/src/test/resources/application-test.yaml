@@ -1,12 +1,6 @@
-server.port: ${SERVER_PORT}
-
 spring:
   application:
-    name: ${SPRING_APPLICATION_NAME}
-  datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+    name: bankExchange}
   sql.init:
     mode: ALWAYS
     schema-locations: classpath:schema.sql
@@ -14,10 +8,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+          issuer-uri: http://localhost:8090/realms/bankapp
   kafka:
     consumer:
-      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
       group-id: bank-exchange
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -25,16 +19,20 @@ spring:
       properties.spring.json.trusted.packages: com.github.mrchcat.*
       enable-auto-commit: true
       auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties.spring.json.type.mapping: rates:com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto
 
 management.endpoints.web.exposure.include: info, health
 
 logging:
   pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
   level:
-    root: ${LOG_LEVEL:DEBUG}
-    org.zalando.logbook: ${LOG_LEVEL:DEBUG}
+    root: DEBUG
+    org.zalando.logbook: DEBUG
 
 application:
   kafka:
     topic:
-      rates: ${KAFKA_EXCHANGE_RATES_TOPIC}
+      rates: bank-exchange-rates

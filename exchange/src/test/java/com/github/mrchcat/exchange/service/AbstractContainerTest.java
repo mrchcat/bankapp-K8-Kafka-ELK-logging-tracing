@@ -27,13 +27,14 @@ public abstract class AbstractContainerTest {
     static void redisProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.security.oauth2.client.provider.keycloak.issuer-uri",
                 () -> keycloak.getAuthServerUrl() + "/realms/bankapp");
+
         registry.add("spring.datasource.url", AbstractContainerTest::getPostgresUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
 
     static String getPostgresUrl() {
-        return String.format("r2dbc:postgresql://%s:%s/%s",
+        return String.format("jdbc:postgresql://%s:%s/%s",
                 postgres.getHost(),
                 postgres.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
                 postgres.getDatabaseName()

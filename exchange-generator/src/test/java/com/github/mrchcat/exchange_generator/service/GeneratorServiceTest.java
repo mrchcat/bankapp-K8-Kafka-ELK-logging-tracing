@@ -27,7 +27,6 @@ class GeneratorServiceTest extends AbstractContainerTest {
 
     @Test
     public void testRatesGenerator() throws Exception {
-//        embeddedKafkaBroker.addTopics(TEST_TOPIC);
         var props = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafkaBroker);
         props.put(JsonDeserializer.TYPE_MAPPINGS, "rates:com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto");
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
