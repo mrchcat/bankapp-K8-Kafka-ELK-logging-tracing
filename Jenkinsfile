@@ -12,28 +12,28 @@ pipeline {
         TEST_NAMESPACE='test'
 
         FRONT_IMAGE_NAME='bank-front'
-        FRONT_BUILD_NUMBER='10.0'
+        FRONT_BUILD_NUMBER='1.0'
 
         ACCOUNT_IMAGE_NAME='bank-account'
-        ACCOUNT_BUILD_NUMBER='10.0'
+        ACCOUNT_BUILD_NUMBER='1.0'
 
         BLOCKER_IMAGE_NAME='bank-blocker'
-        BLOCKER_BUILD_NUMBER='10.0'
+        BLOCKER_BUILD_NUMBER='1.0'
 
         CASH_IMAGE_NAME='bank-cash'
-        CASH_BUILD_NUMBER='10.0'
+        CASH_BUILD_NUMBER='1.0'
 
         EXCHANGE_IMAGE_NAME='bank-exchange'
-        EXCHANGE_BUILD_NUMBER='10.0'
+        EXCHANGE_BUILD_NUMBER='1.0'
 
         EXCHANGE_GENERATOR_IMAGE_NAME='bank-exchange-generator'
-        EXCHANGE_GENERATOR_BUILD_NUMBER='10.0'
+        EXCHANGE_GENERATOR_BUILD_NUMBER='1.0'
 
         NOTIFICATIONS_IMAGE_NAME='bank-notifications'
-        NOTIFICATIONS_BUILD_NUMBER='10.0'
+        NOTIFICATIONS_BUILD_NUMBER='1.0'
 
         TRANSFER_IMAGE_NAME='bank-transfer'
-        TRANSFER_BUILD_NUMBER='10.0'
+        TRANSFER_BUILD_NUMBER='1.0'
     }
 
     stages {
