@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: bankTransfer
+  sql.init:
+    mode: always
+    schema-locations: classpath:schema.sql
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/realms/bankapp
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8090/realms/bankapp
+        registration:
+          bank_transfer:
+            provider: keycloak
+            authorizationGrantType: client_credentials
+            client-id: bank_transfer
+            client-secret: TBdc8HtAio8f0SXlvHPWS6Cbbz5i6yEf
+            clientAuthenticationMethod: client_secret_post
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
+      acks: all
+
+management.endpoints.web.exposure.include: info, health
+
+logging:
+  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
+  level:
+    root: DEBUG
+    org.zalando.logbook: DEBUG
+
+application:
+  service:
+    urls:
+      account: localhost:8081
+      exchange: localhost:8086
+      blocker: localhost:8089
+      transfer: localhost:8084
+  kafka:
+    topic:
+      notifications: bank-notifications

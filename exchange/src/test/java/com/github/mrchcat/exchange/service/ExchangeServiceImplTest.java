@@ -1,6 +1,5 @@
 package com.github.mrchcat.exchange.service;
 
-import com.github.mrchcat.exchange.repository.ExchangeRepository;
 import com.github.mrchcat.shared.enums.BankCurrency;
 import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
 import com.github.mrchcat.shared.exchange.CurrencyRate;
