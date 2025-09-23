@@ -10,11 +10,6 @@ spring:
   sql.init:
     mode: ALWAYS
     schema-locations: classpath:schema.sql
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI}
   kafka:
     consumer:
       bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}

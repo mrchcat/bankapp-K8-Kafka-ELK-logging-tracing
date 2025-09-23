@@ -21,7 +21,7 @@ front:
 
   image:
     repository: mcat1980/bank-front
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -56,7 +56,7 @@ account:
 
   image:
     repository: mcat1980/bank-account
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -91,7 +91,7 @@ blocker:
 
   image:
     repository: mcat1980/bank-blocker
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -129,7 +129,7 @@ cash:
 
   image:
     repository: mcat1980/bank-cash
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -168,7 +168,7 @@ exchange:
 
   image:
     repository: mcat1980/bank-exchange
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -199,7 +199,7 @@ exchange-generator:
 
   SERVICE_URL_EXCHANGE: exchange:8080
 
-  LOG_LEVEL: INFO
+  LOG_LEVEL: DEBUG
 
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
@@ -208,7 +208,7 @@ exchange-generator:
 
   image:
     repository: mcat1980/bank-exchange-generator
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -240,7 +240,7 @@ notifications:
 
   image:
     repository: mcat1980/bank-notifications
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -287,7 +287,7 @@ transfer:
 
   image:
     repository: mcat1980/bank-transfer
-    tag: "10.0"
+    tag: "1.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]

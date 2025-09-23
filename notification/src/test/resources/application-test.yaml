@@ -4,11 +4,6 @@ spring:
   sql.init:
     mode: ALWAYS
     schema-locations: classpath:schema.sql
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8090/realms/bankapp
   kafka:
     consumer:
       bootstrap-servers: ${spring.embedded.kafka.brokers}
