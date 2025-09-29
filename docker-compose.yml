@@ -12,6 +12,8 @@ services:
       - --import-realm
     ports:
       - "8090:8080"
+    networks:
+      - backend
     volumes:
       - ./keycloak/config/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
     restart: unless-stopped
@@ -24,8 +26,56 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+
+  bank-kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: bank-kafka
+    ports:
+      - '9094:9094'
     networks:
       - backend
+    environment:
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_CONTROLLER_BROKER_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://bank-kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@bank-kafka:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+  kafka-ui:
+    image: 'provectuslabs/kafka-ui:latest'
+    ports:
+      - '8080:8080'
+    networks:
+      - backend
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=bank-kafka:9092
+    depends_on:
+      - bank-kafka
+
+  bank-zipkin:
+    image: openzipkin/zipkin:3.5
+    container_name: bank-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - backend
+
+  bank-prometheus:
+    image: prom/prometheus:v3.6.0
+    container_name: bank-prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    volumes:
+      - ./prometheus/:/etc/prometheus/:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    restart: unless-stopped
 
 networks:
   backend:

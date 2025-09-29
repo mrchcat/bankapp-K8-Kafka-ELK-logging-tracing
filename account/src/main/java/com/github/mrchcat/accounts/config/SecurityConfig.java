@@ -26,9 +26,8 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    RestClient.Builder restClientBuilder() {
-        return RestClient.builder();
-    }
-
+//    @Bean
+//    RestClient.Builder restClientBuilder() {
+//        return RestClient.builder();
+//    }
 }

@@ -3,6 +3,7 @@ package com.github.mrchcat.exchange_generator.service;
 import com.github.mrchcat.shared.enums.BankCurrency;
 import com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto;
 import com.github.mrchcat.shared.exchange.CurrencyRate;
+import io.micrometer.tracing.Tracer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -25,21 +26,28 @@ public class GeneratorService {
     private String ratesTopic;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final Tracer tracer;
 
-    public GeneratorService(KafkaTemplate<String, Object> kafkaTemplate) {
+    public GeneratorService(KafkaTemplate<String, Object> kafkaTemplate, Tracer tracer) {
         this.kafkaTemplate = kafkaTemplate;
+        this.tracer=tracer;
     }
 
     @Scheduled(fixedDelay = 1000L)
     public void sendNewRates() {
         var rates = new CurrencyExchangeRatesDto(BankCurrency.RUB, getRates());
-        kafkaTemplate
-                .send(ratesTopic, 0, "rates", rates)
-                .whenComplete((result, e) -> {
-                    if (e != null) {
-                        log.error("Ошибка при отправке сообщения: {} ", e.getMessage());
-                    }
-                });
+        var kafkaSpan = tracer.nextSpan().name("bank-kafka-"+ratesTopic).start();
+        try{
+            kafkaTemplate
+                    .send(ratesTopic, 0, "rates", rates)
+                    .whenComplete((result, e) -> {
+                        if (e != null) {
+                            log.error("Ошибка при отправке сообщения: {} ", e.getMessage());
+                        }
+                    });
+        } finally{
+            kafkaSpan.end();
+        }
     }
 
     private List<CurrencyRate> getRates() {

@@ -233,4 +233,5 @@ public class AccountServiceImpl implements AccountService {
         logService.saveTransactionLogRecord(LogMapper.toNonCashLogRecord(transactionDto, TransactionStatus.SUCCESS));
         return new TransactionConfirmation(transactionDto.transactionId(), transactionDto.status());
     }
+
 }

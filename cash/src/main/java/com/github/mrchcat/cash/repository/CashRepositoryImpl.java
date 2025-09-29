@@ -1,6 +1,7 @@
 package com.github.mrchcat.cash.repository;
 
 import com.github.mrchcat.cash.model.CashTransaction;
+import com.github.mrchcat.shared.annotation.ToTrace;
 import com.github.mrchcat.shared.enums.TransactionStatus;
 import com.sun.jdi.InternalException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,9 @@ public class CashRepositoryImpl implements CashRepository {
     private final CashTransactionRowMapper cashTransactionRowMapper;
 
     @Override
+    @ToTrace(spanName = "database")
     public CashTransaction createNewTransaction(CashTransaction cashTransaction) {
+        System.out.println("обратились к базе данных");
         String query = """
                 INSERT INTO cash_transactions(transaction_id,action,user_id,username,account_id,currency_string_code_iso4217,amount,status,updated_at)
                 VALUES (?, CAST(? AS cash_action),?,?,?, CAST(? AS currency),?,CAST('STARTED' AS transaction_status),NOW())
@@ -43,7 +46,9 @@ public class CashRepositoryImpl implements CashRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database")
     public void changeTransactionStatus(long id, TransactionStatus newStatus) {
+        System.out.println("обратились к базе данных");
         String query = """
                 UPDATE cash_transactions
                 SET status=CAST(? AS transaction_status)

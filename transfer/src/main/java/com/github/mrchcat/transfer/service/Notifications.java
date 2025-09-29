@@ -3,6 +3,7 @@ package com.github.mrchcat.transfer.service;
 import com.github.mrchcat.shared.accounts.BankUserDto;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
 import com.github.mrchcat.transfer.config.ServiceUrl;
+import io.micrometer.tracing.Tracer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -11,13 +12,15 @@ import org.springframework.stereotype.Component;
 public class Notifications {
     private final String TRANSFER_SERVICE;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final Tracer tracer;
 
     @Value("${application.kafka.topic.notifications}")
     private String notificationTopic;
 
-    public Notifications(KafkaTemplate<String, Object> kafkaTemplate, ServiceUrl serviceUrl) {
+    public Notifications(KafkaTemplate<String, Object> kafkaTemplate, ServiceUrl serviceUrl,Tracer tracer) {
         this.TRANSFER_SERVICE = serviceUrl.getTransfer();
         this.kafkaTemplate = kafkaTemplate;
+        this.tracer=tracer;
     }
 
 
@@ -29,6 +32,11 @@ public class Notifications {
                 .email(client.email())
                 .message(message)
                 .build();
-        kafkaTemplate.send(notificationTopic, notification);
+        var kafkaSpan = tracer.nextSpan().name("bank-kafka-" + notificationTopic).start();
+        try{
+            kafkaTemplate.send(notificationTopic, notification);
+        } finally {
+            kafkaSpan.end();
+        }
     }
 }

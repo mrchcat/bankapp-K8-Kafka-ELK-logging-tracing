@@ -11,7 +11,14 @@ spring:
       properties.spring.json.type.mapping: rates:com.github.mrchcat.shared.exchange.CurrencyExchangeRatesDto
       acks: all
 
-management.endpoints.web.exposure.include: info, health
+management:
+  endpoints.web.exposure.include: info, health
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT}
+  tracing:
+    sampling:
+      probability: ${ZIPKIN_TRACING_PROBABILITY}
 
 logging:
   pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
