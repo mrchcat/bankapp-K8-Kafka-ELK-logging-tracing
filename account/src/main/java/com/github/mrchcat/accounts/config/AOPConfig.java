@@ -1,4 +1,4 @@
-package com.github.mrchcat.cash.config;
+package com.github.mrchcat.accounts.config;
 
 import com.github.mrchcat.shared.utils.trace.TracingAspect;
 import io.micrometer.tracing.Tracer;

@@ -1,7 +1,7 @@
 package com.github.mrchcat.cash.repository;
 
 import com.github.mrchcat.cash.model.CashTransaction;
-import com.github.mrchcat.shared.annotation.ToTrace;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import com.github.mrchcat.shared.enums.TransactionStatus;
 import com.sun.jdi.InternalException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class CashRepositoryImpl implements CashRepository {
     private final CashTransactionRowMapper cashTransactionRowMapper;
 
     @Override
-    @ToTrace(spanName = "database")
+    @ToTrace(spanName = "database", tags = {"database:cash_transactions","operation:create_transaction"})
     public CashTransaction createNewTransaction(CashTransaction cashTransaction) {
         System.out.println("обратились к базе данных");
         String query = """
@@ -46,7 +46,7 @@ public class CashRepositoryImpl implements CashRepository {
     }
 
     @Override
-    @ToTrace(spanName = "database")
+    @ToTrace(spanName = "database", tags = {"database:cash_transactions","operation:update_transaction"})
     public void changeTransactionStatus(long id, TransactionStatus newStatus) {
         System.out.println("обратились к базе данных");
         String query = """

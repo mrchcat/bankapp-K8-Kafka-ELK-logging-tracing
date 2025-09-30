@@ -44,7 +44,7 @@ public class NotificationService {
     }
 
     private void sendByEmail(BankNotification notification) {
-        String message = "Уведомление " + notification.toString() + " отправлено по почте";
+        String message = String.format("Уведомление \"%s\" отправлено по почте", notification);
         log.info(message);
     }
 

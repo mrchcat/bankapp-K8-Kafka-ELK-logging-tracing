@@ -3,6 +3,7 @@ package com.github.mrchcat.accounts.user.service;
 import com.github.mrchcat.accounts.config.ServiceUrl;
 import com.github.mrchcat.accounts.user.model.BankUser;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import io.micrometer.tracing.Tracer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ public class Notifications {
         this.tracer = tracer;
     }
 
+    @ToTrace(spanName = "kafka", tags = {"operation:send_notification"})
     public void sendNotification(BankUser client, String message) {
         var notification = BankNotificationDto.builder()
                 .service(ACCOUNT_SERVICE)
@@ -33,17 +35,13 @@ public class Notifications {
                 .email(client.getEmail())
                 .message(message)
                 .build();
-        var kafkaSpan = tracer.nextSpan().name("bank-kafka-" + notificationTopic).start();
-        try {
-            kafkaTemplate
-                    .send(notificationTopic, notification)
-                    .whenComplete((result, e) -> {
-                        if (e != null) {
-                            log.error("Ошибка при отправке сообщения: {} ", e.getMessage());
+        kafkaTemplate
+                .send(notificationTopic, notification)
+                .whenComplete((result, e) -> {
+                            if (e != null) {
+                                log.error("Ошибка при отправке сообщения: {} ", e.getMessage());
+                            }
                         }
-                    });
-        } finally {
-            kafkaSpan.end();
-        }
+                );
     }
 }

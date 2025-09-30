@@ -1,6 +1,7 @@
 package com.github.mrchcat.transfer.repository;
 
 import com.github.mrchcat.shared.enums.TransactionStatus;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import com.github.mrchcat.transfer.model.TransferTransaction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +21,7 @@ public class TransferRepositoryImpl implements TransferRepository {
     private final TransferRowMapper transferRowMapper;
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:transfers","operation:create_new_transaction"})
     public TransferTransaction createNewTransaction(TransferTransaction transaction) throws SQLException {
         String query = """
                 INSERT INTO transfers(from_account,to_account,from_amount,to_amount,exchange_rate,status,updated_at)
@@ -58,6 +60,7 @@ public class TransferRepositoryImpl implements TransferRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:transfers","operation:change_transaction"})
     public void changeTransactionStatus(long id, TransactionStatus status) {
         String query = """
                 UPDATE transfers
