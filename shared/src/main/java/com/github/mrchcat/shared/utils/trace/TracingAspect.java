@@ -19,12 +19,11 @@ public class TracingAspect {
     @Around("@annotation(toTrace)")
     public Object trace(ProceedingJoinPoint jp, ToTrace toTrace) throws Throwable {
         String spanName = toTrace.spanName();
-        System.out.println("спан=" + spanName + "теги=" + Arrays.toString(toTrace.tags()));
+//        System.out.println("спан=" + spanName + "теги=" + Arrays.toString(toTrace.tags()));
         var newSpan = tracer.nextSpan().name(spanName).start();
-        String[] tags = toTrace.tags();
-        for (String pair : tags) {
-            if (!pair.isBlank() && pair.matches("\\w+:\\w+")) {
-                String tag[] = pair.split(":");
+        for (String pair : toTrace.tags()) {
+            if (pair != null && !pair.isBlank() && pair.matches("\\w+:\\w+")) {
+                String[] tag = pair.split(":");
                 newSpan.tag(tag[0], tag[1]);
             }
         }
