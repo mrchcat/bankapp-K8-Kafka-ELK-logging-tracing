@@ -22,6 +22,16 @@ spring:
         isolation.level: read_committed
       enable-auto-commit: true
       auto-offset-reset: earliest
+  mail:
+    host: ${SMTP_SERVER_HOST}
+    port: ${SMTP_SERVER_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp:
+        auth: true
+        starttls.enable: true
+        ssl.enable: true
 
 management:
   endpoints.web.exposure.include: info, health
@@ -42,3 +52,7 @@ application:
   kafka:
     topic:
       notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
+  mail:
+    enabled: true
+    from_address: ${FROM_MAIL_ADDRESS}
+    sender: ${SENDER_NAME_FOR_MAIL}
