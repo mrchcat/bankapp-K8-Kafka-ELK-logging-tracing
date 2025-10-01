@@ -12,7 +12,7 @@ spring:
       acks: all
 
 management:
-  endpoints.web.exposure.include: info, health
+  endpoints.web.exposure.include: info, health,metrics,prometheus
   zipkin:
     tracing:
       endpoint: ${ZIPKIN_ENDPOINT}

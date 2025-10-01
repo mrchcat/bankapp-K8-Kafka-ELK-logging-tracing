@@ -27,7 +27,7 @@ spring:
       auto-offset-reset: earliest
 
 management:
-  endpoints.web.exposure.include: info, health
+  endpoints.web.exposure.include: info, health,metrics,prometheus
   zipkin:
     tracing:
       endpoint: ${ZIPKIN_ENDPOINT}
