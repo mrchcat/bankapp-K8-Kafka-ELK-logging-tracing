@@ -79,6 +79,7 @@ public class NotificationService {
         } catch (Exception e) {
             log.error(e.getMessage());
             newSpan.tag("isSucceed", false);
+            newSpan.tag("error", e.getMessage());
             return false;
         } finally {
             newSpan.end();
