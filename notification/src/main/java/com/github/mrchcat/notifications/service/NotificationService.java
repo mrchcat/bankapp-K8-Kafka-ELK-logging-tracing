@@ -3,15 +3,14 @@ package com.github.mrchcat.notifications.service;
 import com.github.mrchcat.notifications.Repository.NotificationRepository;
 import com.github.mrchcat.notifications.domain.BankNotification;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
-import io.micrometer.tracing.Tracer;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +24,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final MailSender mailSender;
+    private final MeterRegistry meterRegistry;
 
     @Value("${application.mail.enabled}")
     private boolean isEmailEnabled;
@@ -33,7 +33,6 @@ public class NotificationService {
     @Value("${application.mail.sender_name}")
     private String senderName;
 
-    private final Tracer tracer;
 
     @KafkaListener(topics = {"#{'${application.kafka.topic.notifications}'.split(',')}"})
     @Transactional("transactionManager")
@@ -61,28 +60,22 @@ public class NotificationService {
     }
 
     private boolean deliver(BankNotification notification) {
-        var newSpan = tracer.nextSpan().name("deliver").start();
-        newSpan.tag("username", notification.getUsername());
         if (!isEmailEnabled) {
-            newSpan.tag("delivery_enabled", false);
-            newSpan.tag("isSucceed", true);
-            log.info("Уведомление \"{}\" обработано без отправки", notification.getMessage());
+            log.debug("Уведомление \"{}\" обработано без отправки", notification.getMessage());
             return true;
         }
         try {
-            newSpan.tag("delivery_enabled", true);
-            newSpan.tag("to_mail", notification.getEmail());
             sendByEmail(notification);
-            newSpan.tag("isSucceed", true);
-            log.info("Уведомление \"{}\" отправлено на e-mail:{} ", notification.getMessage(), notification.getEmail());
+            log.debug("Уведомление \"{}\" отправлено на e-mail:{} ", notification.getMessage(), notification.getEmail());
             return true;
         } catch (Exception e) {
+            Counter failedMailsCounter = Counter.builder("notification_delivery_fails")
+                    .description("Counter of failed deliveries")
+                    .tag("username", notification.getUsername())
+                    .register(meterRegistry);
+            failedMailsCounter.increment();
             log.error(e.getMessage());
-            newSpan.tag("isSucceed", false);
-            newSpan.tag("error", e.getMessage());
             return false;
-        } finally {
-            newSpan.end();
         }
     }
 

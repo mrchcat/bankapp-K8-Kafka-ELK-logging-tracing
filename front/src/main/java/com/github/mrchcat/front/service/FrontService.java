@@ -8,10 +8,12 @@ import com.github.mrchcat.front.dto.NewClientRegisterDto;
 import com.github.mrchcat.front.dto.NonCashTransfer;
 import com.github.mrchcat.shared.accounts.BankUserDto;
 import com.github.mrchcat.shared.enums.CashAction;
+import com.github.mrchcat.shared.exchange.CurrencyRate;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.naming.ServiceUnavailableException;
+import java.util.Collection;
 import java.util.List;
 
 public interface FrontService {

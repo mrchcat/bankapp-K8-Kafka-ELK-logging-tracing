@@ -10,6 +10,8 @@ import com.github.mrchcat.front.dto.PasswordUpdateDto;
 import com.github.mrchcat.front.service.FrontService;
 import com.github.mrchcat.shared.enums.CashAction;
 import com.github.mrchcat.shared.enums.UserRole;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.security.auth.message.AuthException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -44,11 +46,14 @@ public class MainController {
     private final FrontService frontService;
     private final String FRONT_GET_FRONT_RATES = "/front/rates";
     private final String ratesLink;
+    private final MeterRegistry meterRegistry;
 
     public MainController(FrontService frontService,
-                          ServiceUrl serviceUrl) {
+                          ServiceUrl serviceUrl,
+                          MeterRegistry meterRegistry) {
         this.frontService = frontService;
         this.ratesLink = "http://" + serviceUrl.getFront() + FRONT_GET_FRONT_RATES;
+        this.meterRegistry = meterRegistry;
     }
 
     /**
@@ -254,6 +259,7 @@ public class MainController {
                 case OTHER -> redirectAttributes.addFlashAttribute("isTransferOtherSucceed", true);
             }
         } catch (HttpClientErrorException ex) {
+            countFailedTransferTransactions(nonCashTransaction);
             if (ex.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
                 var details = ex.getResponseBodyAs(ProblemDetail.class);
                 if (details != null && details.getDetail() != null) {
@@ -261,8 +267,22 @@ public class MainController {
                 }
             }
         } catch (Exception ex) {
+            countFailedTransferTransactions(nonCashTransaction);
             transferErrors.add(ex.getMessage());
         }
         return redirectView;
+    }
+
+    private void countFailedTransferTransactions(NonCashTransfer nonCashTransaction) {
+        Counter failedNonCashTransactions = Counter.builder("transfer_transaction_fails")
+                .description("Counter of failed transfer transactions")
+                .tag("type", "non-cash")
+                .tag("direction", nonCashTransaction.direction().name())
+                .tag("sender", nonCashTransaction.fromUsername())
+                .tag("receiver", nonCashTransaction.toUsername())
+                .tag("sender_currency", nonCashTransaction.fromCurrency().name())
+                .tag("receiver_currency", nonCashTransaction.toCurrency().name())
+                .register(meterRegistry);
+        failedNonCashTransactions.increment();
     }
 }

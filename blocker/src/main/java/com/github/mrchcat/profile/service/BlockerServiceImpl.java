@@ -2,9 +2,9 @@ package com.github.mrchcat.profile.service;
 
 import com.github.mrchcat.shared.blocker.BlockerResponseDto;
 import com.github.mrchcat.shared.cash.CashTransactionDto;
-import com.github.mrchcat.shared.enums.TransferDirection;
 import com.github.mrchcat.shared.transfer.NonCashTransferDto;
-import io.micrometer.tracing.Tracer;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,48 +25,20 @@ public class BlockerServiceImpl implements BlockerService {
             "ограничения на определённые виды деятельности"
     );
 
-    private final Tracer tracer;
-    private final String SPAN_NAME = "check-result";
+    private final MeterRegistry meterRegistry;
 
     @Override
     public BlockerResponseDto checkCashTransaction(CashTransactionDto cashTransactionDto) {
-        var newSpan = tracer.nextSpan().name(SPAN_NAME).start();
-        newSpan.tag("type", "cash");
-        newSpan.tag("action", cashTransactionDto.action().name());
-        newSpan.tag("sender", cashTransactionDto.username());
-        newSpan.tag("receiver", cashTransactionDto.username());
-        newSpan.tag("currency", cashTransactionDto.currency().name());
-        try {
-            BlockerResponseDto response = getRandomResponse();
-            newSpan.tag("is_confirmed", response.isConfirmed());
-            return getRandomResponse();
-        } finally {
-            newSpan.end();
-        }
+        BlockerResponseDto response = getRandomResponse();
+        countBlockedTransactions(cashTransactionDto, response);
+        return response;
     }
 
     @Override
     public BlockerResponseDto checkNonCashTransaction(NonCashTransferDto nonCashTransferDto) {
-        var newSpan = tracer.nextSpan().name(SPAN_NAME).start();
-        newSpan.tag("type", "non-cash");
-        newSpan.tag("direction", nonCashTransferDto.direction().name());
-        newSpan.tag("sender", nonCashTransferDto.fromUsername());
-        String reciver;
-        if(nonCashTransferDto.direction()==TransferDirection.YOURSELF){
-            reciver=nonCashTransferDto.fromUsername();
-        } else {
-            reciver=nonCashTransferDto.toUsername();
-        }
-        newSpan.tag("receiver", reciver);
-        newSpan.tag("sender_currency", nonCashTransferDto.fromCurrency().name());
-        newSpan.tag("receiver_currency", nonCashTransferDto.toCurrency().name());
-        try {
-            BlockerResponseDto response = getRandomResponse();
-            newSpan.tag("is_confirmed", response.isConfirmed());
-            return response;
-        } finally {
-            newSpan.end();
-        }
+        BlockerResponseDto response = getRandomResponse();
+        countBlockedTransactions(nonCashTransferDto, response);
+        return response;
     }
 
     private BlockerResponseDto getRandomResponse() {
@@ -75,6 +47,35 @@ public class BlockerServiceImpl implements BlockerService {
             return new BlockerResponseDto(false, rejectReasons.get(answer));
         }
         return new BlockerResponseDto(true, "операция подтверждена");
+    }
+
+    private void countBlockedTransactions(Object transactionDto, BlockerResponseDto response) {
+        if (response.isConfirmed()) {
+            return;
+        }
+        Counter blocksCounter;
+        if (transactionDto instanceof CashTransactionDto cashDto) {
+            blocksCounter = Counter.builder("blocks")
+                    .description("Counter of blocked cash transactions")
+                    .tag("type", "cash")
+                    .tag("action", cashDto.action().name())
+                    .tag("username", cashDto.username())
+                    .tag("currency", cashDto.currency().name())
+                    .register(meterRegistry);
+        } else if (transactionDto instanceof NonCashTransferDto nonCashDto) {
+            blocksCounter = Counter.builder("blocks")
+                    .description("Counter of blocked non-cash transactions")
+                    .tag("type", "non-cash")
+                    .tag("direction", nonCashDto.direction().name())
+                    .tag("sender", nonCashDto.fromUsername())
+                    .tag("receiver", nonCashDto.toUsername())
+                    .tag("sender_currency", nonCashDto.fromUsername())
+                    .tag("receiver_currency", nonCashDto.toCurrency().name())
+                    .register(meterRegistry);
+        } else {
+            throw new IllegalArgumentException("icorrect class of TransactionDto");
+        }
+        blocksCounter.increment();
     }
 
 }

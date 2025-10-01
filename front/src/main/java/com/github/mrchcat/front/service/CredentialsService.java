@@ -8,6 +8,7 @@ import com.github.mrchcat.front.security.OAuthHeaderGetter;
 import com.github.mrchcat.shared.accounts.UpdatePasswordRequestDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
@@ -32,7 +33,8 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     public CredentialsService(RestClient.Builder restClientBuilder,
                               OAuthHeaderGetter oAuthHeaderGetter,
                               PasswordEncoder encoder,
-                              ServiceUrl serviceUrl) {
+                              ServiceUrl serviceUrl,
+                              MeterRegistry meterRegistry) {
         this.restClientBuilder = restClientBuilder;
         this.oAuthHeaderGetter = oAuthHeaderGetter;
         this.encoder = encoder;

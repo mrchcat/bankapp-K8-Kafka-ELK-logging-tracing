@@ -10,7 +10,7 @@ spring:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
 
 management:
-  endpoints.web.exposure.include: info, health
+  endpoints.web.exposure.include: info, health, metrics,prometheus
   zipkin:
     tracing:
       endpoint: ${ZIPKIN_ENDPOINT}

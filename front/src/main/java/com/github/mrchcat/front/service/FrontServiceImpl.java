@@ -27,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -49,6 +50,7 @@ public class FrontServiceImpl implements FrontService {
     private final OAuthHeaderGetter oAuthHeaderGetter;
     private final PasswordEncoder encoder;
     private final ServiceUrl serviceUrl;
+
 
     private final String ACCOUNT_SERVICE;
     private final String ACCOUNTS_REGISTER_NEW_CLIENT_API = "/registration";
@@ -270,5 +272,4 @@ public class FrontServiceImpl implements FrontService {
             throw new ExchangeServiceException("");
         }
     }
-
 }

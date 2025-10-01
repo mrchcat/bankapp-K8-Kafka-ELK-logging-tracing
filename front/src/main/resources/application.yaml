@@ -18,7 +18,7 @@ spring:
             clientAuthenticationMethod: client_secret_post
 
 management:
-  endpoints.web.exposure.include: info, health
+  endpoints.web.exposure.include: info, health, metrics,prometheus
   zipkin:
     tracing:
       endpoint: ${ZIPKIN_ENDPOINT}
