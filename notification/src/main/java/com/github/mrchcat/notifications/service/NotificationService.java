@@ -3,6 +3,7 @@ package com.github.mrchcat.notifications.service;
 import com.github.mrchcat.notifications.Repository.NotificationRepository;
 import com.github.mrchcat.notifications.domain.BankNotification;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +26,14 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final MailSender mailSender;
 
-    @Value("${application.mail.from_address}")
-    private String fromMailAddress;
-    @Value("${application.mail.sender}")
-    private String senderName;
     @Value("${application.mail.enabled}")
     private boolean isEmailEnabled;
+    @Value("${application.mail.from_address}")
+    private String fromMailAddress;
+    @Value("${application.mail.sender_name}")
+    private String senderName;
 
+    private final Tracer tracer;
 
     @KafkaListener(topics = {"#{'${application.kafka.topic.notifications}'.split(',')}"})
     @Transactional("transactionManager")
@@ -52,24 +54,44 @@ public class NotificationService {
     public void process() {
         notificationRepository.findAllNotProcessed()
                 .forEach(notification -> {
-                    if (!isEmailEnabled || sendByEmail(notification)) {
+                    if (deliver(notification)) {
                         notificationRepository.setProcessed(notification.getId());
                     }
                 });
     }
 
-    private boolean sendByEmail(BankNotification notification) {
+    private boolean deliver(BankNotification notification) {
+        var newSpan = tracer.nextSpan().name("deliver").start();
+        newSpan.tag("username", notification.getUsername());
+        if (!isEmailEnabled) {
+            newSpan.tag("delivery_enabled", false);
+            newSpan.tag("isSucceed", true);
+            log.info("Уведомление \"{}\" обработано без отправки", notification.getMessage());
+            return true;
+        }
         try {
-            SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom(fromMailAddress);
-            msg.setTo(notification.getEmail());
-            msg.setText(notification.getMessage());
-            mailSender.send(msg);
-            log.info("Уведомление \"{}\" отправлено на почту {}", notification.getMessage(), notification.getEmail());
+            newSpan.tag("delivery_enabled", true);
+            newSpan.tag("to_mail", notification.getEmail());
+            sendByEmail(notification);
+            newSpan.tag("isSucceed", true);
+            log.info("Уведомление \"{}\" отправлено на e-mail:{} ", notification.getMessage(), notification.getEmail());
             return true;
         } catch (Exception e) {
             log.error(e.getMessage());
+            newSpan.tag("isSucceed", false);
             return false;
+        } finally {
+            newSpan.end();
         }
+    }
+
+    private void sendByEmail(BankNotification notification) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom(fromMailAddress);
+        msg.setTo(notification.getEmail());
+        msg.setSubject("notification from " + senderName);
+        msg.setReplyTo(fromMailAddress);
+        msg.setText(notification.getMessage());
+        mailSender.send(msg);
     }
 }

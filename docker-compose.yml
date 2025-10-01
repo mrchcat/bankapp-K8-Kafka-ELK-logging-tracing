@@ -43,6 +43,7 @@ services:
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@bank-kafka:9093
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    restart: unless-stopped
 
   kafka-ui:
     image: 'provectuslabs/kafka-ui:latest'
@@ -63,6 +64,7 @@ services:
       - "9411:9411"
     networks:
       - backend
+    restart: unless-stopped
 
   bank-prometheus:
     image: prom/prometheus:v3.6.0

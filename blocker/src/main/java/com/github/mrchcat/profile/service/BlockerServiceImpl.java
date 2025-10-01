@@ -2,6 +2,7 @@ package com.github.mrchcat.profile.service;
 
 import com.github.mrchcat.shared.blocker.BlockerResponseDto;
 import com.github.mrchcat.shared.cash.CashTransactionDto;
+import com.github.mrchcat.shared.enums.TransferDirection;
 import com.github.mrchcat.shared.transfer.NonCashTransferDto;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,13 @@ public class BlockerServiceImpl implements BlockerService {
         newSpan.tag("type", "non-cash");
         newSpan.tag("direction", nonCashTransferDto.direction().name());
         newSpan.tag("sender", nonCashTransferDto.fromUsername());
-        newSpan.tag("receiver", nonCashTransferDto.toUsername());
+        String reciver;
+        if(nonCashTransferDto.direction()==TransferDirection.YOURSELF){
+            reciver=nonCashTransferDto.fromUsername();
+        } else {
+            reciver=nonCashTransferDto.toUsername();
+        }
+        newSpan.tag("receiver", reciver);
         newSpan.tag("sender_currency", nonCashTransferDto.fromCurrency().name());
         newSpan.tag("receiver_currency", nonCashTransferDto.toCurrency().name());
         try {

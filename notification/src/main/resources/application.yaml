@@ -53,6 +53,6 @@ application:
     topic:
       notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
   mail:
-    enabled: true
+    enabled: ${MAIL_DELIVERY_ENABLED}
     from_address: ${FROM_MAIL_ADDRESS}
-    sender: ${SENDER_NAME_FOR_MAIL}
+    sender_name: ${SENDER_NAME_FOR_MAIL}
