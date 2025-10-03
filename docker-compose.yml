@@ -28,7 +28,7 @@ services:
       retries: 3
 
   bank-kafka:
-    image: 'bitnami/kafka:latest'
+    image: bitnami/kafka:latest
     container_name: bank-kafka
     ports:
       - '9094:9094'
@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
 
   kafka-ui:
-    image: 'provectuslabs/kafka-ui:latest'
+    image: provectuslabs/kafka-ui:latest
     ports:
       - '8080:8080'
     networks:
@@ -78,6 +78,25 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     restart: unless-stopped
+
+  grafana:
+#    image: grafana/grafana:12.3.0-18147126998-ubuntu
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    environment:
+      - GF_SECURITY_ADMIN_user=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - bank-prometheus
+
 
 networks:
   backend:

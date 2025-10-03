@@ -273,15 +273,15 @@ public class MainController {
         return redirectView;
     }
 
-    private void countFailedTransferTransactions(NonCashTransfer nonCashTransaction) {
+    private void countFailedTransferTransactions(NonCashTransfer nct) {
         Counter failedNonCashTransactions = Counter.builder("transfer_transaction_fails")
                 .description("Counter of failed transfer transactions")
                 .tag("type", "non-cash")
-                .tag("direction", nonCashTransaction.direction().name())
-                .tag("sender", nonCashTransaction.fromUsername())
-                .tag("receiver", nonCashTransaction.toUsername())
-                .tag("sender_currency", nonCashTransaction.fromCurrency().name())
-                .tag("receiver_currency", nonCashTransaction.toCurrency().name())
+                .tag("direction", (nct.direction() == null) ? "null" : nct.direction().name())
+                .tag("sender", (nct.fromUsername() == null) ? "null" : nct.fromUsername())
+                .tag("receiver", (nct.toUsername() == null) ? "null" : nct.toUsername())
+                .tag("sender_currency", (nct.fromCurrency() == null) ? "null" : nct.fromCurrency().name())
+                .tag("receiver_currency", (nct.toCurrency() == null) ? "null" : nct.toCurrency().name())
                 .register(meterRegistry);
         failedNonCashTransactions.increment();
     }

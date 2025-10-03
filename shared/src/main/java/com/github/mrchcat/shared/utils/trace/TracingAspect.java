@@ -19,7 +19,6 @@ public class TracingAspect {
     @Around("@annotation(toTrace)")
     public Object trace(ProceedingJoinPoint jp, ToTrace toTrace) throws Throwable {
         String spanName = toTrace.spanName();
-//        System.out.println("спан=" + spanName + "теги=" + Arrays.toString(toTrace.tags()));
         var newSpan = tracer.nextSpan().name(spanName).start();
         for (String pair : toTrace.tags()) {
             if (pair != null && !pair.isBlank() && pair.matches("\\w+:\\w+")) {

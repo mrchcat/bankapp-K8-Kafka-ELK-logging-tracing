@@ -21,7 +21,21 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
 
-management.endpoints.web.exposure.include: info, health
+  mail:
+    username: username
+    password: password
+    properties:
+      mail.smtp:
+        auth: false
+        starttls.enable: false
+        ssl.enable: false
+
+
+management:
+  endpoints.web.exposure.include: info, health, metrics,prometheus
+  tracing:
+    sampling:
+      probability: 0.1
 
 logging:
   pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
@@ -33,3 +47,7 @@ application:
   kafka:
     topic:
       notifications: bank-notifications
+  mail:
+    enabled: true
+    from_address: address@mail.com
+    sender_name: some_name

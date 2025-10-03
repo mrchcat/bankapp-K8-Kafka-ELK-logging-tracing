@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -52,7 +53,8 @@ public class SecurityConfig {
                         })
                         .failureHandler((request, response, authException) -> {
                             countLogins(false, authException.getAuthenticationRequest(), meterRegistry);
-                            response.sendRedirect("/error");
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.sendRedirect("/main");
                         })
                 )
                 .logout(cst -> cst
@@ -65,27 +67,32 @@ public class SecurityConfig {
         return http.build();
     }
 
+    private void countLogins(Boolean isSuccess, Authentication authentication, MeterRegistry meterRegistry) {
+        System.out.println(authentication.getPrincipal().getClass());
+        Object principal = authentication.getPrincipal();
+        String username = "";
+        if (principal instanceof User user) {
+            username = user.getUsername();
+        } else if (principal instanceof String user) {
+            username = user;
+        }
+        Counter loginCounter = Counter.builder("login")
+                .description("Counter of logins with usernames")
+                .tag("username", username)
+                .tag("is_success", isSuccess.toString())
+                .register(meterRegistry);
+        loginCounter.increment();
+    }
+
     @Bean
     BCryptPasswordEncoder getEncoder() {
         int strength = 10;
         return new BCryptPasswordEncoder(strength, new SecureRandom());
     }
 
-    private void countLogins(Boolean isSuccess, Authentication authentication, MeterRegistry meterRegistry) {
-        if (authentication.getPrincipal() instanceof User user) {
-            Counter loginCounter = Counter.builder("login")
-                    .description("Counter of logins with usernames")
-                    .tag("username", user.getUsername())
-                    .tag("is_success", isSuccess.toString())
-                    .register(meterRegistry);
-            loginCounter.increment();
-        }
-    }
-
     @Bean
     AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
                                                                                  OAuth2AuthorizedClientService authorizedClientService) {
-
         OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder
                 .builder()
                 .clientCredentials()
@@ -95,10 +102,4 @@ public class SecurityConfig {
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
         return authorizedClientManager;
     }
-
-
-//    @Bean
-//    RestClient.Builder restClientBuilder() {
-//        return RestClient.builder();
-//    }
 }

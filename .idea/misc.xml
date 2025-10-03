@@ -11,6 +11,7 @@
       <set>
         <option value="$PROJECT_DIR$/shared-model-dto/pom.xml" />
         <option value="$PROJECT_DIR$/shared-modul-dto-2/pom.xml" />
+        <option value="$PROJECT_DIR$/testapp/pom.xml" />
       </set>
     </option>
   </component>
