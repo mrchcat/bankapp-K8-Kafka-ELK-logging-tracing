@@ -1,4 +1,4 @@
-package com.github.mrchcat.notifications.Repository;
+package com.github.mrchcat.notifications.repository;
 
 import com.github.mrchcat.notifications.domain.BankNotification;
 import com.github.mrchcat.shared.utils.trace.ToTrace;

@@ -1,6 +1,6 @@
 package com.github.mrchcat.notifications.service;
 
-import com.github.mrchcat.notifications.Repository.NotificationRepository;
+import com.github.mrchcat.notifications.repository.NotificationRepository;
 import com.github.mrchcat.notifications.domain.BankNotification;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
