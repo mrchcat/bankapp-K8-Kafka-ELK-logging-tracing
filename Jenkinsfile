@@ -96,16 +96,17 @@ pipeline {
                     echo 'Устанавливаем инфраструктурные компоненты'
                     echo 'Ожидание 3-4 минуты.'
                     helm install bankapp ./helm/bankapp \\
-                                 --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
+                                 --set services.enabled=false \\
                                  --namespace=$TEST_NAMESPACE  \\
                                  --create-namespace
                     echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
-                    helm install bankapp  ./helm/bankapp \\
+                    helm install bankapp ./helm/bankapp \\
+                                 --set infrastructure.enabled=false \\
                                  --set services.enabled=true \\
-                                 --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
                     sleep 180
                 """
                 }
