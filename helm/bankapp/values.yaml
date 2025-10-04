@@ -330,8 +330,10 @@ transfer:
 zipkin:
   service:
     port: 9411
-    type: NodePort
   storage.type: mem
+  ingress:
+    enabled: true
+    host: "zipkin.internal.com"
   fullnameOverride: "zipkin"
 
 # Subchart for Kafka

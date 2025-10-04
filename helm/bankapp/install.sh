@@ -2,7 +2,8 @@
 nameOfNamespace="default"
 
 echo "разворачиваем zipkin"
-helm install bankapp . --set keycloak=true
+helm install bankapp . --set zipkin.enabled=true --set infrastructure.enabled=false --set services.enabled=false
+
 #echo "разворачиваем kafka"
 #helm install kafka ./charts/kafka --namespace=$nameOfNamespace --create-namespace
 #echo "разворачиваем keycloak"
