@@ -93,20 +93,8 @@ pipeline {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to TEST'
-                    echo 'Устанавливаем инфраструктурные компоненты'
                     echo 'Ожидание 3-4 минуты.'
-                    helm install bankapp ./helm/bankapp \\
-                                 --set infrastructure.enabled=true \\
-                                 --set services.enabled=false \\
-                                 --namespace=$TEST_NAMESPACE  \\
-                                 --create-namespace
-                    echo 'Устанавливаем базы данных и микросервисы.'
-                    echo 'Микросервисы полностью развернутся через 3-5 минут'
-                    helm install bankapp ./helm/bankapp \\
-                                 --set infrastructure.enabled=false \\
-                                 --set services.enabled=true \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace
+                    helm install bankapp ./helm/bankapp --namespace=$TEST_NAMESPACE --create-namespace
                     sleep 180
                 """
                 }
@@ -118,27 +106,24 @@ pipeline {
             }
         }
         //TODO разобраться как удалить тесты
+        stage('Free TEST namespace') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo 'Delete pods in TEST namespace'
+                    helm uninstall bankapp --namespace=$TEST_NAMESPACE
+                """
+                }
+            }
+        }
 
         stage('Deploy to PROD') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to TEST'
-                    echo 'Устанавливаем инфраструктурные компоненты'
-                    echo 'Ожидание 1 минута.'
-                    helm upgrade --install bankapp ./helm/bankapp \\
-                                 --set services.enabled=false \\
-                                 --set infrastructure.enabled=true \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace
-                    sleep 60
-                    echo 'Устанавливаем базы данных и микросервисы.'
-                    echo 'Микросервисы полностью развернутся через 3-5 минут'
-                    helm upgrade --install bankapp  ./helm/bankapp \\
-                                 --set services.enabled=true \\
-                                 --set infrastructure.enabled=true \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace
+                    echo 'Ожидание 3-4 минуты.'
+                    helm install bankapp ./helm/bankapp --namespace=$TEST_NAMESPACE --create-namespace
                     sleep 180
                 """
                 }
