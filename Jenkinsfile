@@ -94,20 +94,19 @@ pipeline {
                     sh """
                     echo 'Deploy to TEST'
                     echo 'Устанавливаем инфраструктурные компоненты'
-                    echo 'Ожидание 2 минуты.'
+                    echo 'Ожидание 1 минута.'
                     helm upgrade --install bankapp ./helm/bankapp \\
                                  --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE  \\
                                  --create-namespace
-                    sleep 120
+                    sleep 60
                     echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
                     helm upgrade --install bankapp  ./helm/bankapp \\
                                  --set services.enabled=true \\
-                                 --set infrastructure.enabled=false \\
+                                 --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE  \\
-                                 --create-namespace
                     sleep 180
                 """
                 }
@@ -126,18 +125,18 @@ pipeline {
                     sh """
                     echo 'Deploy to TEST'
                     echo 'Устанавливаем инфраструктурные компоненты'
-                    echo 'Ожидание 2 минуты.'
+                    echo 'Ожидание 1 минута.'
                     helm upgrade --install bankapp ./helm/bankapp \\
                                  --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
                                  --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
-                    sleep 120
+                    sleep 60
                     echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
                     helm upgrade --install bankapp  ./helm/bankapp \\
                                  --set services.enabled=true \\
-                                 --set infrastructure.enabled=false \\
+                                 --set infrastructure.enabled=true \\
                                  --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
                     sleep 180
