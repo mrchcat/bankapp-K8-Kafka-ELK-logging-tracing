@@ -94,22 +94,18 @@ pipeline {
                     sh """
                     echo 'Deploy to TEST'
                     echo 'Устанавливаем инфраструктурные компоненты'
-                    echo 'Ожидание 1 минута.'
-                    helm upgrade bankapp ./helm/bankapp \\
-                                 --install \\
+                    echo 'Ожидание 3-4 минуты.'
+                    helm install bankapp ./helm/bankapp \\
                                  --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE  \\
                                  --create-namespace
-                    sleep 60
                     echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
-                    helm upgrade bankapp  ./helm/bankapp \\
-                                 --install \\
+                    helm install bankapp  ./helm/bankapp \\
                                  --set services.enabled=true \\
                                  --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace
                     sleep 180
                 """
                 }
