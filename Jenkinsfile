@@ -78,16 +78,16 @@ pipeline {
 //                 }
 //             }
 //         }
-        stage('Enable ingress') {
-            steps{
-                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
-                    sh """
-                    echo 'Enable Ingress'
-                    minikube addons enable ingress
-                    """
-                }
-            }
-        }
+//         stage('Enable ingress') {
+//             steps{
+//                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+//                     sh """
+//                     echo 'Enable Ingress'
+//                     minikube addons enable ingress
+//                     """
+//                 }
+//             }
+//         }
         stage('Deploy to TEST') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
