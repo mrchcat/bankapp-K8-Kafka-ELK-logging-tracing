@@ -80,7 +80,12 @@ pipeline {
 //         }
         stage('Enable ingress') {
             steps{
-                sh('minikube addons enable ingress')
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo 'Enable Ingress'
+                    minikube addons enable ingress
+                    """
+                }
             }
         }
         stage('Deploy to TEST') {
