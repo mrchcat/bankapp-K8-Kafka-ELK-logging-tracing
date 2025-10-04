@@ -1,14 +1,12 @@
 pipeline {
     agent any
     environment {
-//     TODO передать через credentials
-        DOCKER_REGISTRY='mcat1980' //укажите наименование своего dockerhub
+        DOCKER_REGISTRY=credentials('DOCKER_REGISTRY') //укажите наименование своего dockerhub
 
         //скорректируйте, если вы присвоили другое имя при сохранении credentials в Jenkins
         DOCKER_CREDENTIAL_ID='DOCKER'
         KUBER_CREDENTIAL_ID='KUBER_CONFIG_YAML'
 
-//     TODO передать через .env
         //при корректировке указанных ниже параметров синхронизируйте изменения с файлом values.yaml чарта
         PROD_NAMESPACE='prod'
         TEST_NAMESPACE='test'
@@ -17,7 +15,7 @@ pipeline {
         FRONT_BUILD_NUMBER='1.0'
 
         ACCOUNT_IMAGE_NAME='bank-account'
-        ACCOUNT_BUILD_NUMBER='1.0'
+        ACCOUNT_BUILD_NUMBER='3.0'
 
         BLOCKER_IMAGE_NAME='bank-blocker'
         BLOCKER_BUILD_NUMBER='1.0'
@@ -32,13 +30,12 @@ pipeline {
         EXCHANGE_GENERATOR_BUILD_NUMBER='1.0'
 
         NOTIFICATIONS_IMAGE_NAME='bank-notifications'
-        NOTIFICATIONS_BUILD_NUMBER='1.0'
+        NOTIFICATIONS_BUILD_NUMBER='3.0'
 
         TRANSFER_IMAGE_NAME='bank-transfer'
         TRANSFER_BUILD_NUMBER='1.0'
     }
 
-//         TODO сделать параллельно
     stages {
         stage('Build & Unit Tests') {
             steps {
@@ -48,7 +45,6 @@ pipeline {
                 """
             }
         }
-        //         TODO сделать параллельно
         stage('Build Docker Images') {
             steps {
                 sh """
@@ -64,7 +60,6 @@ pipeline {
                 """
             }
         }
-//         TODO сделать параллельно
         stage('Push Docker Images') {
             steps {
                 withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
@@ -86,33 +81,29 @@ pipeline {
                 }
             }
         }
-        //TODO добавить развертывание ингресс (убрать из ридми), добавление битнами и закачку архива
-        //TODO отдельно добавить создание namespace
-
+        stage('Enable ingress') {
+            steps{
+                sh "minikube addons enable ingress"
+            }
+        }
         stage('Deploy to TEST') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to TEST'
-                    echo 'Устанавливаем kafka'
-                    helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace
-                    echo 'Kafka поднимается.'
-                    echo 'Устанавливаем keycloak'
-                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace
-                    echo 'Keycloak поднимается.'
+                    echo 'Устанавливаем инфраструктурные компоненты'
                     echo 'Ожидание 2 минуты.'
-                    sleep 130
-
-                    echo 'Устанавливаем базы данных и микросервисы.'
-                    helm upgrade --install bankapp  ./helm/bankapp \\
-                                 --set enableKeycloak=false \\
-                                 --set enableKafka=false \\
+                    helm upgrade --install bankapp ./helm/bankapp \\
+                                 --set services.enabled=false \\
+                                 --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE
+                    sleep 120
+                    echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
+                    helm upgrade --install bankapp  ./helm/bankapp \\
+                                 --set services.enabled=true \\
+                                 --set infrastructure.enabled=false \\
+                                 --namespace=$TEST_NAMESPACE
                     sleep 180
                 """
                 }
@@ -129,28 +120,22 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
-                    echo 'Deploy to PROD'
-                    echo 'Устанавливаем kafka'
-                    helm upgrade --install kafka  ./helm/bankapp/charts/kafka \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace
-                    echo 'Kafka поднимается.'
-                    echo 'Устанавливаем keycloak'
-                    helm upgrade --install keycloak  ./helm/bankapp/charts/keycloak \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace
-                    echo 'Keycloak поднимается.'
+                    echo 'Deploy to TEST'
+                    echo 'Устанавливаем инфраструктурные компоненты'
                     echo 'Ожидание 2 минуты.'
-                    sleep 130
-
-                    echo 'Устанавливаем базы данных и микросервисы.'
-                    helm upgrade --install bankapp  ./helm/bankapp \\
-                                 --set enableKeycloak=false \\
-                                 --set enableKafka=false \\
+                    helm upgrade --install bankapp ./helm/bankapp \\
+                                 --set services.enabled=false \\
+                                 --set infrastructure.enabled=true \\
                                  --namespace=$PROD_NAMESPACE
+                    sleep 120
+                    echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
+                    helm upgrade --install bankapp  ./helm/bankapp \\
+                                 --set services.enabled=true \\
+                                 --set infrastructure.enabled=false \\
+                                 --namespace=$PROD_NAMESPACE
                     sleep 180
-                    """
+                """
                 }
             }
         }
