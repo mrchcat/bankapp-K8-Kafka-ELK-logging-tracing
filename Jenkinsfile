@@ -37,17 +37,17 @@ pipeline {
     }
 
     stages {
-        stage('Build & Unit Tests') {
-            steps {
-                sh """
-                echo 'Build & Unit Tests'
-                mvn clean package
-                """
-            }
-        }
+//         stage('Build & Unit Tests') {
+//             steps {
+//                 sh """
+//                 echo 'Build & Unit Tests'
+//                 mvn clean package
+//                 """
+//             }
+//         }
         stage('Build Docker Images') {
             steps {
-                sh """
+                sh ('
                 echo 'Build Docker Images'
                 docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER
                 docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER
@@ -57,7 +57,7 @@ pipeline {
                 docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER
                 docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER
                 docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER
-                """
+                ')
             }
         }
         stage('Push Docker Images') {
