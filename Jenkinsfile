@@ -47,7 +47,7 @@ pipeline {
 //         }
         stage('Build Docker Images') {
             steps {
-                sh "echo 'Build Docker Images"
+                sh """ echo 'Build Docker Images' """
                 sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER')
 //                 docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER
 //                 docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER
