@@ -1,8 +1,8 @@
 # Subchart for front
 front:
-  HOST_NAME: "bankapp.internal.com"
-
   replicaCount: 1
+
+  HOST_NAME: "bankapp.internal.com"
 
   SPRING_APPLICATION_NAME: bankFront
 
@@ -10,9 +10,12 @@ front:
   KEYCLOAK_CLIENT_ID: bank_front
   KEYCLOAK_CLIENT_SECRET: wKWXOS1YJgNvFHt6jHL2mjgmHHvGu2r0
 
-  LOG_LEVEL: DEBUG
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
 
-  INITIAL_DELAY_SEC: 60
+  LOG_LEVEL: INFO
+
+  INITIAL_DELAY_SEC: 10
 
   SERVICE_URL_ACCOUNT: account:8080
   SERVICE_URL_CASH: cash:8080
@@ -32,6 +35,7 @@ front:
     type: ClusterIP
     port: 8080
 
+
 # Subchart for account
 account:
   replicaCount: 1
@@ -47,19 +51,22 @@ account:
   KEYCLOAK_CLIENT_ID: bank_accounts
   KEYCLOAK_CLIENT_SECRET: EF3owQYOVaDIDnBr14jkSt3kuResW6x0
 
-  DATASOURCE_USERNAME: postgres
-  DATASOURCE_PASSWORD: Inushing1980
+  DATASOURCE_USERNAME: user
+  DATASOURCE_PASSWORD: password
+
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
 
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 60
+  INITIAL_DELAY_SEC: 10
 
   image:
     repository: mcat1980/bank-account
-    tag: "1.0"
+    tag: "3.0"
     pullPolicy: IfNotPresent
 
-  imagePullSecrets: [ ]
+  imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: "account"
 
@@ -71,9 +78,6 @@ account:
     image:
       repository: postgres
       tag: "17.5"
-      pullPolicy: IfNotPresent
-    DB_USERNAME: postgres
-    DB_PASSWORD: postgres
 
 # Subchart for blocker
 blocker:
@@ -83,18 +87,21 @@ blocker:
 
   KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 
-  CONFIRM_PROBABILITY: "0.97"
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
+
+  CONFIRM_PROBABILITY: 0.97
 
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 60
+  INITIAL_DELAY_SEC: 10
 
   image:
     repository: mcat1980/bank-blocker
     tag: "1.0"
     pullPolicy: IfNotPresent
 
-  imagePullSecrets: [ ]
+  imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: "blocker"
 
@@ -113,15 +120,18 @@ cash:
   KEYCLOAK_CLIENT_ID: bank_cash
   KEYCLOAK_CLIENT_SECRET: h09XeFhfvzA4wB68DyIwFx7zKM27aGP7
 
-  DATASOURCE_USERNAME: postgres
-  DATASOURCE_PASSWORD: Inushing1980
+  DATASOURCE_USERNAME: user
+  DATASOURCE_PASSWORD: password
 
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
+
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 60
+  INITIAL_DELAY_SEC: 10
 
   SERVICE_URL_ACCOUNT: account:8080
   SERVICE_URL_BLOCKER: blocker:8080
@@ -132,7 +142,8 @@ cash:
     tag: "1.0"
     pullPolicy: IfNotPresent
 
-  imagePullSecrets: [ ]
+
+  imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: "cash"
 
@@ -144,9 +155,7 @@ cash:
     image:
       repository: postgres
       tag: "17.5"
-      pullPolicy: IfNotPresent
-    DB_USERNAME: postgres
-    DB_PASSWORD: postgres
+
 
 # Subchart for exchange
 exchange:
@@ -156,15 +165,18 @@ exchange:
 
   KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 
-  DATASOURCE_USERNAME: postgres
-  DATASOURCE_PASSWORD: Inushing1980
+  DATASOURCE_USERNAME: user
+  DATASOURCE_PASSWORD: password
 
   LOG_LEVEL: INFO
 
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
 
-  INITIAL_DELAY_SEC: 60
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
+
+  INITIAL_DELAY_SEC: 10
 
   image:
     repository: mcat1980/bank-exchange
@@ -183,9 +195,6 @@ exchange:
     image:
       repository: postgres
       tag: "17.5"
-      pullPolicy: IfNotPresent
-    DB_USERNAME: postgres
-    DB_PASSWORD: postgres
 
 # Subchart for exchange-generator
 exchange-generator:
@@ -199,12 +208,15 @@ exchange-generator:
 
   SERVICE_URL_EXCHANGE: exchange:8080
 
-  LOG_LEVEL: DEBUG
+  LOG_LEVEL: INFO
 
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
 
-  INITIAL_DELAY_SEC: 60
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
+
+  INITIAL_DELAY_SEC: 10
 
   image:
     repository: mcat1980/bank-exchange-generator
@@ -228,19 +240,30 @@ notifications:
   KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 
   DATASOURCE_URL: jdbc:postgresql://notifications-db:5432/data
-  DATASOURCE_USERNAME: postgres
-  DATASOURCE_PASSWORD: Inushing1980
+  DATASOURCE_USERNAME: user
+  DATASOURCE_PASSWORD: password
 
   LOG_LEVEL: INFO
 
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
-  INITIAL_DELAY_SEC: 60
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
+
+  MAIL_DELIVERY_ENABLED: false
+  SMTP_SERVER_HOST: smtp.mail.ru
+  SMTP_SERVER_PORT: "465"
+  MAIL_USERNAME: for_develop_test@mail.ru
+  MAIL_PASSWORD: P9MY5cEAGGD2aThf7pgp
+  FROM_MAIL_ADDRESS: for_develop_test@mail.ru
+  SENDER_NAME_FOR_MAIL: "Birbank LLC"
+
+  INITIAL_DELAY_SEC: 10
 
   image:
     repository: mcat1980/bank-notifications
-    tag: "1.0"
+    tag: "3.0"
     pullPolicy: IfNotPresent
 
   imagePullSecrets: [ ]
@@ -255,9 +278,6 @@ notifications:
     image:
       repository: postgres
       tag: "17.5"
-      pullPolicy: IfNotPresent
-    DB_USERNAME: postgres
-    DB_PASSWORD: postgres
 
 # Subchart for transfer
 transfer:
@@ -270,8 +290,8 @@ transfer:
   KEYCLOAK_CLIENT_SECRET: TBdc8HtAio8f0SXlvHPWS6Cbbz5i6yEf
 
   DATASOURCE_URL: jdbc:postgresql://transfer-db:5432/data
-  DATASOURCE_USERNAME: postgres
-  DATASOURCE_PASSWORD: Inushing1980
+  DATASOURCE_USERNAME: user
+  DATASOURCE_PASSWORD: password
 
   SERVICE_URL_ACCOUNT: account:8080
   SERVICE_URL_BLOCKER: blocker:8080
@@ -281,9 +301,12 @@ transfer:
   KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
+  ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+  ZIPKIN_TRACING_PROBABILITY: 1
+
   LOG_LEVEL: INFO
 
-  INITIAL_DELAY_SEC: 60
+  INITIAL_DELAY_SEC: 10
 
   image:
     repository: mcat1980/bank-transfer
@@ -302,14 +325,20 @@ transfer:
     image:
       repository: postgres
       tag: "17.5"
-      pullPolicy: IfNotPresent
-    DB_USERNAME: postgres
-    DB_PASSWORD: postgres
+
+# Subchart for Zipkin
+zipkin:
+  service:
+    port: 9411
+    type: NodePort
+  storage.type: mem
+  fullnameOverride: "zipkin"
 
 # Subchart for Kafka
 kafka:
   kafka:
     enabled: true
+    fullnameOverride: "kafka"
     controller:
       enabled: true
       replicaCount: 3

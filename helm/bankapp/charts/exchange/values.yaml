@@ -4,24 +4,27 @@ SPRING_APPLICATION_NAME: bankExchange
 
 KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 
-DATASOURCE_USERNAME: postgres
-DATASOURCE_PASSWORD: Inushing1980
+DATASOURCE_USERNAME: user
+DATASOURCE_PASSWORD: password
 
 LOG_LEVEL: DEBUG
 
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
 
-INITIAL_DELAY_SEC: 120
+ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+ZIPKIN_TRACING_PROBABILITY: 1
+
+INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-exchange
-  tag: "3.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "exchange"
 
 service:
   type: ClusterIP
@@ -31,6 +34,3 @@ database:
   image:
     repository: postgres
     tag: "17.5"
-    pullPolicy: IfNotPresent
-  DB_USERNAME: postgres
-  DB_PASSWORD: postgres

@@ -3,6 +3,7 @@ package com.github.mrchcat.notifications.service;
 import com.github.mrchcat.notifications.repository.NotificationRepository;
 import com.github.mrchcat.notifications.domain.BankNotification;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
@@ -59,14 +60,15 @@ public class NotificationService {
                 });
     }
 
+    @ToTrace(spanName = "deliver")
     private boolean deliver(BankNotification notification) {
         if (!isEmailEnabled) {
-            log.debug("Уведомление \"{}\" обработано без отправки", notification.getMessage());
+            log.warn("Уведомление \"{}\" обработано без отправки", notification.getMessage());
             return true;
         }
         try {
             sendByEmail(notification);
-            log.debug("Уведомление \"{}\" отправлено на e-mail:{} ", notification.getMessage(), notification.getEmail());
+            log.info("Уведомление \"{}\" отправлено на e-mail:{} ", notification.getMessage(), notification.getEmail());
             return true;
         } catch (Exception e) {
             Counter failedMailsCounter = Counter.builder("notification_delivery_fails")
@@ -74,7 +76,7 @@ public class NotificationService {
                     .tag("username", notification.getUsername())
                     .register(meterRegistry);
             failedMailsCounter.increment();
-            log.error(e.getMessage());
+            log.error("Ошибка отправки уведомления \"{}\" , описание: \"{}\"",notification.getMessage(), e.getMessage());
             return false;
         }
     }

@@ -15,4 +15,7 @@ data:
 
   CONFIRM_PROBABILITY: {{ .Values.CONFIRM_PROBABILITY | quote }}
 
+  ZIPKIN_ENDPOINT: {{ .Values.ZIPKIN_ENDPOINT }}
+  ZIPKIN_TRACING_PROBABILITY: {{ .Values.ZIPKIN_TRACING_PROBABILITY | quote }}
+
 immutable: true

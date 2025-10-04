@@ -1,5 +1,9 @@
 kafka:
   enabled: true
+  fullnameOverride: "kafka"
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/kafka
   controller:
     enabled: true
     replicaCount: 3

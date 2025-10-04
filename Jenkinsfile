@@ -1,12 +1,14 @@
 pipeline {
     agent any
     environment {
+//     TODO передать через credentials
         DOCKER_REGISTRY='mcat1980' //укажите наименование своего dockerhub
 
         //скорректируйте, если вы присвоили другое имя при сохранении credentials в Jenkins
         DOCKER_CREDENTIAL_ID='DOCKER'
         KUBER_CREDENTIAL_ID='KUBER_CONFIG_YAML'
 
+//     TODO передать через .env
         //при корректировке указанных ниже параметров синхронизируйте изменения с файлом values.yaml чарта
         PROD_NAMESPACE='prod'
         TEST_NAMESPACE='test'
@@ -36,6 +38,7 @@ pipeline {
         TRANSFER_BUILD_NUMBER='1.0'
     }
 
+//         TODO сделать параллельно
     stages {
         stage('Build & Unit Tests') {
             steps {
@@ -45,6 +48,7 @@ pipeline {
                 """
             }
         }
+        //         TODO сделать параллельно
         stage('Build Docker Images') {
             steps {
                 sh """
@@ -60,6 +64,7 @@ pipeline {
                 """
             }
         }
+//         TODO сделать параллельно
         stage('Push Docker Images') {
             steps {
                 withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
@@ -81,6 +86,9 @@ pipeline {
                 }
             }
         }
+        //TODO добавить развертывание ингресс (убрать из ридми), добавление битнами и закачку архива
+        //TODO отдельно добавить создание namespace
+
         stage('Deploy to TEST') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
@@ -115,6 +123,8 @@ pipeline {
                 input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
             }
         }
+        //TODO разобраться как удалить тесты
+
         stage('Deploy to PROD') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {

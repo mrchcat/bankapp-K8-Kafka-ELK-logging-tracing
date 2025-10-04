@@ -7,8 +7,8 @@ KEYCLOAK_CLIENT_ID: bank_transfer
 KEYCLOAK_CLIENT_SECRET: TBdc8HtAio8f0SXlvHPWS6Cbbz5i6yEf
 
 DATASOURCE_URL: jdbc:postgresql://transfer-db:5432/data
-DATASOURCE_USERNAME: postgres
-DATASOURCE_PASSWORD: Inushing1980
+DATASOURCE_USERNAME: user
+DATASOURCE_PASSWORD: password
 
 SERVICE_URL_ACCOUNT: account:8080
 SERVICE_URL_BLOCKER: blocker:8080
@@ -18,18 +18,21 @@ SERVICE_URL_TRANSFER: transfer:8080
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
 
+ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+ZIPKIN_TRACING_PROBABILITY: 1
+
 LOG_LEVEL: DEBUG
 
-INITIAL_DELAY_SEC: 120
+INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-transfer
-  tag: "3.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "transfer"
 
 service:
   type: ClusterIP
@@ -39,6 +42,3 @@ database:
   image:
     repository: postgres
     tag: "17.5"
-    pullPolicy: IfNotPresent
-  DB_USERNAME: postgres
-  DB_PASSWORD: postgres

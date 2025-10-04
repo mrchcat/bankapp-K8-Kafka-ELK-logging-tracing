@@ -16,10 +16,11 @@ spec:
       containers:
           - name: {{ .Chart.Name }}-db
             image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+            imagePullPolicy: IfNotPresent
             env:
               - name: POSTGRES_DB
                 value: data
-              - name: POSTGRES_USERNAME
+              - name: POSTGRES_USER
                 valueFrom:
                   secretKeyRef:
                     name: {{ include "notifications.fullname" . }}
