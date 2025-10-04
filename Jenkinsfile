@@ -45,42 +45,42 @@ pipeline {
 //                 """
 //             }
 //         }
-        stage('Build Docker Images') {
-            steps {
-                sh """ echo 'Build Docker Images' """
-                sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER')
-                sh('docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER')
-                sh('docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER')
-                sh('docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER')
-                sh('docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER')
-                sh('docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER')
-                sh('docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER')
-                sh('docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER')
-            }
-        }
-        stage('Push Docker Images') {
-            steps {
-                withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
-                    sh """
-                    echo 'Push Docker Images'
-                    echo 'Начинаем аутентификацию на DockerHub'
-                    """
-                    sh('echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin')
-                    sh """ echo 'Аутентификация успешно завершена.Переносим образы' """
-                    sh('docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER')
-                    sh('docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER')
-                }
-            }
-        }
+//         stage('Build Docker Images') {
+//             steps {
+//                 sh """ echo 'Build Docker Images' """
+//                 sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER')
+//                 sh('docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER')
+//                 sh('docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER')
+//                 sh('docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER')
+//                 sh('docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER')
+//                 sh('docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER')
+//                 sh('docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER')
+//                 sh('docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER')
+//             }
+//         }
+//         stage('Push Docker Images') {
+//             steps {
+//                 withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
+//                     sh """
+//                     echo 'Push Docker Images'
+//                     echo 'Начинаем аутентификацию на DockerHub'
+//                     """
+//                     sh('echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin')
+//                     sh """ echo 'Аутентификация успешно завершена.Переносим образы' """
+//                     sh('docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_NUMBER')
+//                     sh('docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_NUMBER')
+//                 }
+//             }
+//         }
         stage('Enable ingress') {
             steps{
-                sh "minikube addons enable ingress"
+                sh('minikube addons enable ingress')
             }
         }
         stage('Deploy to TEST') {
