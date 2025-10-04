@@ -99,6 +99,7 @@ pipeline {
                                  --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
                                  --namespace=$TEST_NAMESPACE
+                                 --create-namespace
                     sleep 120
                     echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
