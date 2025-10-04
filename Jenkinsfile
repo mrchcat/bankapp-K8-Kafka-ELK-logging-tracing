@@ -41,7 +41,7 @@ pipeline {
 //             steps {
 //                 sh """
 //                 echo 'Build & Unit Tests'
-//                 mvn clean package
+//                 mvn clean install
 //                 """
 //             }
 //         }
@@ -122,7 +122,7 @@ pipeline {
                     sh """
                     echo 'Deploy to TEST'
                     echo 'Ожидание 3-4 минуты.'
-                    helm install bankapp ./helm/bankapp --namespace=$PROD_NAMESPACE --create-namespace
+                    helm upgrade bankapp ./helm/bankapp --install --namespace=$PROD_NAMESPACE --create-namespace
                 """
                 }
             }
