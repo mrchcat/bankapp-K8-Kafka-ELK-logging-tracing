@@ -391,7 +391,6 @@ keycloak:
 
   service:
     type: ClusterIP
-#    type: LoadBalancer
     port: 9080
 
   KC_BOOTSTRAP_ADMIN_USERNAME: admin

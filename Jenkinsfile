@@ -105,7 +105,6 @@ pipeline {
                 input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
             }
         }
-        //TODO разобраться как удалить тесты
         stage('Free TEST namespace') {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
@@ -123,7 +122,7 @@ pipeline {
                     sh """
                     echo 'Deploy to TEST'
                     echo 'Ожидание 3-4 минуты.'
-                    helm install bankapp ./helm/bankapp --namespace=$TEST_NAMESPACE --create-namespace
+                    helm install bankapp ./helm/bankapp --namespace=$PROD_NAMESPACE --create-namespace
                     sleep 180
                 """
                 }
