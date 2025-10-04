@@ -98,7 +98,7 @@ pipeline {
                     helm upgrade --install bankapp ./helm/bankapp \\
                                  --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
-                                 --namespace=$TEST_NAMESPACE
+                                 --namespace=$TEST_NAMESPACE  \\
                                  --create-namespace
                     sleep 120
                     echo 'Устанавливаем базы данных и микросервисы.'
@@ -106,7 +106,8 @@ pipeline {
                     helm upgrade --install bankapp  ./helm/bankapp \\
                                  --set services.enabled=true \\
                                  --set infrastructure.enabled=false \\
-                                 --namespace=$TEST_NAMESPACE
+                                 --namespace=$TEST_NAMESPACE  \\
+                                 --create-namespace
                     sleep 180
                 """
                 }
@@ -129,14 +130,16 @@ pipeline {
                     helm upgrade --install bankapp ./helm/bankapp \\
                                  --set services.enabled=false \\
                                  --set infrastructure.enabled=true \\
-                                 --namespace=$PROD_NAMESPACE
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
                     sleep 120
                     echo 'Устанавливаем базы данных и микросервисы.'
                     echo 'Микросервисы полностью развернутся через 3-5 минут'
                     helm upgrade --install bankapp  ./helm/bankapp \\
                                  --set services.enabled=true \\
                                  --set infrastructure.enabled=false \\
-                                 --namespace=$PROD_NAMESPACE
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
                     sleep 180
                 """
                 }
