@@ -21,10 +21,20 @@ dependencies:
     repository: "https://zipkin.io/zipkin-helm"
     condition: infrastructure.enabled
 
+  - name: prometheus
+    version: "27.39.0"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: infrastructure.enabled
+
+  - name: grafana
+    version: "10.0.0"
+    repository: "https://grafana.github.io/helm-charts"
+
   - name: account
     version: "1.0.0"
     repository: "file://./charts/account"
     condition: services.enabled
+    depends on:
 
   - name: blocker
     version: "1.0.0"

@@ -1,8 +1,11 @@
 #задайте название namespace
 nameOfNamespace="default"
 
-echo "разворачиваем zipkin"
-helm install bankapp . --set zipkin.enabled=true --set infrastructure.enabled=false --set services.enabled=false
+#kubectl create secret generic grafana --from-literal=admin-user=admin --from-literal=admin-password=admin
+helm install bankapp  . --namespace=$nameOfNamespace --create-namespace
+
+#echo "разворачиваем zipkin"
+#helm install bankapp . --set zipkin.enabled=true --set infrastructure.enabled=false --set services.enabled=false
 
 #echo "разворачиваем kafka"
 #helm install kafka ./charts/kafka --namespace=$nameOfNamespace --create-namespace
