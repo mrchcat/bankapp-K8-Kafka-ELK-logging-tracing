@@ -123,7 +123,7 @@ pipeline {
                     echo 'Deploy to TEST'
                     echo 'Ожидание 3-4 минуты.'
                     helm upgrade bankapp ./helm/bankapp --install --namespace=$PROD_NAMESPACE --create-namespace
-                """
+                    """
                 }
             }
         }

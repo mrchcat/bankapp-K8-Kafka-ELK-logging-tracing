@@ -20,7 +20,7 @@ MAIL_DELIVERY_ENABLED: false
 SMTP_SERVER_HOST: smtp.mail.ru
 SMTP_SERVER_PORT: "465"
 MAIL_USERNAME: for_develop_test@mail.ru
-MAIL_PASSWORD: P9MY5cEAGGD2aThf7pgp
+MAIL_PASSWORD: password
 FROM_MAIL_ADDRESS: for_develop_test@mail.ru
 SENDER_NAME_FOR_MAIL: "Birbank LLC"
 
