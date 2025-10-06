@@ -57,6 +57,7 @@ zipkin:
 # Subchart for Prometheus
 prometheus:
   server:
+    fullnameOverride: prometheus-server
     ingress:
       enabled: true
       hosts:
@@ -123,6 +124,15 @@ grafana:
     enabled: true
     hosts:
       - grafana.internal.com
+  dashboards:
+    default:
+      spring-boot:
+        file: dashboards/19004_rev1.json
+      prometheus-stats:
+        # Ref: https://grafana.com/dashboards/2
+        gnetId: 2
+        revision: 2
+        datasource: Prometheus
 
 # Subchart for Kafka
 #kafka:
