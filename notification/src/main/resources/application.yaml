@@ -11,8 +11,8 @@ spring:
     mode: ALWAYS
     schema-locations: classpath:schema.sql
   kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
-      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
       group-id: bank-notifications
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -43,15 +43,14 @@ management:
       probability: ${ZIPKIN_TRACING_PROBABILITY}
 
 logging:
-  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
   level:
     root: ${LOG_LEVEL:DEBUG}
-    org.zalando.logbook: ${LOG_LEVEL:DEBUG}
 
 application:
   kafka:
     topic:
       notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
+      service-log: ${SERVICE_LOG}
   mail:
     enabled: ${MAIL_DELIVERY_ENABLED}
     from_address: ${FROM_MAIL_ADDRESS}

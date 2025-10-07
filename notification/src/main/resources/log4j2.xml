@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="bank-logging" status="info" packages="io.woolford">
+    <Appenders>
+        <Kafka name="kafkaAppender" topic="notifications-log">
+            <Property name="bootstrap.servers">127.0.0.1:9094</Property>
+            <JsonLayout>
+                <KeyValuePair key="traceId" value="$${ctx:traceId}"/>
+                <KeyValuePair key="spanId" value="$${ctx:spanId}"/>
+            </JsonLayout>
+        </Kafka>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root>
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="kafkaAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
