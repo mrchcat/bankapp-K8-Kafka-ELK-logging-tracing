@@ -1,0 +1,39 @@
+dependencies:
+- name: keycloak
+  repository: file://./charts/keycloak
+  version: 1.0.0
+- name: kafka
+  repository: file://./charts/kafka
+  version: 1.0.0
+- name: zipkin
+  repository: https://zipkin.io/zipkin-helm
+  version: 0.4.0
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 27.39.0
+- name: account
+  repository: file://./charts/account
+  version: 1.0.0
+- name: blocker
+  repository: file://./charts/blocker
+  version: 1.0.0
+- name: cash
+  repository: file://./charts/cash
+  version: 1.0.0
+- name: exchange-generator
+  repository: file://./charts/exchange-generator
+  version: 1.0.0
+- name: exchange
+  repository: file://./charts/exchange
+  version: 1.0.0
+- name: front
+  repository: file://./charts/front
+  version: 1.0.0
+- name: notifications
+  repository: file://./charts/notifications
+  version: 1.0.0
+- name: transfer
+  repository: file://./charts/transfer
+  version: 1.0.0
+digest: sha256:ed03a0d798f494cd2b714de3b2722678bf27d50132d7404f9258644dff1067c5
+generated: "2025-10-05T14:17:23.279022+03:00"

@@ -1,0 +1,40 @@
+#zipkin:
+#  service:
+#    port: 9411
+#    type: NodePort
+#  storage.type: mem
+#
+#  fullnameOverride: "zipkin"
+
+#prometheus:
+#  server:
+#    ingress:
+#      enabled: true
+#      hosts:
+#        - prometheus.internal.com
+#    global:
+#      scrape_interval: 15s
+#
+#  serverFiles:
+#    prometheus.yml:
+#      scrape_configs:
+#        - job_name: 'account'
+#          metrics_path: /actuator/prometheus
+#          static_configs:
+#            - targets: [ 'account:8080' ]
+#              labels:
+#                application: 'accounts'
+#        - job_name: 'front'
+#          metrics_path: /actuator/prometheus
+#          static_configs:
+#            - targets: [ 'front:8080' ]
+#              labels:
+#                application: 'accounts'
+
+grafana:
+  admin:
+    existingSecret: grafana
+  ingress:
+    enabled: true
+    hosts:
+    - grafana.internal.com
