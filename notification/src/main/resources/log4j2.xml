@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration name="bank-logging" status="info" packages="io.woolford">
+<Configuration name="bank-logging" status="${env:LOG_LEVEL}" packages="io.woolford">
     <Appenders>
-        <Kafka name="kafkaAppender" topic="notifications-log">
-            <Property name="bootstrap.servers">127.0.0.1:9094</Property>
+        <Kafka name="kafkaAppender" topic="${env:KAFKA_SERVICE_LOG_TOPIC}">
+            <Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVERS}</Property>
             <JsonLayout>
                 <KeyValuePair key="traceId" value="$${ctx:traceId}"/>
                 <KeyValuePair key="spanId" value="$${ctx:spanId}"/>
@@ -13,7 +13,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root>
+        <Root level="${env:LOG_LEVEL}">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="kafkaAppender"/>
         </Root>

@@ -41,6 +41,4 @@ public class TracingLogger {
         log.error(template, args);
         MDC.clear();
     }
-
-
 }

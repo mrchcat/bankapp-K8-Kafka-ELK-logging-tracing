@@ -42,10 +42,6 @@ management:
     sampling:
       probability: ${ZIPKIN_TRACING_PROBABILITY}
 
-logging:
-  level:
-    root: ${LOG_LEVEL:DEBUG}
-
 application:
   kafka:
     topic:
