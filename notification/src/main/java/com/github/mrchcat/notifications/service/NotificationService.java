@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -87,7 +86,7 @@ public class NotificationService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setFrom(fromMailAddress);
         msg.setTo(notification.getEmail());
-        msg.setSubject("notification from " + senderName);
+        msg.setSubject("notification from: " + senderName);
         msg.setReplyTo(fromMailAddress);
         msg.setText(notification.getMessage());
         mailSender.send(msg);

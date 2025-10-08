@@ -79,10 +79,10 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     restart: unless-stopped
 
-  grafana:
+  bank-grafana:
 #    image: grafana/grafana:12.3.0-18147126998-ubuntu
     image: grafana/grafana
-    container_name: grafana
+    container_name: bank-grafana
     ports:
       - "3000:3000"
     networks:
@@ -96,6 +96,43 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - bank-prometheus
+
+  bank-logstash:
+    image: docker.elastic.co/logstash/logstash:9.1.4
+    container_name: bank-logstash
+    volumes:
+      - ./logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - "5044:5044"
+    depends_on:
+      - bank-kafka
+    networks:
+      - backend
+
+  bank-elasticsearch:
+    image: elasticsearch:9.1.4
+    container_name: bank-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    depends_on:
+      - bank-logstash
+    networks:
+      - backend
+
+  kibana:
+    image: kibana:9.1.4
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://bank-elasticsearch:9200
+    depends_on:
+      - bank-elasticsearch
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

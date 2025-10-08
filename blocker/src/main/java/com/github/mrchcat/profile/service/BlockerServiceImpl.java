@@ -3,6 +3,7 @@ package com.github.mrchcat.profile.service;
 import com.github.mrchcat.shared.blocker.BlockerResponseDto;
 import com.github.mrchcat.shared.cash.CashTransactionDto;
 import com.github.mrchcat.shared.transfer.NonCashTransferDto;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BlockerServiceImpl implements BlockerService {
-    @Value("#{new Double('${application.CONFIRM_PROBABILITY:0.9}')}")
+    @Value("#{new Double('${application.CONFIRM_PROBABILITY:0.95}')}")
     private double CONFIRM_PROBABILITY;
+    private final TracingLogger tracingLogger;
 
     private final List<String> rejectReasons = List.of(
             "сомнительные источники поступлений",
@@ -30,6 +32,8 @@ public class BlockerServiceImpl implements BlockerService {
     @Override
     public BlockerResponseDto checkCashTransaction(CashTransactionDto cashTransactionDto) {
         BlockerResponseDto response = getRandomResponse();
+        tracingLogger.info("Поступил запрос на проверку операции с наличными {}. Результат проверки {}",
+                cashTransactionDto, response);
         countBlockedTransactions(cashTransactionDto, response);
         return response;
     }
@@ -37,6 +41,8 @@ public class BlockerServiceImpl implements BlockerService {
     @Override
     public BlockerResponseDto checkNonCashTransaction(NonCashTransferDto nonCashTransferDto) {
         BlockerResponseDto response = getRandomResponse();
+        tracingLogger.info("Поступил запрос на проверку операции перевода средств {}. Результат проверки {}",
+                nonCashTransferDto, response);
         countBlockedTransactions(nonCashTransferDto, response);
         return response;
     }
