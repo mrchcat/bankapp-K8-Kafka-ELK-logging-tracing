@@ -122,12 +122,12 @@ services:
     networks:
       - backend
 
-  kibana:
+  bank-kibana:
     image: kibana:9.1.4
     ports:
       - "5601:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=http://bank-elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=bank-elasticsearch:9200
     depends_on:
       - bank-elasticsearch
     networks:
