@@ -1,0 +1,38 @@
+logstashPipeline:
+  logstash.conf: |
+    input {
+      kafka {
+          bootstrap_servers => "kafka:9092"
+          topics => ["cash-log","exchange-generator-log","exchange-log","front-log","notifications-log","transfer-log"]
+          group_id => "bank-logstash"
+          decorate_events  => extended
+          enable_auto_commit  => true
+      }
+    }
+    filter {
+      json {
+        source => "message"
+        remove_field => [ "endOfBatch", "loggerFqcn","threadId","threadPriority","event"]
+      }
+      mutate {
+        copy => { "[instant][epochSecond]" => "logger_timestamp_epochSeconds"}
+      }
+      mutate {
+        remove_field => ["instant"]
+      }
+      date {
+        match => [ "logger_timestamp_epochSeconds","UNIX" ]
+        target => "logger_timestamp"
+      }
+    }
+    output {
+      stdout {}
+      elasticsearch {
+        hosts => ["https://elasticsearch-master:9200"]
+        index => "bankapp-logs-%{+YYYY.MM.dd}"
+        retry_on_conflict => 3
+        ssl_certificate_verification => false
+        user => "elastic"
+        password => "admin"
+      }
+    }

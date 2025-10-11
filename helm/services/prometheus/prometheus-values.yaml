@@ -1,0 +1,59 @@
+server:
+  fullnameOverride: prometheus-server
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.internal.com
+  global:
+    scrape_interval: 15s
+serverFiles:
+  prometheus.yml:
+    scrape_configs:
+      - job_name: 'front'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'front:8080' ]
+            labels:
+              application: 'front'
+      - job_name: 'account'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'account:8080' ]
+            labels:
+              application: 'accounts'
+      - job_name: 'blocker'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'blocker:8080' ]
+            labels:
+              application: 'blocker'
+      - job_name: 'cash'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'cash:8080' ]
+            labels:
+              application: 'cash'
+      - job_name: 'exchange'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'exchange:8080' ]
+            labels:
+              application: 'exchange'
+      - job_name: 'exchange-generator'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'exchange-generator:8080' ]
+            labels:
+              application: 'exchange-generator'
+      - job_name: 'notifications'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'notifications:8080' ]
+            labels:
+              application: 'notifications'
+      - job_name: 'transfer'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'transfer:8080' ]
+            labels:
+              application: 'transfer'

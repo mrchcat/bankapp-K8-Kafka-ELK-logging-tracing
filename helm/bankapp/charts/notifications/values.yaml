@@ -12,6 +12,7 @@ LOG_LEVEL: INFO
 
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
+KAFKA_SERVICE_LOG_TOPIC: notifications-log
 
 ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
 ZIPKIN_TRACING_PROBABILITY: 1
@@ -28,7 +29,7 @@ INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-notifications
-  tag: "3.0"
+  tag: "5.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: [ ]

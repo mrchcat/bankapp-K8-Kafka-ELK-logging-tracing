@@ -11,6 +11,7 @@ LOG_LEVEL: DEBUG
 
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_EXCHANGE_RATES_TOPIC: bank-exchange-rates
+KAFKA_SERVICE_LOG_TOPIC: exchange-log
 
 ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
 ZIPKIN_TRACING_PROBABILITY: 1
@@ -19,7 +20,7 @@ INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-exchange
-  tag: "1.0"
+  tag: "5.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

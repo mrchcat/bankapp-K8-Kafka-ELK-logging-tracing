@@ -6,6 +6,7 @@ SERVICE_URL_ACCOUNT: account:8080
 
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
+KAFKA_SERVICE_LOG_TOPIC: account-log
 
 KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 KEYCLOAK_CLIENT_ID: bank_accounts
@@ -23,7 +24,7 @@ INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-account
-  tag: "3.0"
+  tag: "5.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

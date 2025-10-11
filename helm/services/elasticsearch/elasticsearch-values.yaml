@@ -1,0 +1,20 @@
+antiAffinity: "soft"
+#  clusterHealthCheckParams: "wait_for_status=green&timeout=50s"
+#  readinessProbe:
+#    initialDelaySeconds: 60
+
+xpack.security.enabled: false
+
+xpack.security.http.ssl:
+  enabled: false
+  keystore.path: certs/http.p12
+
+xpack.security.authc:
+  anonymous:
+    username: anonymous_user
+    roles: superuser
+    authz_exception: true
+
+secret:
+  enabled: true
+  password: "admin"
