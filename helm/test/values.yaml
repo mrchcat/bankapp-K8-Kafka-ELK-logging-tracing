@@ -31,10 +31,63 @@
 #              labels:
 #                application: 'accounts'
 
-grafana:
-  admin:
-    existingSecret: grafana
-  ingress:
-    enabled: true
-    hosts:
-    - grafana.internal.com
+#grafana:
+#  admin:
+#    existingSecret: grafana
+#  ingress:
+#    enabled: true
+#    hosts:
+#    - grafana.internal.com
+
+logstash:
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        kafka {
+            bootstrap_servers => "bank-kafka:9092"
+            topics => ["cash-log","exchange-generator-log","exchange-log","front-log","notifications-log","transfer-log"]
+            group_id => "bank-logstash"
+            decorate_events  => extended
+            enable_auto_commit  => true
+        }
+      }
+      filter {
+        json {
+          source => "message"
+          remove_field => [ "endOfBatch", "loggerFqcn","threadId","threadPriority","event"]
+        }
+        mutate {
+          copy => { "[instant][epochSecond]" => "logger_timestamp_epochSeconds"}
+        }
+        mutate {
+          remove_field => ["instant"]
+        }
+        date {
+          match => [ "logger_timestamp_epochSeconds","UNIX" ]
+          target => "logger_timestamp"
+        }
+      }
+      output {
+        stdout {}
+        elasticsearch {
+          hosts => ["http://bank-elasticsearch:9200"]
+          index => "bankapp-logs-%{+YYYY.MM.dd}"
+          retry_on_conflict => 3
+        }
+      }
+
+elasticsearch:
+  antiAffinity: "soft"
+#  clusterHealthCheckParams: "wait_for_status=green&timeout=50s"
+#  readinessProbe:
+#    initialDelaySeconds: 60
+  xpack.security.enabled: false
+#  xpack.security.http.ssl:
+#    enabled: false
+#    keystore.path: certs/http.p12
+#
+#  xpack.security.authc:
+#    anonymous:
+#      username: anonymous_user
+#      roles: superuser
+#      authz_exception: true

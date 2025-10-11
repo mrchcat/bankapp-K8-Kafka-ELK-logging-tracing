@@ -26,12 +26,6 @@ management:
     sampling:
       probability: ${ZIPKIN_TRACING_PROBABILITY}
 
-logging:
-  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
-  level:
-    root: ${LOG_LEVEL:DEBUG}
-    org.zalando.logbook: ${LOG_LEVEL:DEBUG}
-
 resilience4j:
   circuitbreaker:
     configs:

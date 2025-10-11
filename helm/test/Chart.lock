@@ -1,6 +1,9 @@
 dependencies:
-- name: grafana
-  repository: https://grafana.github.io/helm-charts
-  version: 10.0.0
-digest: sha256:93c16f23472767ca2e47197b2edadf17540cabf1261af246de6a091e1ffe016e
-generated: "2025-10-05T14:35:25.4786253+03:00"
+- name: logstash
+  repository: https://helm.elastic.co
+  version: 8.5.1
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 8.5.1
+digest: sha256:33e9d56168e2fec0c5d8e8d83503f9489537a7312e6a8dfe33f397d936b693d9
+generated: "2025-10-10T17:42:50.4346384+03:00"

@@ -34,12 +34,6 @@ management:
     sampling:
       probability: 0.1
 
-logging:
-  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
-  level:
-    root: DEBUG
-    org.zalando.logbook: DEBUG
-
 application:
   service:
     urls:

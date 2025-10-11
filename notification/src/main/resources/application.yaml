@@ -46,7 +46,7 @@ application:
   kafka:
     topic:
       notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
-      service-log: ${SERVICE_LOG}
+
   mail:
     enabled: ${MAIL_DELIVERY_ENABLED}
     from_address: ${FROM_MAIL_ADDRESS}

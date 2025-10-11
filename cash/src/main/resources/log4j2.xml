@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration name="bank-logging" status="${env:LOG_LEVEL}" packages="io.woolford">
+<Configuration name="bank-logging" status="${env:LOG_LEVEL}">
     <Appenders>
         <Kafka name="Kafka" topic="${env:KAFKA_SERVICE_LOG_TOPIC}">
             <Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVERS}</Property>
