@@ -4,3 +4,60 @@ ingress:
     - host: kibana.internal.com
       paths:
         - path: /
+
+enabled: true
+replicaCount: 1
+elasticsearchHosts: "https://elasticsearch-master:9200"
+elasticsearchUsername: "elastic"
+elasticsearchPassword: "admin"
+healthCheckPath: "/api/status"
+
+# Отключаем pre-install job и SSL
+createKibanaToken: false
+
+# Отключаем TLS/SSL
+elasticsearchTLS: false
+tls: false
+
+# Явно отключаем сертификаты
+elasticsearchSslVerificationMode: none
+
+# Disable certificate mounting
+secretMounts: []
+extraVolumes: []
+extraVolumeMounts: []
+
+# Настройки для отключения SSL
+extraEnvs:
+    - name: ELASTICSEARCH_HOSTS
+      value: "https://elasticsearch-master:9200"
+    - name: ELASTICSEARCH_USERNAME
+      value: "elastic"
+    - name: ELASTICSEARCH_PASSWORD
+      value: "elactic"
+    - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
+      value: "none"
+    - name: ELASTICSEARCH_SSL_ENABLED
+      value: "false"
+    - name: NODE_TLS_REJECT_UNAUTHORIZED
+      value: "0"
+    - name: XPACK_SECURITY_ENABLED
+      value: "false"
+
+  # Отключаем init containers и pre-install jobs
+podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+
+  # Ресурсы
+resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+service:
+    type: NodePort
+    nodePort: 32000

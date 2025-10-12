@@ -5,7 +5,8 @@
 пользовательских данных, создание и удаление банковских аккаунтов в 3 валютах, операции в наличной и безналичной форме, 
 просмотр динамики курсов валют.  
 Безопасность обмена сообщений между микросервисами обеспечивает Keycloak, паттерн Service Discovery и 
-Externalized Config - Kubernetes, коммуникация между микросервисами происходит через REST-API и частично через Kafka   
+Externalized Config - Kubernetes, коммуникация между микросервисами происходит через REST-API и частично через Kafka.
+Мониторинг осуществляется на базе Prometheus, Grafana, Zipkin, Logstash, Elasticsearch, Kibana  
 ![](/readme/front.png)
 
 
@@ -16,6 +17,7 @@ Externalized Config - Kubernetes, коммуникация между микро
 * Spring Security
 * Spring WebMVC
 * Spring Data
+* Redis
 * Postgres
 * Kafka
 * Resilience4j
@@ -25,6 +27,8 @@ Externalized Config - Kubernetes, коммуникация между микро
 * Lombok
 * Keycloak
 * Ingress
+* Tracing: Zipkin, Prometheus, Grafana
+* ELK (Logstash, Elasticsearch, Kibana)
 
 Для запуска программы на локальном компьютере необходимы: 
 * VirtualBox
@@ -39,10 +43,8 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Порядок запуска: 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
 (при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
-"minikube start --driver=virtualbox --cpus=7 --memory=40000 --no-vtx-check"
+"minikube start --driver=virtualbox --cpus=6 --memory=40000 --no-vtx-check"
 2) установите в minikube Ingress Controller: "minikube addons enable ingress"
-3) установите репозитории: 
-* 
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
 (при возникновении ошибок в Windows смените язык по умолчанию на английский)
 4) получите ip-aдрес ноды командой "minikube ip" и добавьте его в файл hosts вместе с будущим адресом сайта.
@@ -80,23 +82,13 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Введите логин "anna", пароль "12345" и удостоверьтесь, что все работает. 
 Подтвердите в консоли Jenkins продолжение развертывания уже в production. Если в момент развертывания в продакшн вы столкнулись
 с тем, что поду не хватает системных ресурсов, то либо увеличьте системные ресурсы, выделяемые minikube,
-либо перед развертыванием в продакшн удалите тестовое окружение:
-- helm delete keycloak -n test
-- helm delete kafka -n test
-- helm delete bankapp -n test
+либо перед развертыванием в продакшн удалите сервисы из тестового окружения.
 
 В итоге приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
 
 Также можно развернуть приложение 
-* в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/install.sh
-* локально в целях отладки. 1) docker-compose позволяет запустить Keycloak с необходимыми настройками. 2) потребуется 
-установить локально Postgres и настроить к нему доступ микросервисов через параметры в файлах env 3) скачать и установить Kafka
-набором команд 
-  KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
-  bin/kafka-storage.sh format --standalone -t "$KAFKA_CLUSTER_ID" -c config/server.properties
-  bin/kafka-server-start.sh config/server.properties
-  bin/kafka-topics.sh --create --topic bank-notifications --bootstrap-server localhost:9092
-  bin/kafka-topics.sh --create --topic bank-exchange-rates --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+* в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/full_deploy.sh
+* локально в целях отладки. Файл docker-compose позволяет запустить все необходимыми сервисы, а файлы .env содержат необходимые настройки   
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
@@ -107,8 +99,10 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 **Общая структура микросервисов**:
 ![](/readme/all_micro.png)
 
-**Схема базы данных accounts:**
+**Схема мониторинга**:
+![](/readme/monitoring.png)
 
+**Схема базы данных accounts:**
 ![](/readme/accounts_db.png)
 * users - таблица пользователей
 * accounts - таблица аккаунтов
@@ -144,8 +138,4 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 При коммуникации между сервисами Accounts, Cash и Transfer во избежание повторного проведения уже проведенных ранее 
 операций используется UUID номер транзакции. 
 Сервис проверки транзакций (blocker) подтверждает или отклоняет транзакции случайным образом.
-По умолчанию вероятность подтвердить транзакцию составляет CONFIRM_PROBABILITY = 0.97%  
-
-
-
-P.S. недоступность bitnamy/legacy
+По умолчанию вероятность подтвердить транзакцию составляет CONFIRM_PROBABILITY = 0.97%

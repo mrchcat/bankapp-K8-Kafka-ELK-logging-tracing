@@ -1,0 +1,20 @@
+replicaCount: 1
+
+image:
+  repository: redis
+  tag: "8.2.2"
+  pullPolicy: IfNotPresent
+
+service:
+  #  type: ClusterIP
+  type: LoadBalancer
+  port: 6379
+
+arguments:
+  - "--save"
+  - "60"
+  - "1"
+
+imagePullSecrets: [ ]
+nameOverride: ""
+fullnameOverride: "redis"

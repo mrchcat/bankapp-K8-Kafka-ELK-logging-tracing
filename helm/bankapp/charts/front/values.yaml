@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 2
 
 HOST_NAME: "bankapp.internal.com"
 
@@ -14,6 +14,9 @@ ZIPKIN_TRACING_PROBABILITY: 1
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_SERVICE_LOG_TOPIC: front-log
 
+REDIS_HOST: redis
+REDIS_PORT: 6379
+
 LOG_LEVEL: DEBUG
 
 INITIAL_DELAY_SEC: 10
@@ -25,7 +28,7 @@ SERVICE_URL_EXCHANGE: exchange:8080
 
 image:
   repository: mcat1980/bank-front
-  tag: "5.0"
+  tag: "11.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

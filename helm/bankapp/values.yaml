@@ -139,3 +139,93 @@ grafana:
 
 # Subchart for keycloak
 #keycloak:
+
+# Subchart for Logstash
+logstash:
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        kafka {
+            bootstrap_servers => "kafka:9092"
+            topics => ["cash-log","exchange-generator-log","exchange-log","front-log","notifications-log","transfer-log"]
+            group_id => "bank-logstash"
+            decorate_events  => extended
+            enable_auto_commit  => true
+        }
+      }
+      filter {
+        json {
+          source => "message"
+          remove_field => [ "endOfBatch", "loggerFqcn","threadId","threadPriority","event"]
+        }
+        mutate {
+          copy => { "[instant][epochSecond]" => "logger_timestamp_epochSeconds"}
+        }
+        mutate {
+          remove_field => ["instant"]
+        }
+        date {
+          match => [ "logger_timestamp_epochSeconds","UNIX" ]
+          target => "logger_timestamp"
+        }
+      }
+      output {
+        stdout {}
+        elasticsearch {
+          hosts => ["https://elasticsearch-master:9200"]
+          index => "bankapp-logs-%{+YYYY.MM.dd}"
+          retry_on_conflict => 3
+          ssl_certificate_verification => false
+          user => "elastic"
+          password => "admin"
+        }
+      }
+
+# Subchart for Elsaticsearch
+elasticsearch:
+  antiAffinity: "soft"
+
+  xpack.security.enabled: false
+
+  xpack.security.http.ssl:
+    enabled: false
+    keystore.path: certs/http.p12
+
+  xpack.security.authc:
+    anonymous:
+      username: anonymous_user
+      roles: superuser
+      authz_exception: true
+
+  secret:
+    enabled: true
+    password: "admin"
+
+  # Shrink default JVM heap.
+  esJavaOpts: "-Xmx128m -Xms128m"
+
+  # Allocate smaller chunks of memory per pod.
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "1000m"
+      memory: "512M"
+
+  # Request smaller persistent volumes.
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "standard"
+    resources:
+      requests:
+        storage: 100M
+
+# Subchart for Kibana
+kibana:
+  ingress:
+    enabled: true
+    hosts:
+      - host: kibana.internal.com
+        paths:
+          - path: /

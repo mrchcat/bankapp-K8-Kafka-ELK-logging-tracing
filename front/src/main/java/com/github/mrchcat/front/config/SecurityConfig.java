@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -30,7 +32,9 @@ public class SecurityConfig {
     private int maximumSessions;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, MeterRegistry meterRegistry) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   MeterRegistry meterRegistry,
+                                                   SessionRegistry sessionRegistry) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
@@ -53,13 +57,15 @@ public class SecurityConfig {
                 )
                 .logout(cst -> cst
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"))
+                        .deleteCookies("JSESSIONID","SESSIONID"))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(maximumSessions)
+                        .sessionRegistry(sessionRegistry)
                 );
         return http.build();
     }
+
 
     private void countLogins(Boolean isSuccess, Authentication authentication, MeterRegistry meterRegistry) {
         System.out.println(authentication.getPrincipal().getClass());

@@ -1,20 +1,51 @@
 antiAffinity: "soft"
-#  clusterHealthCheckParams: "wait_for_status=green&timeout=50s"
-#  readinessProbe:
-#    initialDelaySeconds: 60
 
-xpack.security.enabled: false
+#xpack.security.enabled: false
+#
+#xpack.security.http.ssl:
+#  enabled: false
+#  keystore.path: certs/http.p12
+#
+#xpack.security.authc:
+#  anonymous:
+#    username: anonymous_user
+#    roles: superuser
+#    authz_exception: true
 
-xpack.security.http.ssl:
-  enabled: false
-  keystore.path: certs/http.p12
-
-xpack.security.authc:
-  anonymous:
-    username: anonymous_user
-    roles: superuser
-    authz_exception: true
+#Max
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+    xpack.security.http.ssl.enabled: false
+    xpack.security.transport.ssl.enabled: false
+    xpack.security.transport.ssl.verification_mode: none
+    xpack.security.autoconfiguration.enabled: false
+    xpack.monitoring.collection.enabled: true
+  # Disable certificate creation and mounting
+#createCert: false
+#secretMounts: []
+#Max
 
 secret:
   enabled: true
   password: "admin"
+
+# Shrink default JVM heap.
+esJavaOpts: "-Xmx128m -Xms128m"
+
+# Allocate smaller chunks of memory per pod.
+resources:
+  requests:
+    cpu: "100m"
+    memory: "512M"
+  limits:
+    cpu: "1000m"
+    memory: "512M"
+
+# Request smaller persistent volumes.
+volumeClaimTemplate:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: "standard"
+  resources:
+    requests:
+      storage: 100M

@@ -11,6 +11,18 @@ dependencies:
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 27.39.0
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 10.0.0
+- name: logstash
+  repository: https://helm.elastic.co
+  version: 8.5.1
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 8.5.1
+- name: kibana
+  repository: https://helm.elastic.co
+  version: 8.5.1
 - name: account
   repository: file://./charts/account
   version: 1.0.0
@@ -35,5 +47,5 @@ dependencies:
 - name: transfer
   repository: file://./charts/transfer
   version: 1.0.0
-digest: sha256:ed03a0d798f494cd2b714de3b2722678bf27d50132d7404f9258644dff1067c5
-generated: "2025-10-05T14:17:23.279022+03:00"
+digest: sha256:25d58fbfed94b5ec822b28f2a41b6a357b8b9fc46f7182726b4e892eeab708aa
+generated: "2025-10-11T21:36:19.5752557+03:00"

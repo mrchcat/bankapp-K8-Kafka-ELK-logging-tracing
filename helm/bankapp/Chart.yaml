@@ -16,6 +16,11 @@ dependencies:
     repository: "file://./charts/kafka"
     condition: infrastructure.enabled
 
+  - name: redis
+    version: "1.0.0"
+    repository: "file://./charts/redis"
+    condition: infrastructure.enabled
+
   - name: zipkin
     version: "0.4.0"
     repository: "https://zipkin.io/zipkin-helm"
@@ -31,11 +36,25 @@ dependencies:
     repository: "https://grafana.github.io/helm-charts"
     condition: infrastructure.enabled
 
+  - name: logstash
+    version: "8.5.1"
+    repository: "https://helm.elastic.co"
+    condition: infrastructure.enabled
+
+  - name: elasticsearch
+    version: "8.5.1"
+    repository: "https://helm.elastic.co"
+    condition: infrastructure.enabled
+
+  - name: kibana
+    version: "8.5.1"
+    repository: "https://helm.elastic.co"
+    condition: infrastructure.enabled
+
   - name: account
     version: "1.0.0"
     repository: "file://./charts/account"
     condition: services.enabled
-    depends on:
 
   - name: blocker
     version: "1.0.0"

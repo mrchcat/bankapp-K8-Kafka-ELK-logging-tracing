@@ -133,6 +133,22 @@ services:
     networks:
       - backend
 
+  bank-redis:
+    image: redis:8.2.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "12345", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

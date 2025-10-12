@@ -1,6 +1,15 @@
 server.port: ${SERVER_PORT}
 
 spring:
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on_save
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      timeout: 3000ms
   application:
     name: ${SPRING_APPLICATION_NAME}
   security:
