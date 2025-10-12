@@ -53,7 +53,12 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 При развертывании с настройками по умолчанию, приложение станет доступно 
 по адресам "prod.bankapp.internal.com" и "test.bankapp.internal.com", поэтому надо добавить строки
 "192.168.59.107 prod.bankapp.internal.com" и "192.168.59.107 test.bankapp.internal.com", где вместо 192.168.59.107 укажите 
-адрес "minikube ip"
+адрес "minikube ip".
+Также добавьте в hosts адреса для доступа к мониторингу:
+   * zipkin.internal.com  
+   * grafana.internal.com
+   * kibana.internal.com"
+
 5) Клонируйте репозиторий на свой Github  
 6) Получите токен доступа на Github и сохраните его в Jenkins в раздел Credential с областью видимости "global" как 
 "secret text". В Jenkins в разделе System заполните группу настроек GitHub: 
@@ -87,14 +92,18 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 В итоге приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
 
 Также можно развернуть приложение 
-* в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/bankapp/full_deploy.sh
-* локально в целях отладки. Файл docker-compose позволяет запустить все необходимыми сервисы, а файлы .env содержат необходимые настройки   
+* в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/deploy_full_separate.sh
+* локально в IDE в целях отладки. Файл docker-compose позволяет запустить все вспомогательные сервисы, а файлы .env содержат необходимые настройки.   
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
 'anna'/'12345'/'CLIENT'; 'boris'/'12345'/'CLIENT'; 'ivanov'/'12345'/'MANAGER'
 Клиенты и менеджеры имеют доступ к главной странице, тогда как зарегистрировать нового пользователя может только
 менеджер (в нашем случае это 'ivanov').
 При первоначальном запуске пользователи не имеют аккаунтов, для их создания поставьте галочки напротив соответствующей валюты.   
+Для просмотра аналитики:
+Zipkin: url "zipkin.internal.com" без логина и пароля  
+Grafana: url "grafana.internal.com", логин "admin", пароль - "admin"
+Kibana:  url "kibana.internal.com", логин "elastic", пароль - "admin"
 
 **Общая структура микросервисов**:
 ![](/readme/all_micro.png)

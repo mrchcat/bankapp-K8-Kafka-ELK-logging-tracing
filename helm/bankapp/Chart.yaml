@@ -49,7 +49,7 @@ dependencies:
   - name: kibana
     version: "8.5.1"
     repository: "https://helm.elastic.co"
-    condition: infrastructure.enabled
+    condition: kibana.enabled
 
   - name: account
     version: "1.0.0"

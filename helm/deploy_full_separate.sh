@@ -16,7 +16,7 @@ helm upgrade keycloak ./bankapp/charts/keycloak --install --namespace=$nameOfNam
 #Prometheus
 helm upgrade prometheus prometheus-community/prometheus --install -f ./services/prometheus/prometheus-values.yaml --namespace=$nameOfNamespace --create-namespace
 #Grafana
-kubectl apply -f ./services/grafana/secret.yaml
+kubectl apply -f ./services/grafana/secret.yaml --namespace=$nameOfNamespace
 helm upgrade grafana grafana/grafana --install -f ./services/grafana/grafana-values.yaml --namespace=$nameOfNamespace --create-namespace
 #Logstash
 helm upgrade logstash elastic/logstash  --install -f ./services/logstash/logstash-values.yaml --namespace=$nameOfNamespace --create-namespace
