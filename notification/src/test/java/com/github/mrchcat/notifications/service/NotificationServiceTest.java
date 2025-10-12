@@ -1,7 +1,7 @@
 package com.github.mrchcat.notifications.service;
 
-import com.github.mrchcat.notifications.repository.NotificationRepository;
 import com.github.mrchcat.notifications.domain.BankNotification;
+import com.github.mrchcat.notifications.repository.NotificationRepository;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

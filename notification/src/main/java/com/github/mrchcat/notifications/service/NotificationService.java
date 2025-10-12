@@ -1,14 +1,13 @@
 package com.github.mrchcat.notifications.service;
 
-import com.github.mrchcat.shared.utils.log.TracingLogger;
-import com.github.mrchcat.notifications.repository.NotificationRepository;
 import com.github.mrchcat.notifications.domain.BankNotification;
+import com.github.mrchcat.notifications.repository.NotificationRepository;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
 import com.github.mrchcat.shared.utils.trace.ToTrace;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.MailSender;

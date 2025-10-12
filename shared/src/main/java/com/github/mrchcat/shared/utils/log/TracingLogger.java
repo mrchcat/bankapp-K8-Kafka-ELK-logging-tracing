@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TracingLogger {
     private final Tracer tracer;
-    Logger logger = LogManager.getLogger("KafkaLogger");
+    private final Logger logger = LogManager.getLogger("KafkaLogger");
 
     public void debug(String template, Object... args) {
         processLogs(Status.debug, tracer.currentSpan(), template, args);

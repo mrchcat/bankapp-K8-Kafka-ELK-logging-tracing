@@ -2,7 +2,6 @@ package com.github.mrchcat.transfer.service;
 
 import com.github.mrchcat.shared.accounts.BankUserDto;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

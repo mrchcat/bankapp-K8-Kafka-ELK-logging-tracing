@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -68,7 +67,6 @@ public class SecurityConfig {
 
 
     private void countLogins(Boolean isSuccess, Authentication authentication, MeterRegistry meterRegistry) {
-        System.out.println(authentication.getPrincipal().getClass());
         Object principal = authentication.getPrincipal();
         String username = "";
         if (principal instanceof User user) {

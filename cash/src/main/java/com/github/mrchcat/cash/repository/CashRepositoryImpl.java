@@ -19,7 +19,6 @@ public class CashRepositoryImpl implements CashRepository {
     @Override
     @ToTrace(spanName = "database", tags = {"database:cash_transactions","operation:create_transaction"})
     public CashTransaction createNewTransaction(CashTransaction cashTransaction) {
-        System.out.println("обратились к базе данных");
         String query = """
                 INSERT INTO cash_transactions(transaction_id,action,user_id,username,account_id,currency_string_code_iso4217,amount,status,updated_at)
                 VALUES (?, CAST(? AS cash_action),?,?,?, CAST(? AS currency),?,CAST('STARTED' AS transaction_status),NOW())
@@ -48,7 +47,6 @@ public class CashRepositoryImpl implements CashRepository {
     @Override
     @ToTrace(spanName = "database", tags = {"database:cash_transactions","operation:update_transaction"})
     public void changeTransactionStatus(long id, TransactionStatus newStatus) {
-        System.out.println("обратились к базе данных");
         String query = """
                 UPDATE cash_transactions
                 SET status=CAST(? AS transaction_status)

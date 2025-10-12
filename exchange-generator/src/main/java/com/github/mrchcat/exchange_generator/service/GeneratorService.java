@@ -7,7 +7,6 @@ import com.github.mrchcat.shared.utils.log.TracingLogger;
 import com.github.mrchcat.shared.utils.trace.ToTrace;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;

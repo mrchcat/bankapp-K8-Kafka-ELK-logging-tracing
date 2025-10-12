@@ -5,14 +5,10 @@ import com.github.mrchcat.accounts.user.model.BankUser;
 import com.github.mrchcat.shared.notification.BankNotificationDto;
 import com.github.mrchcat.shared.utils.log.TracingLogger;
 import com.github.mrchcat.shared.utils.trace.ToTrace;
-import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class Notifications {
