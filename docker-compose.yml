@@ -149,6 +149,91 @@ services:
     networks:
       - backend
 
+  bank-database-account:
+    image: postgres:17.4
+    container_name: bank-database-account
+    ports:
+      - "7541:5432"
+    environment:
+      - POSTGRES_DB=accountapp
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-cash:
+    image: postgres:17.4
+    container_name: bank-database-cash
+    ports:
+      - "7542:5432"
+    environment:
+      - POSTGRES_DB=cashapp
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-exchange:
+    image: postgres:17.4
+    container_name: bank-database-exchange
+    ports:
+      - "7543:5432"
+    environment:
+      - POSTGRES_DB=exchange
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-notifications:
+    image: postgres:17.4
+    container_name: bank-database-notifications
+    ports:
+      - "7544:5432"
+    environment:
+      - POSTGRES_DB=notifications
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-transfer:
+    image: postgres:17.4
+    container_name: bank-database-transfer
+    ports:
+      - "7545:5432"
+    environment:
+      - POSTGRES_DB=transferapp
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

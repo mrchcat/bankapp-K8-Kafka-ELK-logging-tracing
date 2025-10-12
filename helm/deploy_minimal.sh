@@ -1,3 +1,6 @@
+#задайте название namespace
+nameOfNamespace="default"
+
 echo "разворачиваем сервисы"
 #Kafka
 helm upgrade kafka ./bankapp/charts/kafka --install --namespace=$nameOfNamespace --create-namespace

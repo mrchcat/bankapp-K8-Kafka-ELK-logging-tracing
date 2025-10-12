@@ -24,3 +24,6 @@ kubectl delete roles.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $n
 kubectl delete configmap kibana-kibana-helm-scripts -n $nameOfNamespace
 kubectl delete rolebindings.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $nameOfNamespace
 kubectl delete jobs.batch "pre-install-kibana-kibana" -n $nameOfNamespace
+kubectl delete service kibana-kibana -n $nameOfNamespace
+kubectl delete secret kibana-kibana-es-token -n $nameOfNamespace
+kubectl delete deploy kibana-kibana -n $nameOfNamespace
