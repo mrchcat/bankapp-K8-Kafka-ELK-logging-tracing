@@ -89,10 +89,6 @@ pipeline {
                     helm upgrade --install redis ./helm/bankapp/charts/redis \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
-                    echo "Kibana"
-                    helm upgrade --install kibana elastic/kibana  \\
-                                 -f ./helm/services/kibana/kibana-values.yaml \\
-                                 --namespace=$TEST_NAMESPACE --create-namespace
 
                     echo "Deploy main services"
                     echo "account"
