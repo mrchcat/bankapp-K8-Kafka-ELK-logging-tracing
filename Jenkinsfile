@@ -59,10 +59,10 @@ pipeline {
                                  -f ./helm/services/elasticsearch/elasticsearch-values.yaml \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
-                    echo "Kibana"
-                    helm upgrade --install kibana elastic/kibana  \\
-                                 -f ./helm/services/kibana/kibana-values.yaml \\
-                                 --namespace=$TEST_NAMESPACE --create-namespace
+//                     echo "Kibana"
+//                     helm upgrade --install kibana elastic/kibana  \\
+//                                  -f ./helm/services/kibana/kibana-values.yaml \\
+//                                  --namespace=$TEST_NAMESPACE --create-namespace
                     echo "Keycloak"
                     helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
                                  --namespace=$TEST_NAMESPACE \\
@@ -72,6 +72,31 @@ pipeline {
                                  -f ./helm/services/prometheus/prometheus-values.yaml \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
+                    echo "Grafana"
+                    kubectl apply -f ./helm/services/grafana/secret.yaml \\
+                                       --namespace=$TEST_NAMESPACE
+                    helm upgrade grafana grafana/grafana \\
+                                       --install \\
+                                       -f ./services/grafana/grafana-values.yaml \\
+                                       --namespace=$TEST_NAMESPACE \\
+                                       --create-namespace
+                    echo "Logstash"
+                    helm upgrade logstash elastic/logstash  \\
+                                       --install \\
+                                       -f ./helm/services/logstash/logstash-values.yaml \\
+                                       --namespace=$TEST_NAMESPACE \\
+                                       --create-namespace
+                    echo "Zipkin"
+                    helm upgrade zipkin zipkin/zipkin \\
+                                       --install \\
+                                       -f ./helm/services/zipkin/zipkin-values.yaml \\
+                                       --namespace=$TEST_NAMESPACE \\
+                                       --create-namespace
+                    echo "Redis"
+                    helm upgrade redis ./helm/bankapp/charts/redis \\
+                                       --install \\
+                                       --namespace=$TEST_NAMESPACE \\
+                                       --create-namespace
                     """
                 }
             }

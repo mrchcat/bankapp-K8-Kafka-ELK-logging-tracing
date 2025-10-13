@@ -95,7 +95,13 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Логи в Kibana по адресу "kibana.internal.com" (логин "elastic", пароль - "admin")
 
 Также приложение можно развернуть:  
-* в Kubernetes без использования Jenkins. Для этого запустите скрипт helm/deploy_full_separate.sh
+* в Kubernetes без использования Jenkins. Для этого запустите 
+  1) установите репозитории
+     * helm repo add elastic https://helm.elastic.co
+     * helm repo add grafana https://grafana.github.io/helm-charts
+     * helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+     * helm repo add zipkin https://zipkin.io/zipkin-helm
+  2) запустите скрипт helm/deploy_full_separate.sh
 * локально в IDE в целях отладки. Файл docker-compose позволяет запустить все вспомогательные сервисы, а файлы .env содержат необходимые настройки самих сервисов.   
 
 По умолчанию доступны 3 пользователя со следующими username, паролем и правами:
