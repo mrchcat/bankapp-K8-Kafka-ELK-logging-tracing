@@ -71,28 +71,24 @@ pipeline {
                     echo "Grafana"
                     kubectl apply -f ./helm/services/grafana/secret.yaml \\
                                        --namespace=$TEST_NAMESPACE
-                    helm upgrade grafana grafana/grafana \\
-                                       --install \\
-                                       -f ./services/grafana/grafana-values.yaml \\
-                                       --namespace=$TEST_NAMESPACE \\
-                                       --create-namespace
+                    helm upgrade --install grafana grafana/grafana \\
+                                 -f ./helm/services/grafana/grafana-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
                     echo "Logstash"
-                    helm upgrade logstash elastic/logstash  \\
-                                       --install \\
-                                       -f ./helm/services/logstash/logstash-values.yaml \\
-                                       --namespace=$TEST_NAMESPACE \\
-                                       --create-namespace
+                    helm upgrade --install logstash elastic/logstash  \\
+                                 -f ./helm/services/logstash/logstash-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
                     echo "Zipkin"
-                    helm upgrade zipkin zipkin/zipkin \\
-                                       --install \\
-                                       -f ./helm/services/zipkin/zipkin-values.yaml \\
-                                       --namespace=$TEST_NAMESPACE \\
-                                       --create-namespace
+                    helm upgrade --install zipkin zipkin/zipkin \\
+                                 -f ./helm/services/zipkin/zipkin-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
                     echo "Redis"
-                    helm upgrade redis ./helm/bankapp/charts/redis \\
-                                       --install \\
-                                       --namespace=$TEST_NAMESPACE \\
-                                       --create-namespace
+                    helm upgrade --install redis ./helm/bankapp/charts/redis \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
                     """
                 }
             }
