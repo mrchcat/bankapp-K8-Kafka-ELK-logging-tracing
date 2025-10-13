@@ -56,12 +56,12 @@ pipeline {
                                  --create-namespace
                     echo "Elasticsearch"
                     helm upgrade --install elasticsearch elastic/elasticsearch \\
-                                 -f ./services/elasticsearch/elasticsearch-values.yaml \\
+                                 -f ./helm/services/elasticsearch/elasticsearch-values.yaml \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
                     echo "Kibana"
                     helm upgrade --install kibana elastic/kibana  \\
-                                 -f ./services/kibana/kibana-values.yaml \\
+                                 -f ./helm/services/kibana/kibana-values.yaml \\
                                  --namespace=$TEST_NAMESPACE --create-namespace
                     echo "Keycloak"
                     helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
@@ -69,7 +69,7 @@ pipeline {
                                  --create-namespace
                     echo "Prometheus"
                     helm upgrade --install prometheus prometheus-community/prometheus \\
-                                 -f ./services/prometheus/prometheus-values.yaml \\
+                                 -f ./helm/services/prometheus/prometheus-values.yaml \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
                     """
