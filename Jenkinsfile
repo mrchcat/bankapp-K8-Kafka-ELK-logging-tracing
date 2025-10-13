@@ -89,6 +89,52 @@ pipeline {
                     helm upgrade --install redis ./helm/bankapp/charts/redis \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
+                    echo "Kibana"
+                    helm upgrade --install kibana elastic/kibana  \\
+                                 -f ./helm/services/kibana/kibana-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE --create-namespace
+
+                    echo "Deploy main services"
+                    echo "account"
+                    helm upgrade --install account ./helm/bankapp/charts/account \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$ACCOUNT_BUILD_TAG
+                    echo "blocker"
+                    helm upgrade --install blocker ./helm/bankapp/charts/blocker \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$BLOCKER_BUILD_TAG
+                    echo "cash"
+                    helm upgrade --install cash ./helm/bankapp/charts/cash \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$CASH_BUILD_TAG
+                    echo "exchange"
+                    helm upgrade --install exchange ./helm/bankapp/charts/exchange \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$EXCHANGE_BUILD_TAG
+                    echo "exchange-generator"
+                    helm upgrade --install exchange-generator ./helm/bankapp/charts/exchange-generator \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$EXCHANGE_GENERATOR_BUILD_TAG
+                    echo "notifications"
+                    helm upgrade --install notifications ./helm/bankapp/charts/notifications \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$NOTIFICATIONS_BUILD_TAG
+                    echo "transfer"
+                    helm upgrade --install transfer ./helm/bankapp/charts/transfer \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$TRANSFER_BUILD_TAG
+                    echo "front"
+                    helm upgrade --install front ./helm/bankapp/charts/front \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                                 --set image.tag=$FRONT_BUILD_TAG
                     """
                 }
             }
