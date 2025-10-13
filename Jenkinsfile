@@ -41,6 +41,14 @@ pipeline {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
                     echo 'Deploy to TEST'
+
+                    echo "Add helm repositories"
+                    helm repo add elastic https://helm.elastic.co
+                    helm repo add grafana https://grafana.github.io/helm-charts
+                    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                    helm repo add zipkin https://zipkin.io/zipkin-helm
+                    helm repo update
+
                     echo "Deploy infrastructure"
                     echo "Kafka"
                     helm upgrade --install kafka ./helm/bankapp/charts/kafka \\
