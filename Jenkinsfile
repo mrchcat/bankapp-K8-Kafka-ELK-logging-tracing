@@ -36,6 +36,46 @@ pipeline {
     }
 
     stages {
+        stage('Build & Unit Tests') {
+            steps {
+                sh """
+                echo 'Build & Unit Tests'
+                mvn clean install
+                """
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                sh """ echo 'Build Docker Images' """
+                sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
+                sh('docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
+                sh('docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
+                sh('docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
+                sh('docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
+                sh('docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
+                sh('docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
+                sh('docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
+            }
+        }
+        stage('Push Docker Images') {
+            steps {
+                withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
+                    sh """
+                    echo 'Push Docker Images'
+                    """
+                    sh('echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin')
+                    sh """ echo 'Аутентификация успешно завершена.Переносим образы' """
+                    sh('docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
+                    sh('docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
+                }
+            }
+        }
         stage("Install helm repositories"){
             steps {
                 sh """
@@ -140,8 +180,8 @@ pipeline {
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace \\
                                  --set image.tag=$FRONT_BUILD_TAG
-                    sleep 60
                     echo "Wait for service start"
+                    sleep 180
                     """
                 }
             }
@@ -158,6 +198,7 @@ pipeline {
                         try {
                             sh """
                             echo "Uninstall helm charts from test namespace"
+                            helm uninstall kibana -n $TEST_NAMESPACE
                             helm uninstall redis -n $TEST_NAMESPACE
                             helm uninstall keycloak -n $TEST_NAMESPACE
                             helm uninstall kafka -n $TEST_NAMESPACE
@@ -165,7 +206,6 @@ pipeline {
                             helm uninstall prometheus -n $TEST_NAMESPACE
                             helm uninstall grafana -n $TEST_NAMESPACE
                             kubectl delete secret grafana-secret -n $TEST_NAMESPACE
-                            helm uninstall logstash -n $TEST_NAMESPACE
                             helm uninstall account -n $TEST_NAMESPACE
                             helm uninstall blocker -n $TEST_NAMESPACE
                             helm uninstall cash -n $TEST_NAMESPACE
@@ -174,14 +214,17 @@ pipeline {
                             helm uninstall notifications -n $TEST_NAMESPACE
                             helm uninstall transfer -n $TEST_NAMESPACE
                             helm uninstall front -n $TEST_NAMESPACE
+                            helm uninstall logstash -n $TEST_NAMESPACE
                             helm uninstall elasticsearch -n $TEST_NAMESPACE
-                            helm uninstall kibana -n $TEST_NAMESPACE
-                            sleep 30
                             kubectl delete serviceaccounts "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete serviceaccounts "post-delete-kibana-kibana" -n $TEST_NAMESPACE
                             kubectl delete roles.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete roles.rbac.authorization.k8s.io "post-install-kibana-kibana" -n $TEST_NAMESPACE
                             kubectl delete configmap kibana-kibana-helm-scripts -n $TEST_NAMESPACE
                             kubectl delete rolebindings.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete rolebindings.rbac.authorization.k8s.io "post-install-kibana-kibana" -n $TEST_NAMESPACE
                             kubectl delete jobs.batch "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete jobs.batch "post-install-kibana-kibana" -n $TEST_NAMESPACE
                             kubectl delete service kibana-kibana -n $TEST_NAMESPACE
                             kubectl delete secret kibana-kibana-es-token -n $TEST_NAMESPACE
                             kubectl delete deploy kibana-kibana -n $TEST_NAMESPACE
@@ -287,6 +330,7 @@ pipeline {
                                  --create-namespace \\
                                  --set image.tag=$FRONT_BUILD_TAG
                     echo "Wait for service start"
+                    sleep 180
                     """
                 }
             }

@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="default"
+nameOfNamespace="test"
 
 helm delete kibana -n $nameOfNamespace
 helm delete redis -n $nameOfNamespace
@@ -20,10 +20,14 @@ helm delete notifications -n $nameOfNamespace
 helm delete transfer -n $nameOfNamespace
 helm delete front -n $nameOfNamespace
 kubectl delete serviceaccounts "pre-install-kibana-kibana" -n $nameOfNamespace
+kubectl delete serviceaccounts "post-delete-kibana-kibana" -n $nameOfNamespace
 kubectl delete roles.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $nameOfNamespace
+kubectl delete roles.rbac.authorization.k8s.io "post-install-kibana-kibana" -n $nameOfNamespace
 kubectl delete configmap kibana-kibana-helm-scripts -n $nameOfNamespace
 kubectl delete rolebindings.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $nameOfNamespace
+kubectl delete rolebindings.rbac.authorization.k8s.io "post-install-kibana-kibana" -n $nameOfNamespace
 kubectl delete jobs.batch "pre-install-kibana-kibana" -n $nameOfNamespace
+kubectl delete jobs.batch "post-install-kibana-kibana" -n $nameOfNamespace
 kubectl delete service kibana-kibana -n $nameOfNamespace
 kubectl delete secret kibana-kibana-es-token -n $nameOfNamespace
 kubectl delete deploy kibana-kibana -n $nameOfNamespace
