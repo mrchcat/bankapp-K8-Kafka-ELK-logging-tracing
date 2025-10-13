@@ -36,59 +36,60 @@ pipeline {
     }
 
     stages {
-        stage('Build & Unit Tests') {
-            steps {
-                sh """
-                echo 'Build & Unit Tests'
-                mvn clean install
-                """
-            }
-        }
-        stage('Build Docker Images') {
-            steps {
-                sh """ echo 'Build Docker Images' """
-                sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
-                sh('docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
-                sh('docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
-                sh('docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
-                sh('docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
-                sh('docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
-                sh('docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
-                sh('docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
-            }
-        }
-        stage('Push Docker Images') {
-            steps {
-                withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
-                    sh """
-                    echo 'Push Docker Images'
-                    """
-                    sh('echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin')
-                    sh """ echo 'Аутентификация успешно завершена.Переносим образы' """
-                    sh('docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
-                }
-            }
-        }
-        stage('Deploy to TEST') {
+//         stage('Build & Unit Tests') {
+//             steps {
+//                 sh """
+//                 echo 'Build & Unit Tests'
+//                 mvn clean install
+//                 """
+//             }
+//         }
+//         stage('Build Docker Images') {
+//             steps {
+//                 sh """ echo 'Build Docker Images' """
+//                 sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
+//                 sh('docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
+//                 sh('docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
+//                 sh('docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
+//                 sh('docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
+//                 sh('docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
+//                 sh('docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
+//                 sh('docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
+//             }
+//         }
+//         stage('Push Docker Images') {
+//             steps {
+//                 withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
+//                     sh """
+//                     echo 'Push Docker Images'
+//                     """
+//                     sh('echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin')
+//                     sh """ echo 'Аутентификация успешно завершена.Переносим образы' """
+//                     sh('docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
+//                     sh('docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
+//                 }
+//             }
+//         }
+//         stage('Deploy to TEST') {
+//             steps {
+//                     sh """
+//                     echo "Add helm repositories"
+//                     helm repo add elastic https://helm.elastic.co
+//                     helm repo add grafana https://grafana.github.io/helm-charts
+//                     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+//                     helm repo add zipkin https://zipkin.io/zipkin-helm
+//                     helm repo update
+//                     """
+//             }
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
-                    echo 'Deploy to TEST'
-
-                    echo "Add helm repositories"
-                    helm repo add elastic https://helm.elastic.co
-                    helm repo add grafana https://grafana.github.io/helm-charts
-                    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-                    helm repo add zipkin https://zipkin.io/zipkin-helm
-                    helm repo update
-
                     echo "Deploy infrastructure"
                     echo "Kafka"
                     helm upgrade --install kafka ./helm/bankapp/charts/kafka \\

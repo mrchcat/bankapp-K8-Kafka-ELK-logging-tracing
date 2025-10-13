@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="test"
+nameOfNamespace="prod"
 
 helm delete redis -n $nameOfNamespace
 helm delete keycloak -n $nameOfNamespace
