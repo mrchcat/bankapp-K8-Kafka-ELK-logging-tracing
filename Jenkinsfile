@@ -187,30 +187,31 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     script {
-                        sh """
-                        echo "Uninstall helm charts from test namespace"
-                        helm uninstall redis -n $TEST_NAMESPACE
-                        helm uninstall keycloak -n $TEST_NAMESPACE
-                        helm uninstall kafka -n $TEST_NAMESPACE
-                        helm uninstall zipkin -n $TEST_NAMESPACE
-                        helm uninstall prometheus -n $TEST_NAMESPACE
-                        helm uninstall grafana -n $TEST_NAMESPACE
-                        kubectl delete secret grafana-secret -n $TEST_NAMESPACE
-                        helm uninstall logstash -n $TEST_NAMESPACE
-                        helm uninstall account -n $TEST_NAMESPACE
-                        helm uninstall blocker -n $TEST_NAMESPACE
-                        helm uninstall cash -n $TEST_NAMESPACE
-                        helm uninstall exchange -n $TEST_NAMESPACE
-                        helm uninstall exchange-generator -n $TEST_NAMESPACE
-                        helm uninstall notifications -n $TEST_NAMESPACE
-                        helm uninstall transfer -n $TEST_NAMESPACE
-                        helm uninstall front -n $TEST_NAMESPACE
-                        helm uninstall elasticsearch -n $TEST_NAMESPACE
-                        helm uninstall kibana -n $TEST_NAMESPACE
-                        """
-                    } catch (e) {
-                        echo "An error occurred: ${e}"
-                    }
+                        try {
+                            sh """
+                            echo "Uninstall helm charts from test namespace"
+                            helm uninstall redis -n $TEST_NAMESPACE
+                            helm uninstall keycloak -n $TEST_NAMESPACE
+                            helm uninstall kafka -n $TEST_NAMESPACE
+                            helm uninstall zipkin -n $TEST_NAMESPACE
+                            helm uninstall prometheus -n $TEST_NAMESPACE
+                            helm uninstall grafana -n $TEST_NAMESPACE
+                            kubectl delete secret grafana-secret -n $TEST_NAMESPACE
+                            helm uninstall logstash -n $TEST_NAMESPACE
+                            helm uninstall account -n $TEST_NAMESPACE
+                            helm uninstall blocker -n $TEST_NAMESPACE
+                            helm uninstall cash -n $TEST_NAMESPACE
+                            helm uninstall exchange -n $TEST_NAMESPACE
+                            helm uninstall exchange-generator -n $TEST_NAMESPACE
+                            helm uninstall notifications -n $TEST_NAMESPACE
+                            helm uninstall transfer -n $TEST_NAMESPACE
+                            helm uninstall front -n $TEST_NAMESPACE
+                            helm uninstall elasticsearch -n $TEST_NAMESPACE
+                            helm uninstall kibana -n $TEST_NAMESPACE
+                            """
+                        } catch (e) {
+                            echo "An error occurred: ${e}"
+                        }
                 }
             }
         }
