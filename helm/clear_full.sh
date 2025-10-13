@@ -1,6 +1,7 @@
 #задайте название namespace
-nameOfNamespace="prod"
+nameOfNamespace="default"
 
+helm delete kibana -n $nameOfNamespace
 helm delete redis -n $nameOfNamespace
 helm delete keycloak -n $nameOfNamespace
 helm delete kafka -n $nameOfNamespace
@@ -10,7 +11,6 @@ helm delete grafana -n $nameOfNamespace
 kubectl delete secret grafana-secret
 helm delete logstash -n $nameOfNamespace
 helm delete elasticsearch -n $nameOfNamespace
-helm delete kibana -n $nameOfNamespace
 helm delete account -n $nameOfNamespace
 helm delete blocker -n $nameOfNamespace
 helm delete cash -n $nameOfNamespace

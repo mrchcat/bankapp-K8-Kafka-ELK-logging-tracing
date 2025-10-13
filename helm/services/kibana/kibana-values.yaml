@@ -4,3 +4,10 @@ ingress:
     - host: kibana.internal.com
       paths:
         - path: /
+
+  # Ресурсы
+resources:
+  limits:
+    cpu: 500m
+  requests:
+    cpu: 250m

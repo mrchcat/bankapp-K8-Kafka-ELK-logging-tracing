@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="default"
+nameOfNamespace="test"
 
 helm delete kibana logstash -n $nameOfNamespace
 helm delete elasticsearch -n $nameOfNamespace

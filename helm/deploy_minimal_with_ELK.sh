@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="prod"
+nameOfNamespace="default"
 
 echo "разворачиваем сервисы"
 #Kafka
@@ -10,20 +10,12 @@ helm upgrade elasticsearch elastic/elasticsearch --install -f ./services/elastic
 sleep 60
 #Keycloak
 helm upgrade keycloak ./bankapp/charts/keycloak --install --namespace=$nameOfNamespace --create-namespace
-#Prometheus
-helm upgrade prometheus prometheus-community/prometheus --install -f ./services/prometheus/prometheus-values.yaml --namespace=$nameOfNamespace --create-namespace
 #Logstash
 helm upgrade logstash elastic/logstash  --install -f ./services/logstash/logstash-values.yaml --namespace=$nameOfNamespace --create-namespace
-#Zipkin
-helm upgrade zipkin zipkin/zipkin --install --namespace=$nameOfNamespace --create-namespace -f ./services/zipkin/zipkin-values.yaml
 #Redis
 helm upgrade redis ./bankapp/charts/redis --install --namespace=$nameOfNamespace --create-namespace
 #Kibana
 helm upgrade kibana elastic/kibana  --install -f ./services/kibana/kibana-values.yaml --namespace=$nameOfNamespace --create-namespace
-sleep 60
-#Grafana
-kubectl apply -f ./services/grafana/secret.yaml --namespace=$nameOfNamespace
-helm upgrade grafana grafana/grafana --install -f ./services/grafana/grafana-values.yaml --namespace=$nameOfNamespace --create-namespace
 sleep 60
 
 echo "разворачиваем приложения"

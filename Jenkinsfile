@@ -63,7 +63,6 @@ pipeline {
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
                     echo "Keycloak"
-                    sleep 60
                     helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
@@ -93,6 +92,12 @@ pipeline {
                     helm upgrade --install redis ./helm/bankapp/charts/redis \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
+                    sleep 60
+                    echo "Kibana"
+                    helm upgrade kibana --install elastic/kibana \\
+                                        -f ./helm/services/kibana/kibana-values.yaml \\
+                                        --namespace=$TEST_NAMESPACE \\
+                                        --create-namespace
 
                     echo "Deploy main services"
                     echo "account"
@@ -135,8 +140,8 @@ pipeline {
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace \\
                                  --set image.tag=$FRONT_BUILD_TAG
+                    sleep 60
                     echo "Wait for service start"
-                    sleep 180
                     """
                 }
             }
@@ -171,6 +176,15 @@ pipeline {
                             helm uninstall front -n $TEST_NAMESPACE
                             helm uninstall elasticsearch -n $TEST_NAMESPACE
                             helm uninstall kibana -n $TEST_NAMESPACE
+                            sleep 30
+                            kubectl delete serviceaccounts "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete roles.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete configmap kibana-kibana-helm-scripts -n $TEST_NAMESPACE
+                            kubectl delete rolebindings.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete jobs.batch "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                            kubectl delete service kibana-kibana -n $TEST_NAMESPACE
+                            kubectl delete secret kibana-kibana-es-token -n $TEST_NAMESPACE
+                            kubectl delete deploy kibana-kibana -n $TEST_NAMESPACE
                             """
                         } catch (e) {
                             echo "An error occurred: ${e}"
@@ -194,7 +208,6 @@ pipeline {
                                  -f ./helm/services/elasticsearch/elasticsearch-values.yaml \\
                                  --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
-                    sleep 60
                     echo "Keycloak"
                     helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
                                  --namespace=$PROD_NAMESPACE \\
@@ -225,6 +238,12 @@ pipeline {
                     helm upgrade --install redis ./helm/bankapp/charts/redis \\
                                  --namespace=$PROD_NAMESPACE \\
                                  --create-namespace
+                    sleep 60
+                    echo "Kibana"
+                    helm upgrade kibana --install elastic/kibana \\
+                                        -f ./helm/services/kibana/kibana-values.yaml \\
+                                        --namespace=$PROD_NAMESPACE \\
+                                        --create-namespace
 
                     echo "Deploy main services"
                     echo "account"
@@ -268,7 +287,6 @@ pipeline {
                                  --create-namespace \\
                                  --set image.tag=$FRONT_BUILD_TAG
                     echo "Wait for service start"
-                    sleep 180
                     """
                 }
             }

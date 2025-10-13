@@ -43,7 +43,7 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 Порядок запуска: 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox" 
 (при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
-"minikube start --driver=virtualbox --cpus=6 --memory=40000 --no-vtx-check"
+"minikube start --driver=virtualbox --cpus=8 --memory=40000 --no-vtx-check"
 2) установите в minikube Ingress Controller: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
 (при возникновении ошибок в Windows смените язык по умолчанию на английский)
