@@ -131,6 +131,58 @@ pipeline {
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace \\
                                  --set image.tag=$FRONT_BUILD_TAG
+                    echo "Wait for service start"
+                    sleep 180
+                    """
+                }
+            }
+        }
+        stage('Manual Approval for PROD') {
+            steps {
+                input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
+            }
+        }
+        stage('Free TEST namespace') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo "uninstall helm charts "
+                    helm delete kibana -n $TEST_NAMESPACE
+                    helm uninstall redis -n $TEST_NAMESPACE
+                    helm delete keycloak -n $TEST_NAMESPACE
+                    helm delete kafka -n $TEST_NAMESPACE
+                    helm delete zipkin -n $TEST_NAMESPACE
+                    helm delete prometheus -n $TEST_NAMESPACE
+                    helm delete grafana -n $TEST_NAMESPACE
+                    kubectl delete secret grafana-secret
+                    helm delete logstash -n $TEST_NAMESPACE
+                    helm delete elasticsearch -n $TEST_NAMESPACE
+                    helm delete account -n $TEST_NAMESPACE
+                    helm delete blocker -n $TEST_NAMESPACE
+                    helm delete cash -n $TEST_NAMESPACE
+                    helm delete exchange -n $TEST_NAMESPACE
+                    helm delete exchange-generator -n $TEST_NAMESPACE
+                    helm delete notifications -n $TEST_NAMESPACE
+                    helm delete transfer -n $TEST_NAMESPACE
+                    helm delete front -n $TEST_NAMESPACE
+                    echo "additional uninstall kibana for sure"
+                    kubectl delete serviceaccounts "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                    kubectl delete roles.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                    kubectl delete configmap kibana-kibana-helm-scripts -n $TEST_NAMESPACE
+                    kubectl delete rolebindings.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                    kubectl delete jobs.batch "pre-install-kibana-kibana" -n $TEST_NAMESPACE
+                    kubectl delete service kibana-kibana -n $TEST_NAMESPACE
+                    kubectl delete secret kibana-kibana-es-token -n $TEST_NAMESPACE
+                    kubectl delete deploy kibana-kibana -n $TEST_NAMESPACE
+                """
+                }
+            }
+        }
+        stage('Deploy to PROD') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo "deploy to prod"
                     """
                 }
             }
