@@ -38,6 +38,9 @@ pipeline {
     stages {
         stage('Deploy to PROD') {
             steps {
+              sh """
+              echo 'test'
+              """
             }
         }
     }
