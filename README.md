@@ -66,7 +66,7 @@ Minikube v1.36.0 протестирован в связке с VirtualBox 7.1 н
 * credential - вставьте сохраненный токен. 
 7) Получите токен доступа на DockerHub и сохраните его в Jenkins раздел Credential с областью видимости "global" как
    "secret text" с credentialsId="DOCKER"
-8) Найдите на хосте файл с настройкой Kubernetes (обычно находится по адресу "~/.kube/config", "C:\Users\User\.kube"). 
+8) Найдите на хосте файл с настройкой Kubernetes (обычно находится по адресу "~/.kube/config", "C:\Users\User\.kube\config"). 
 Скопируйте его, переименуйте в config.yaml и сохраните в Jenkins в Credentials с областью видимости "global" 
 как "secret file " с credentialsId="KUBER_CONFIG_YAML"    
 9) В Jenkinsfile заполните блок environment 
