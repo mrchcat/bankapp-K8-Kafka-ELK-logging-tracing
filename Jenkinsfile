@@ -146,34 +146,24 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
                     sh """
-                    echo "uninstall helm charts "
-                    helm delete kibana -n $TEST_NAMESPACE
+                    echo "Uninstall helm charts from test namespace"
                     helm uninstall redis -n $TEST_NAMESPACE
-                    helm delete keycloak -n $TEST_NAMESPACE
-                    helm delete kafka -n $TEST_NAMESPACE
-                    helm delete zipkin -n $TEST_NAMESPACE
-                    helm delete prometheus -n $TEST_NAMESPACE
-                    helm delete grafana -n $TEST_NAMESPACE
-                    kubectl delete secret grafana-secret
-                    helm delete logstash -n $TEST_NAMESPACE
-                    helm delete elasticsearch -n $TEST_NAMESPACE
-                    helm delete account -n $TEST_NAMESPACE
-                    helm delete blocker -n $TEST_NAMESPACE
-                    helm delete cash -n $TEST_NAMESPACE
-                    helm delete exchange -n $TEST_NAMESPACE
-                    helm delete exchange-generator -n $TEST_NAMESPACE
-                    helm delete notifications -n $TEST_NAMESPACE
-                    helm delete transfer -n $TEST_NAMESPACE
-                    helm delete front -n $TEST_NAMESPACE
-                    echo "additional uninstall kibana for sure"
-                    kubectl delete serviceaccounts "pre-install-kibana-kibana" -n $TEST_NAMESPACE
-                    kubectl delete roles.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
-                    kubectl delete configmap kibana-kibana-helm-scripts -n $TEST_NAMESPACE
-                    kubectl delete rolebindings.rbac.authorization.k8s.io "pre-install-kibana-kibana" -n $TEST_NAMESPACE
-                    kubectl delete jobs.batch "pre-install-kibana-kibana" -n $TEST_NAMESPACE
-                    kubectl delete service kibana-kibana -n $TEST_NAMESPACE
-                    kubectl delete secret kibana-kibana-es-token -n $TEST_NAMESPACE
-                    kubectl delete deploy kibana-kibana -n $TEST_NAMESPACE
+                    helm uninstall keycloak -n $TEST_NAMESPACE
+                    helm uninstall kafka -n $TEST_NAMESPACE
+                    helm uninstall zipkin -n $TEST_NAMESPACE
+                    helm uninstall prometheus -n $TEST_NAMESPACE
+                    helm uninstall grafana -n $TEST_NAMESPACE
+                    kubectl delete secret grafana-secret -n $TEST_NAMESPACE
+                    helm uninstall logstash -n $TEST_NAMESPACE
+                    helm uninstall elasticsearch -n $TEST_NAMESPACE
+                    helm uninstall account -n $TEST_NAMESPACE
+                    helm uninstall blocker -n $TEST_NAMESPACE
+                    helm uninstall cash -n $TEST_NAMESPACE
+                    helm uninstall exchange -n $TEST_NAMESPACE
+                    helm uninstall exchange-generator -n $TEST_NAMESPACE
+                    helm uninstall notifications -n $TEST_NAMESPACE
+                    helm uninstall transfer -n $TEST_NAMESPACE
+                    helm uninstall front -n $TEST_NAMESPACE
                 """
                 }
             }
