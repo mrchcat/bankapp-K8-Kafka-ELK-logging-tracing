@@ -1,81 +1,14 @@
 pipeline {
     agent any
     environment {
-        DOCKER_REGISTRY=credentials('DOCKER_REGISTRY') //укажите наименование своего dockerhub
-
         //скорректируйте, если вы присвоили другое имя при сохранении credentials в Jenkins
         DOCKER_CREDENTIAL_ID='DOCKER'
-        KUBER_CREDENTIAL_ID='KUBER_CONFIG_YAML'
 
         PROD_NAMESPACE='prod'
         TEST_NAMESPACE='test'
-
-        FRONT_IMAGE_NAME='bank-front'
-        FRONT_BUILD_TAG='10.0'
-
-        ACCOUNT_IMAGE_NAME='bank-account'
-        ACCOUNT_BUILD_TAG='10.0'
-
-        BLOCKER_IMAGE_NAME='bank-blocker'
-        BLOCKER_BUILD_TAG='10.0'
-
-        CASH_IMAGE_NAME='bank-cash'
-        CASH_BUILD_TAG='10.0'
-
-        EXCHANGE_IMAGE_NAME='bank-exchange'
-        EXCHANGE_BUILD_TAG='10.0'
-
-        EXCHANGE_GENERATOR_IMAGE_NAME='bank-exchange-generator'
-        EXCHANGE_GENERATOR_BUILD_TAG='10.0'
-
-        NOTIFICATIONS_IMAGE_NAME='bank-notifications'
-        NOTIFICATIONS_BUILD_TAG='10.0'
-
-        TRANSFER_IMAGE_NAME='bank-transfer'
-        TRANSFER_BUILD_TAG='10.0'
     }
 
     stages {
-        stage('Build & Unit Tests') {
-            steps {
-                sh """
-                echo 'Build & Unit Tests'
-                mvn clean install
-                """
-            }
-        }
-        stage('Build Docker Images') {
-            steps {
-                sh """ echo 'Build Docker Images' """
-                sh('docker build ./front -t $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
-                sh('docker build ./account -t $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
-                sh('docker build ./blocker -t $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
-                sh('docker build ./cash -t $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
-                sh('docker build ./exchange -t $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
-                sh('docker build ./exchange-generator -t $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
-                sh('docker build ./notification -t $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
-                sh('docker build ./transfer -t $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
-            }
-        }
-        stage('Push Docker Images') {
-            steps {
-                withCredentials([string(credentialsId: DOCKER_CREDENTIAL_ID, variable: 'TOKEN')]) {
-                    sh """
-                    echo 'Push Docker Images'
-                    """
-                    sh('echo $TOKEN | docker login --username $DOCKER_REGISTRY --password-stdin')
-                    sh """ echo 'Аутентификация успешно завершена.Переносим образы' """
-                    sh('docker push $DOCKER_REGISTRY/$FRONT_IMAGE_NAME:$FRONT_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$ACCOUNT_IMAGE_NAME:$ACCOUNT_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$BLOCKER_IMAGE_NAME:$BLOCKER_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$CASH_IMAGE_NAME:$CASH_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_IMAGE_NAME:$EXCHANGE_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$EXCHANGE_GENERATOR_IMAGE_NAME:$EXCHANGE_GENERATOR_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$NOTIFICATIONS_IMAGE_NAME:$NOTIFICATIONS_BUILD_TAG')
-                    sh('docker push $DOCKER_REGISTRY/$TRANSFER_IMAGE_NAME:$TRANSFER_BUILD_TAG')
-                }
-            }
-        }
         stage("Install helm repositories"){
             steps {
                 sh """
@@ -138,50 +71,6 @@ pipeline {
                                         -f ./helm/services/kibana/kibana-values.yaml \\
                                         --namespace=$TEST_NAMESPACE \\
                                         --create-namespace
-
-                    echo "Deploy main services"
-                    echo "account"
-                    helm upgrade --install account ./helm/bankapp/charts/account \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$ACCOUNT_BUILD_TAG
-                    echo "blocker"
-                    helm upgrade --install blocker ./helm/bankapp/charts/blocker \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$BLOCKER_BUILD_TAG
-                    echo "cash"
-                    helm upgrade --install cash ./helm/bankapp/charts/cash \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$CASH_BUILD_TAG
-                    echo "exchange"
-                    helm upgrade --install exchange ./helm/bankapp/charts/exchange \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$EXCHANGE_BUILD_TAG
-                    echo "exchange-generator"
-                    helm upgrade --install exchange-generator ./helm/bankapp/charts/exchange-generator \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$EXCHANGE_GENERATOR_BUILD_TAG
-                    echo "notifications"
-                    helm upgrade --install notifications ./helm/bankapp/charts/notifications \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$NOTIFICATIONS_BUILD_TAG
-                    echo "transfer"
-                    helm upgrade --install transfer ./helm/bankapp/charts/transfer \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$TRANSFER_BUILD_TAG
-                    echo "front"
-                    helm upgrade --install front ./helm/bankapp/charts/front \\
-                                 --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$FRONT_BUILD_TAG
-                    echo "Wait for service start"
-                    sleep 180
                     """
                 }
             }
@@ -213,8 +102,8 @@ pipeline {
                             helm uninstall notifications -n $TEST_NAMESPACE
                             helm uninstall transfer -n $TEST_NAMESPACE
                             helm uninstall front -n $TEST_NAMESPACE
-                            helm uninstall logstash -n $TEST_NAMESPACE
                             helm uninstall kibana -n $TEST_NAMESPACE
+                            helm uninstall logstash -n $TEST_NAMESPACE
                             helm uninstall elasticsearch -n $TEST_NAMESPACE
                             """
                         } catch (e) {
@@ -275,50 +164,6 @@ pipeline {
                                         -f ./helm/services/kibana/kibana-values.yaml \\
                                         --namespace=$PROD_NAMESPACE \\
                                         --create-namespace
-
-                    echo "Deploy main services"
-                    echo "account"
-                    helm upgrade --install account ./helm/bankapp/charts/account \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$ACCOUNT_BUILD_TAG
-                    echo "blocker"
-                    helm upgrade --install blocker ./helm/bankapp/charts/blocker \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$BLOCKER_BUILD_TAG
-                    echo "cash"
-                    helm upgrade --install cash ./helm/bankapp/charts/cash \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$CASH_BUILD_TAG
-                    echo "exchange"
-                    helm upgrade --install exchange ./helm/bankapp/charts/exchange \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$EXCHANGE_BUILD_TAG
-                    echo "exchange-generator"
-                    helm upgrade --install exchange-generator ./helm/bankapp/charts/exchange-generator \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$EXCHANGE_GENERATOR_BUILD_TAG
-                    echo "notifications"
-                    helm upgrade --install notifications ./helm/bankapp/charts/notifications \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$NOTIFICATIONS_BUILD_TAG
-                    echo "transfer"
-                    helm upgrade --install transfer ./helm/bankapp/charts/transfer \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$TRANSFER_BUILD_TAG
-                    echo "front"
-                    helm upgrade --install front ./helm/bankapp/charts/front \\
-                                 --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace \\
-                                 --set image.tag=$FRONT_BUILD_TAG
-                    echo "Wait for service start"
-                    sleep 180
                     """
                 }
             }
