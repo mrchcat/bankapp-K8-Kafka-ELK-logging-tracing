@@ -212,6 +212,7 @@ pipeline {
                         } catch (e) {
                             echo "An error occurred: ${e}"
                         }
+                    }
                 }
             }
         }
