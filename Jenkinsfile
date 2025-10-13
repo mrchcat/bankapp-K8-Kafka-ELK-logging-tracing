@@ -59,10 +59,6 @@ pipeline {
                                  -f ./helm/services/elasticsearch/elasticsearch-values.yaml \\
                                  --namespace=$TEST_NAMESPACE \\
                                  --create-namespace
-//                     echo "Kibana"
-//                     helm upgrade --install kibana elastic/kibana  \\
-//                                  -f ./helm/services/kibana/kibana-values.yaml \\
-//                                  --namespace=$TEST_NAMESPACE --create-namespace
                     echo "Keycloak"
                     helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
                                  --namespace=$TEST_NAMESPACE \\
