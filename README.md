@@ -41,7 +41,7 @@ Windows.
 
 1) создайте узел Kubernetes: "minikube start --driver=virtualbox"
    (при наличии ошибок попробуйте отключить проверку и увеличить ресурсы:
-   "minikube start --driver=virtualbox --cpus=8 --memory=40000 --no-vtx-check"
+   "minikube start --driver=virtualbox --cpus=6 --memory=40000 --no-vtx-check"
 2) установите в minikube Ingress Controller: "minikube addons enable ingress"
 3) в отдельном окне с правами администратора введите "minikube tunnel" и не закрывайте окно
    (при возникновении ошибок в Windows смените язык по умолчанию на английский)
@@ -96,24 +96,21 @@ Windows.
   tunnel"
   Зайдите по адресу http://test.bankapp.internal.com/. Если он недоступен, то убедитесь, что вы внесли его в файл hosts.
   Введите логин "anna", пароль "12345" и удостоверьтесь, что все работает.
-  Подтвердите в консоли Jenkins продолжение развертывания уже в production. Если в момент развертывания в продакшн вы
-  столкнулись
-  с тем, что поду не хватает системных ресурсов, то либо увеличьте системные ресурсы, выделяемые minikube,
-  либо перед развертыванием в продакшн удалите сервисы из тестового окружения.
+  Подтвердите в консоли Jenkins продолжение развертывания уже в production. 
 
 В итоге приложение будет доступно по адресу \<namespace\>.bankapp.internal.com (например, "prod.bankapp.internal.com")
-Трейсинг будет доступен в Zipkin по адресу "zipkin.internal.com" (без логина и пароля)  
-Мониторинг ключевых метрик в Grafana по адресу "grafana.internal.com" (логин "admin", пароль - "admin")
+Трейсинг будет доступен в Zipkin по адресу "zipkin.internal.com" (без логина и пароля). Мониторинг ключевых метрик в Grafana по адресу "grafana.internal.com" (логин "admin", пароль - "admin")
 Логи в Kibana по адресу "kibana.internal.com" (логин "elastic", пароль - "admin")
 
 Также приложение можно развернуть:
 
-* в Kubernetes без использования Jenkins. Для этого запустите
+* в Kubernetes без использования Jenkins.
     1) установите репозитории
         * helm repo add elastic https://helm.elastic.co
         * helm repo add grafana https://grafana.github.io/helm-charts
         * helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
         * helm repo add zipkin https://zipkin.io/zipkin-helm
+        * helm repo update
     2) запустите скрипт helm/deploy_full_separate.sh
 * локально в IDE в целях отладки. Файл docker-compose позволяет запустить все вспомогательные сервисы, а файлы .env
   содержат необходимые настройки самих сервисов.

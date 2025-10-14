@@ -7,6 +7,91 @@ server:
   global:
     scrape_interval: 15s
 serverFiles:
+  alerting_rules.yml:
+   groups:
+     - name: "account service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="account"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance account service down"
+     - name: "blocker service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="blocker"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance blocker service down"
+     - name: "cash service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="cash"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance cash service down"
+     - name: "exchange service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="exchange"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance exchange service down"
+     - name: "exchange-generator service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="exchange-generator"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance exchange-generator service down"
+     - name: "front service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="front"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance front service down"
+     - name: "notifications service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="notifications"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance notifications service down"
+     - name: "transfer service down"
+       rules:
+         - alert: InstanceDown
+           expr: up{job="transfer"} == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance transfer service down"
+
+     - name: CPU-alert
+       rules:
+         - alert: CPUAlert
+           expr: system_cpu_usage>0.5
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "High CPU Usage"
+
   prometheus.yml:
     scrape_configs:
       - job_name: 'front'
