@@ -127,7 +127,7 @@ grafana:
   dashboards:
     default:
       spring-boot:
-        file: dashboards/19004_rev1.json
+        file: dashboards/spring-boot.json
       prometheus-stats:
         # Ref: https://grafana.com/dashboards/2
         gnetId: 2

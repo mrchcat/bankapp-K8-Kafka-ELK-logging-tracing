@@ -4,12 +4,32 @@ ingress:
   enabled: true
   hosts:
     - grafana.internal.com
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server:80
+      access: proxy
+      isDefault: true
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
+
 dashboards:
   default:
     spring-boot:
-      file: dashboards/19004_rev1.json
-    prometheus-stats:
-      # Ref: https://grafana.com/dashboards/2
-      gnetId: 2
-      revision: 2
+      gnetId: 10280
       datasource: Prometheus

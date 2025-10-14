@@ -1,5 +1,5 @@
 #задайте название namespace
-nameOfNamespace="test"
+nameOfNamespace="default"
 
 helm delete kibana -n $nameOfNamespace
 helm delete redis -n $nameOfNamespace
