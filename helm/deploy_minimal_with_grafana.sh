@@ -7,6 +7,7 @@ helm upgrade kafka ./bankapp/charts/kafka --install --namespace=$nameOfNamespace
 sleep 30
 #Prometheus
 helm upgrade prometheus prometheus-community/prometheus --install -f ./services/prometheus/prometheus-values.yaml --namespace=$nameOfNamespace --create-namespace
+sleep 30
 #Keycloak
 helm upgrade keycloak ./bankapp/charts/keycloak --install --namespace=$nameOfNamespace --create-namespace
 #Grafana

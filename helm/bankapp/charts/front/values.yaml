@@ -28,7 +28,7 @@ SERVICE_URL_EXCHANGE: exchange:8080
 
 image:
   repository: mcat1980/bank-front
-  tag: "20.0"
+  tag: "30.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
