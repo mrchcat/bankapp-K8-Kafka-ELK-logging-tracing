@@ -49,7 +49,7 @@ public class Exchange {
             }
             return exchangeRate.getRate();
         } catch (Exception ex) {
-            throw new ExchangeServiceException("");
+            throw new ExchangeServiceException("exchange service unavailable");
         }
     }
 

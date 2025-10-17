@@ -12,7 +12,7 @@ sleep 30
 helm upgrade keycloak ./bankapp/charts/keycloak --install --namespace=$nameOfNamespace --create-namespace
 #Grafana
 kubectl apply -f ./services/grafana/secret.yaml --namespace=$nameOfNamespace
-helm upgrade grafana grafana/grafana --install -f ./services/grafana/grafana-values.yaml --namespace=$nameOfNamespace --create-namespace
+helm upgrade grafana grafana/grafana --install -f ./services/grafana/grafana-values.yaml --namespace=$nameOfNamespace --create-namespace --set-file dashboards.default.bankapp.json=./services/grafana/dashboards/bankapp.json
 #Redis
 helm upgrade redis ./bankapp/charts/redis --install --namespace=$nameOfNamespace --create-namespace
 

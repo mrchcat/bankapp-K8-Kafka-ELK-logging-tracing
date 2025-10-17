@@ -7,6 +7,7 @@ import com.github.mrchcat.front.dto.FrontCashTransactionDto;
 import com.github.mrchcat.front.dto.FrontEditUserAccountDto;
 import com.github.mrchcat.front.dto.NonCashTransfer;
 import com.github.mrchcat.front.dto.PasswordUpdateDto;
+import com.github.mrchcat.front.exception.ExchangeServiceException;
 import com.github.mrchcat.front.service.FrontService;
 import com.github.mrchcat.shared.enums.CashAction;
 import com.github.mrchcat.shared.enums.UserRole;

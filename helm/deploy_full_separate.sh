@@ -23,9 +23,7 @@ helm upgrade kibana elastic/kibana  --install -f ./services/kibana/kibana-values
 sleep 60
 #Grafana
 kubectl apply -f ./services/grafana/secret.yaml --namespace=$nameOfNamespace
-helm upgrade grafana grafana/grafana --install -f ./services/grafana/grafana-values.yaml --namespace=$nameOfNamespace --create-namespace
-sleep 60
-
+helm upgrade grafana grafana/grafana --install -f ./services/grafana/grafana-values.yaml --namespace=$nameOfNamespace --create-namespace --set-file dashboards.default.bankapp.json=./services/grafana/dashboards/bankapp.json
 echo "разворачиваем приложения"
 #account
 helm upgrade account ./bankapp/charts/account --install --namespace=$nameOfNamespace --create-namespace

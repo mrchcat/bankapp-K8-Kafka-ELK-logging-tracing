@@ -27,7 +27,7 @@ SERVICE_URL_CASH: cash:8080
 
 image:
   repository: mcat1980/bank-cash
-  tag: "30.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 

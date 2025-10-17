@@ -62,6 +62,27 @@ serverFiles:
              summary: "High 5xx error rate detected"
              description: "Instance {{ $labels.instance }}: 5xx error rate has exceeded 0,01 error/sec for the last 1 minute"
 
+     - name: LongServerResponse
+       rules:
+         - alert: LongServerResponse
+           expr: histogram_quantile(0.95, rate(http_server_requests_active_seconds_bucket[5m]))>500
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Long server response detected"
+             description: "Instance {{ $labels.instance }}: 95% quantile of server responses is more than 500 ms "
+     - name: LongKafkaResponse
+       rules:
+         - alert: LongKafkaResponse
+           expr: histogram_quantile(0.95, rate(spring_kafka_template_seconds_bucket[5m]))>500
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Long Kafka response detected"
+             description: "Instance {{ $labels.instance }}: 95% quantile of Kafka responses is more than 500 ms "
+
   prometheus.yml:
     scrape_configs:
       - job_name: 'front'

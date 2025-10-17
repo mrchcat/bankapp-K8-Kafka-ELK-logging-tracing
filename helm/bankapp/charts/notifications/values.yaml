@@ -29,7 +29,7 @@ INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-notifications
-  tag: "30.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: [ ]

@@ -2,6 +2,7 @@ package com.github.mrchcat.profile.service;
 
 import com.github.mrchcat.shared.blocker.BlockerResponseDto;
 import com.github.mrchcat.shared.cash.CashTransactionDto;
+import com.github.mrchcat.shared.enums.TransferDirection;
 import com.github.mrchcat.shared.transfer.NonCashTransferDto;
 import com.github.mrchcat.shared.utils.log.TracingLogger;
 import io.micrometer.core.instrument.Counter;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -48,8 +51,9 @@ public class BlockerServiceImpl implements BlockerService {
     }
 
     private BlockerResponseDto getRandomResponse() {
-        if (Math.random() > CONFIRM_PROBABILITY) {
-            int answer = (int) (Math.random() * rejectReasons.size());
+        double randomDbl = ThreadLocalRandom.current().nextDouble();
+        if (randomDbl > CONFIRM_PROBABILITY) {
+            int answer = (int) (randomDbl * rejectReasons.size());
             return new BlockerResponseDto(false, rejectReasons.get(answer));
         }
         return new BlockerResponseDto(true, "операция подтверждена");
@@ -59,29 +63,26 @@ public class BlockerServiceImpl implements BlockerService {
         if (response.isConfirmed()) {
             return;
         }
-        Counter blocksCounter;
         if (transactionDto instanceof CashTransactionDto cashDto) {
-            blocksCounter = Counter.builder("blocks")
+            Counter blocksCounter = Counter.builder("cash-blocks")
                     .description("Counter of blocked cash transactions")
-                    .tag("type", "cash")
-                    .tag("action", cashDto.action().name())
-                    .tag("username", cashDto.username())
-                    .tag("currency", cashDto.currency().name())
+                    .tag("username", Objects.requireNonNull(cashDto.username()))
+                    .tag("cash", Objects.requireNonNull(cashDto.currency().name()))
                     .register(meterRegistry);
+            blocksCounter.increment();
         } else if (transactionDto instanceof NonCashTransferDto nonCashDto) {
-            blocksCounter = Counter.builder("blocks")
+            var receiver = (nonCashDto.direction().equals(TransferDirection.YOURSELF)) ? nonCashDto.fromUsername() : nonCashDto.toUsername();
+            Counter blocksCounter = Counter.builder("non-cash-blocks")
                     .description("Counter of blocked non-cash transactions")
-                    .tag("type", "non-cash")
-                    .tag("direction", nonCashDto.direction().name())
-                    .tag("sender", nonCashDto.fromUsername())
-                    .tag("receiver", nonCashDto.toUsername())
-                    .tag("sender_currency", nonCashDto.fromUsername())
-                    .tag("receiver_currency", nonCashDto.toCurrency().name())
+                    .tag("username", Objects.requireNonNull(nonCashDto.fromUsername()))
+                    .tag("receiver", Objects.requireNonNull(receiver))
+                    .tag("from_cash", Objects.requireNonNull(nonCashDto.fromCurrency().name()))
+                    .tag("to_cash", Objects.requireNonNull(nonCashDto.toCurrency().name()))
                     .register(meterRegistry);
+            blocksCounter.increment();
         } else {
-            throw new IllegalArgumentException("icorrect class of TransactionDto");
+            throw new IllegalArgumentException("incorrect class of TransactionDto");
         }
-        blocksCounter.increment();
     }
 
 }

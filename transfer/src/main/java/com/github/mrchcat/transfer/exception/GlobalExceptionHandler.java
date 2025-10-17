@@ -31,4 +31,9 @@ public class GlobalExceptionHandler {
         return ErrorResponse.create(ex, HttpStatus.FORBIDDEN, "Не хватает средств для проведения операции");
     }
 
+    @ExceptionHandler(ExchangeServiceException.class)
+    public ErrorResponse handleExchangeServiceException(ExchangeServiceException ex) {
+        return ErrorResponse.create(ex, HttpStatus.FORBIDDEN, "Сервис курсов валют недоступен");
+    }
+
 }
