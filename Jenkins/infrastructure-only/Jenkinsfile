@@ -50,7 +50,9 @@ pipeline {
                     helm upgrade --install grafana grafana/grafana \\
                                  -f ./helm/services/grafana/grafana-values.yaml \\
                                  --namespace=$TEST_NAMESPACE \\
-                                 --create-namespace
+                                 --create-namespace \\
+                                 --set-file dashboards.default.bankapp.json=./grafana/dashboards/bankapp.json
+
                     echo "Logstash"
                     helm upgrade --install logstash elastic/logstash  \\
                                  -f ./helm/services/logstash/logstash-values.yaml \\
@@ -143,7 +145,9 @@ pipeline {
                     helm upgrade --install grafana grafana/grafana \\
                                  -f ./helm/services/grafana/grafana-values.yaml \\
                                  --namespace=$PROD_NAMESPACE \\
-                                 --create-namespace
+                                 --create-namespace \\
+                                 --set-file dashboards.default.bankapp.json=./grafana/dashboards/bankapp.json
+
                     echo "Logstash"
                     helm upgrade --install logstash elastic/logstash  \\
                                  -f ./helm/services/logstash/logstash-values.yaml \\
