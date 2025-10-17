@@ -10,7 +10,7 @@ ZIPKIN_TRACING_PROBABILITY: 1
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_SERVICE_LOG_TOPIC: blocker-log
 
-CONFIRM_PROBABILITY: 0.5
+CONFIRM_PROBABILITY: 0.97
 
 LOG_LEVEL: DEBUG
 
@@ -18,7 +18,7 @@ INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-blocker
-  tag: "2.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
