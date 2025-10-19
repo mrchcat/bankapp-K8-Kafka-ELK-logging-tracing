@@ -6,26 +6,30 @@ SERVICE_URL_ACCOUNT: account:8080
 
 KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 KAFKA_NOTIFICATIONS_TOPIC: bank-notifications
+KAFKA_SERVICE_LOG_TOPIC: account-log
 
 KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 KEYCLOAK_CLIENT_ID: bank_accounts
 KEYCLOAK_CLIENT_SECRET: EF3owQYOVaDIDnBr14jkSt3kuResW6x0
 
-DATASOURCE_USERNAME: postgres
-DATASOURCE_PASSWORD: Inushing1980
+DATASOURCE_USERNAME: user
+DATASOURCE_PASSWORD: password
+
+ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+ZIPKIN_TRACING_PROBABILITY: 1
 
 LOG_LEVEL: DEBUG
 
-INITIAL_DELAY_SEC: 120
+INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-account
-  tag: "10.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "account"
 
 service:
   type: ClusterIP
@@ -35,6 +39,3 @@ database:
   image:
     repository: postgres
     tag: "17.5"
-    pullPolicy: IfNotPresent
-  DB_USERNAME: postgres
-  DB_PASSWORD: postgres

@@ -2,6 +2,7 @@ package com.github.mrchcat.front.controller;
 
 import com.github.mrchcat.front.dto.NewClientRegisterDto;
 import com.github.mrchcat.front.service.FrontService;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RegistrationController {
     private final FrontService frontService;
+    private final TracingLogger tracingLogger;
 
-    @GetMapping({"/registration","/signup"})
+    @GetMapping({"/registration", "/signup"})
     String registerNewClient(Model model) {
         return "signup";
     }
@@ -34,7 +37,10 @@ public class RegistrationController {
     @PostMapping("/registration")
     String registerNewClient(@ModelAttribute @Valid NewClientRegisterDto newClientRegisterDto,
                              BindingResult bindingResult,
-                             Model model) {
+                             Model model,
+                             Principal principal) {
+        tracingLogger.info("Получен запрос от пользователя {} на регистрацию нового клиента {}", principal.getName(), newClientRegisterDto);
+
         List<String> errors = new ArrayList<>();
 
         model.addAttribute("errors", errors);
@@ -45,6 +51,7 @@ public class RegistrationController {
                     .stream()
                     .map(ObjectError::getDefaultMessage)
                     .forEach(errors::add);
+            tracingLogger.info("Найдены ошибки при регистрации нового клиента пользователем {} Ошибки: {}", principal.getName(), errors);
             return "signup";
         }
         try {
@@ -63,6 +70,9 @@ public class RegistrationController {
             }
         } catch (Exception ex) {
             errors.add(ex.getMessage());
+        }
+        if(!errors.isEmpty()){
+            tracingLogger.info("Найдены ошибки при регистрации нового клиента пользователем {} Ошибки: {}", principal.getName(), errors);
         }
         return "signup";
     }

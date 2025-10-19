@@ -2,6 +2,7 @@ package com.github.mrchcat.accounts.account.repository;
 
 import com.github.mrchcat.accounts.account.model.Account;
 import com.github.mrchcat.shared.enums.BankCurrency;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     private final AccountRowMapper accountRowMapper;
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:find_all_accounts_by_user"})
     public List<Account> findAllActiveAccountsByUser(UUID userId) {
         String query = """
                 SELECT id, number,balance, currency_string_code_iso4217, user_id, created_at, updated_at,is_active
@@ -29,6 +31,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:find_all_accounts_by_user"})
     public List<Account> findAllActiveAccountsByUser(UUID userId, BankCurrency currency) {
         String query = """
                 SELECT id, number,balance, currency_string_code_iso4217, user_id, created_at, updated_at,is_active
@@ -39,6 +42,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:find_all_accounts_by_user"})
     public List<Account> findAllAccountsByUser(UUID userId) {
         String query = """
                 SELECT id, number,balance, currency_string_code_iso4217, user_id, created_at, updated_at,is_active
@@ -49,6 +53,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:update_account"})
     public void setAccountActivation(UUID accountId, boolean isActive) {
         String query = """
                 UPDATE accounts
@@ -59,6 +64,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:create_account"})
     public void createNewAccount(Account account) {
         String query = """
                 INSERT INTO accounts(number,currency_string_code_iso4217,user_id,updated_at)
@@ -72,6 +78,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:change_balance"})
     public void changeBalance(UUID accountId, BigDecimal amount) {
         String query = """
                 UPDATE accounts
@@ -85,6 +92,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:check_account_property"})
     public Boolean isExistActive(UUID accountId) {
         String query = """
                 SELECT EXISTS(
@@ -94,6 +102,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:get_balance"})
     public Optional<BigDecimal> getBalance(UUID accountId) {
         String query = """
                 SELECT balance
@@ -105,6 +114,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:accounts","operation:find_active_account"})
     public Optional<Account> findActiveAccountById(UUID accountId) {
         String query = """
                 SELECT *

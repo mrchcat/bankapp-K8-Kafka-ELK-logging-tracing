@@ -12,6 +12,8 @@ services:
       - --import-realm
     ports:
       - "8090:8080"
+    networks:
+      - backend
     volumes:
       - ./keycloak/config/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
     restart: unless-stopped
@@ -24,6 +26,211 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+
+  bank-kafka:
+    image: bitnami/kafka:latest
+    container_name: bank-kafka
+    ports:
+      - '9094:9094'
+    networks:
+      - backend
+    environment:
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_CONTROLLER_BROKER_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://bank-kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@bank-kafka:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+    restart: unless-stopped
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - '7080:8080'
+    networks:
+      - backend
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=bank-kafka:9092
+    depends_on:
+      - bank-kafka
+
+  bank-zipkin:
+    image: openzipkin/zipkin:3.5
+    container_name: bank-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  bank-prometheus:
+    image: prom/prometheus:v3.6.0
+    container_name: bank-prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    volumes:
+      - ./prometheus/:/etc/prometheus/:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+
+  bank-grafana:
+#    image: grafana/grafana:12.3.0-18147126998-ubuntu
+    image: grafana/grafana
+    container_name: bank-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    environment:
+      - GF_SECURITY_ADMIN_user=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - bank-prometheus
+
+  bank-logstash:
+    image: docker.elastic.co/logstash/logstash:9.1.4
+    container_name: bank-logstash
+    volumes:
+      - ./logstash/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - "5044:5044"
+    depends_on:
+      - bank-elasticsearch
+    networks:
+      - backend
+
+  bank-elasticsearch:
+    image: elasticsearch:9.1.4
+    container_name: bank-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    depends_on:
+      - bank-kafka
+    networks:
+      - backend
+
+  bank-kibana:
+    image: kibana:9.1.4
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://bank-elasticsearch:9200
+    depends_on:
+      - bank-elasticsearch
+    networks:
+      - backend
+
+  bank-redis:
+    image: redis:8.2.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "12345", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - backend
+
+  bank-database-account:
+    image: postgres:17.4
+    container_name: bank-database-account
+    ports:
+      - "7541:5432"
+    environment:
+      - POSTGRES_DB=accountapp
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-cash:
+    image: postgres:17.4
+    container_name: bank-database-cash
+    ports:
+      - "7542:5432"
+    environment:
+      - POSTGRES_DB=cashapp
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-exchange:
+    image: postgres:17.4
+    container_name: bank-database-exchange
+    ports:
+      - "7543:5432"
+    environment:
+      - POSTGRES_DB=exchange
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-notifications:
+    image: postgres:17.4
+    container_name: bank-database-notifications
+    ports:
+      - "7544:5432"
+    environment:
+      - POSTGRES_DB=notifications
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - backend
+
+  bank-database-transfer:
+    image: postgres:17.4
+    container_name: bank-database-transfer
+    ports:
+      - "7545:5432"
+    environment:
+      - POSTGRES_DB=transferapp
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
     networks:
       - backend
 

@@ -6,6 +6,10 @@ metadata:
     {{- include "front.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 900
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}

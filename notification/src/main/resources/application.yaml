@@ -11,8 +11,8 @@ spring:
     mode: ALWAYS
     schema-locations: classpath:schema.sql
   kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
-      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
       group-id: bank-notifications
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -22,16 +22,39 @@ spring:
         isolation.level: read_committed
       enable-auto-commit: true
       auto-offset-reset: earliest
+  mail:
+    host: ${SMTP_SERVER_HOST}
+    port: ${SMTP_SERVER_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp:
+        auth: true
+        starttls.enable: true
+        ssl.enable: true
 
-management.endpoints.web.exposure.include: info, health
+management:
+  endpoints.web.exposure.include: info, health, metrics,prometheus
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT}
+  tracing:
+    sampling:
+      probability: ${ZIPKIN_TRACING_PROBABILITY}
+  metrics:
+    distribution:
+      percentiles-histogram:
+        spring.kafka.*: true
+        http.server.requests: true
 
-logging:
-  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
-  level:
-    root: ${LOG_LEVEL:DEBUG}
-    org.zalando.logbook: ${LOG_LEVEL:DEBUG}
+
 
 application:
   kafka:
     topic:
       notifications: ${KAFKA_NOTIFICATIONS_TOPIC}
+
+  mail:
+    enabled: ${MAIL_DELIVERY_ENABLED}
+    from_address: ${FROM_MAIL_ADDRESS}
+    sender_name: ${SENDER_NAME_FOR_MAIL}

@@ -9,37 +9,84 @@ dependencies:
   - name: keycloak
     version: "1.0.0"
     repository: "file://./charts/keycloak"
-    condition: enableKeycloak
+    condition: infrastructure.enabled
 
   - name: kafka
     version: "1.0.0"
     repository: "file://./charts/kafka"
-    condition: enableKafka
+    condition: infrastructure.enabled
+
+  - name: redis
+    version: "1.0.0"
+    repository: "file://./charts/redis"
+    condition: infrastructure.enabled
+
+  - name: zipkin
+    version: "0.4.0"
+    repository: "https://zipkin.io/zipkin-helm"
+    condition: infrastructure.enabled
+
+  - name: prometheus
+    version: "27.39.0"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: infrastructure.enabled
+
+  - name: grafana
+    version: "10.0.0"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: infrastructure.enabled
+
+  - name: logstash
+    version: "8.5.1"
+    repository: "https://helm.elastic.co"
+    condition: infrastructure.enabled
+
+  - name: elasticsearch
+    version: "8.5.1"
+    repository: "https://helm.elastic.co"
+    condition: infrastructure.enabled
+
+  - name: kibana
+    version: "8.5.1"
+    repository: "https://helm.elastic.co"
+    condition: kibana.enabled
 
   - name: account
     version: "1.0.0"
     repository: "file://./charts/account"
+    condition: services.enabled
 
   - name: blocker
     version: "1.0.0"
     repository: "file://./charts/blocker"
+    condition: services.enabled
 
   - name: cash
     version: "1.0.0"
     repository: "file://./charts/cash"
-
-  - name: transfer
-    version: "1.0.0"
-    repository: "file://./charts/transfer"
+    condition: services.enabled
 
   - name: exchange-generator
     version: "1.0.0"
     repository: "file://./charts/exchange-generator"
+    condition: services.enabled
 
   - name: exchange
     version: "1.0.0"
     repository: "file://./charts/exchange"
+    condition: services.enabled
 
   - name: front
     version: "1.0.0"
     repository: "file://./charts/front"
+    condition: services.enabled
+
+  - name: notifications
+    version: "1.0.0"
+    repository: "file://./charts/notifications"
+    condition: services.enabled
+
+  - name: transfer
+    version: "1.0.0"
+    repository: "file://./charts/transfer"
+    condition: services.enabled

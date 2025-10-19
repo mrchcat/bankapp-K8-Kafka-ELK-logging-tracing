@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="bank-logging" status="${env:LOG_LEVEL}">
+    <Appenders>
+        <Kafka name="Kafka" topic="${env:KAFKA_SERVICE_LOG_TOPIC}">
+            <Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVERS}</Property>
+            <JsonLayout>
+                <KeyValuePair key="application" value="$${env:SPRING_APPLICATION_NAME}"/>
+                <KeyValuePair key="traceId" value="$${ctx:traceId}"/>
+                <KeyValuePair key="spanId" value="$${ctx:spanId}"/>
+            </JsonLayout>
+        </Kafka>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="${env:LOG_LEVEL}">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="KafkaLogger" level="${env:LOG_LEVEL}">
+            <AppenderRef ref="Kafka"/>
+        </Logger>
+    </Loggers>
+</Configuration>

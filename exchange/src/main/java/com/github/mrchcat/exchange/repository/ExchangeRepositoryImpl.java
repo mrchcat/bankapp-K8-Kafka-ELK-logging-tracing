@@ -1,6 +1,7 @@
 package com.github.mrchcat.exchange.repository;
 
 import com.github.mrchcat.exchange.model.CurrencyExchangeRecord;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ public class ExchangeRepositoryImpl implements ExchangeRepository {
 
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:exchange_rates","operation:save_rates"})
     public void save(CurrencyExchangeRecord record) {
         String query = """
                 INSERT INTO exchange_rates(base,exchange, buy_rate, sell_rate, time)

@@ -12,6 +12,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @EmbeddedKafka
+@DirtiesContext
 class NotificationsTest extends AbstractContainerTest {
 
     @Autowired

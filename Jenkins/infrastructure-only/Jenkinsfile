@@ -1,0 +1,176 @@
+pipeline {
+    agent any
+    environment {
+        //скорректируйте, если вы присвоили другое имя при сохранении credentials в Jenkins
+        DOCKER_CREDENTIAL_ID='DOCKER'
+
+        PROD_NAMESPACE='prod'
+        TEST_NAMESPACE='test'
+    }
+
+    stages {
+        stage("Install helm repositories"){
+            steps {
+                sh """
+                echo "Add helm repositories"
+                helm repo add elastic https://helm.elastic.co
+                helm repo add grafana https://grafana.github.io/helm-charts
+                helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                helm repo add zipkin https://zipkin.io/zipkin-helm
+                helm repo update
+                """
+            }
+        }
+        stage('Deploy to TEST') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo "Deploy infrastructure"
+                    echo "Kafka"
+                    helm upgrade --install kafka ./helm/bankapp/charts/kafka \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo "Elasticsearch"
+                    helm upgrade --install elasticsearch elastic/elasticsearch \\
+                                 -f ./helm/services/elasticsearch/elasticsearch-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo "Keycloak"
+                    helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo "Prometheus"
+                    helm upgrade --install prometheus prometheus-community/prometheus \\
+                                 -f ./helm/services/prometheus/prometheus-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo "Grafana"
+                    kubectl apply -f ./helm/services/grafana/secret.yaml \\
+                                       --namespace=$TEST_NAMESPACE
+                    helm upgrade --install grafana grafana/grafana \\
+                                 -f ./helm/services/grafana/grafana-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace \\
+                                 --set-file dashboards.default.bankapp.json=./grafana/dashboards/bankapp.json
+
+                    echo "Logstash"
+                    helm upgrade --install logstash elastic/logstash  \\
+                                 -f ./helm/services/logstash/logstash-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo "Zipkin"
+                    helm upgrade --install zipkin zipkin/zipkin \\
+                                 -f ./helm/services/zipkin/zipkin-values.yaml \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    echo "Redis"
+                    helm upgrade --install redis ./helm/bankapp/charts/redis \\
+                                 --namespace=$TEST_NAMESPACE \\
+                                 --create-namespace
+                    sleep 60
+                    echo "Kibana"
+                    helm upgrade kibana --install elastic/kibana \\
+                                        -f ./helm/services/kibana/kibana-values.yaml \\
+                                        --namespace=$TEST_NAMESPACE \\
+                                        --create-namespace
+                    """
+                }
+            }
+        }
+        stage('Manual Approval for PROD') {
+            steps {
+                input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
+            }
+        }
+        stage('Free TEST namespace') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    script {
+                        try {
+                            sh """
+                            echo "Uninstall helm charts from test namespace"
+                            helm uninstall redis -n $TEST_NAMESPACE
+                            helm uninstall keycloak -n $TEST_NAMESPACE
+                            helm uninstall kafka -n $TEST_NAMESPACE
+                            helm uninstall zipkin -n $TEST_NAMESPACE
+                            helm uninstall prometheus -n $TEST_NAMESPACE
+                            helm uninstall grafana -n $TEST_NAMESPACE
+                            kubectl delete secret grafana-secret -n $TEST_NAMESPACE
+                            helm uninstall account -n $TEST_NAMESPACE
+                            helm uninstall blocker -n $TEST_NAMESPACE
+                            helm uninstall cash -n $TEST_NAMESPACE
+                            helm uninstall exchange -n $TEST_NAMESPACE
+                            helm uninstall exchange-generator -n $TEST_NAMESPACE
+                            helm uninstall notifications -n $TEST_NAMESPACE
+                            helm uninstall transfer -n $TEST_NAMESPACE
+                            helm uninstall front -n $TEST_NAMESPACE
+                            helm uninstall kibana -n $TEST_NAMESPACE
+                            helm uninstall logstash -n $TEST_NAMESPACE
+                            helm uninstall elasticsearch -n $TEST_NAMESPACE
+                            """
+                        } catch (e) {
+                            echo "An error occurred: ${e}"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy to PROD') {
+            steps {
+                withKubeConfig([credentialsId: KUBER_CREDENTIAL_ID]) {
+                    sh """
+                    echo 'Deploy to PROD'
+                    echo "Deploy infrastructure"
+                    echo "Kafka"
+                    helm upgrade --install kafka ./helm/bankapp/charts/kafka \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo "Elasticsearch"
+                    helm upgrade --install elasticsearch elastic/elasticsearch \\
+                                 -f ./helm/services/elasticsearch/elasticsearch-values.yaml \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo "Keycloak"
+                    helm upgrade --install keycloak ./helm/bankapp/charts/keycloak \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo "Prometheus"
+                    helm upgrade --install prometheus prometheus-community/prometheus \\
+                                 -f ./helm/services/prometheus/prometheus-values.yaml \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo "Grafana"
+                    kubectl apply -f ./helm/services/grafana/secret.yaml \\
+                                       --namespace=$PROD_NAMESPACE
+                    helm upgrade --install grafana grafana/grafana \\
+                                 -f ./helm/services/grafana/grafana-values.yaml \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace \\
+                                 --set-file dashboards.default.bankapp.json=./grafana/dashboards/bankapp.json
+
+                    echo "Logstash"
+                    helm upgrade --install logstash elastic/logstash  \\
+                                 -f ./helm/services/logstash/logstash-values.yaml \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo "Zipkin"
+                    helm upgrade --install zipkin zipkin/zipkin \\
+                                 -f ./helm/services/zipkin/zipkin-values.yaml \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    echo "Redis"
+                    helm upgrade --install redis ./helm/bankapp/charts/redis \\
+                                 --namespace=$PROD_NAMESPACE \\
+                                 --create-namespace
+                    sleep 60
+                    echo "Kibana"
+                    helm upgrade kibana --install elastic/kibana \\
+                                        -f ./helm/services/kibana/kibana-values.yaml \\
+                                        --namespace=$PROD_NAMESPACE \\
+                                        --create-namespace
+                    """
+                }
+            }
+        }
+    }
+}

@@ -50,6 +50,7 @@ public class FrontServiceImpl implements FrontService {
     private final PasswordEncoder encoder;
     private final ServiceUrl serviceUrl;
 
+
     private final String ACCOUNT_SERVICE;
     private final String ACCOUNTS_REGISTER_NEW_CLIENT_API = "/registration";
     private final String ACCOUNTS_GET_CLIENT_API = "/account";
@@ -270,5 +271,4 @@ public class FrontServiceImpl implements FrontService {
             throw new ExchangeServiceException("");
         }
     }
-
 }

@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableWebSecurity
@@ -24,10 +23,5 @@ public class SecurityConfig {
                         oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Client(Customizer.withDefaults())
                 .build();
-    }
-
-    @Bean
-    RestClient.Builder restClientBuilder() {
-        return RestClient.builder();
     }
 }

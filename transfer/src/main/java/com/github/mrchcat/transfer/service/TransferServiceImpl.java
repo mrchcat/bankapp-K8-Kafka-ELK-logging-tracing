@@ -7,6 +7,7 @@ import com.github.mrchcat.shared.enums.BankCurrency;
 import com.github.mrchcat.shared.enums.TransactionStatus;
 import com.github.mrchcat.shared.enums.TransferDirection;
 import com.github.mrchcat.shared.transfer.NonCashTransferDto;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
 import com.github.mrchcat.transfer.exception.AccountServiceException;
 import com.github.mrchcat.transfer.exception.BlockerException;
 import com.github.mrchcat.transfer.exception.NotEnoughMoney;
@@ -30,6 +31,7 @@ public class TransferServiceImpl implements TransferService {
     private final Exchange exchange;
     private final Blocker blocker;
     private final Account account;
+    private final TracingLogger tracingLogger;
 
     BankUserDto senderClient;
     BankUserDto receiverClient;
@@ -38,6 +40,7 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public void processTransfer(NonCashTransferDto transaction) throws AuthException, ServiceUnavailableException, SQLException {
+        tracingLogger.info("Запущена обработка перевода средств. Транзакция: {}", transaction);
         UUID fromAccountId = getFromAccountAndValidate(transaction.fromUsername(), transaction.amount(), transaction.fromCurrency());
         UUID toAccountId = switch (transaction.direction()) {
             case YOURSELF -> getToAccountAndValidate(transaction.fromUsername(), transaction.toCurrency());

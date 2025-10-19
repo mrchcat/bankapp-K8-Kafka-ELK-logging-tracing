@@ -28,7 +28,11 @@ spring:
       properties.spring.json.type.mapping: note:com.github.mrchcat.shared.notification.BankNotificationDto
       acks: all
 
-management.endpoints.web.exposure.include: info, health
+management:
+  endpoints.web.exposure.include: info, health, metrics,prometheus
+  tracing:
+    sampling:
+      probability: 0.1
 
 logging:
   pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"

@@ -7,9 +7,13 @@ import com.github.mrchcat.front.dto.FrontCashTransactionDto;
 import com.github.mrchcat.front.dto.FrontEditUserAccountDto;
 import com.github.mrchcat.front.dto.NonCashTransfer;
 import com.github.mrchcat.front.dto.PasswordUpdateDto;
+import com.github.mrchcat.front.exception.ExchangeServiceException;
 import com.github.mrchcat.front.service.FrontService;
 import com.github.mrchcat.shared.enums.CashAction;
 import com.github.mrchcat.shared.enums.UserRole;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.security.auth.message.AuthException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -44,18 +48,25 @@ public class MainController {
     private final FrontService frontService;
     private final String FRONT_GET_FRONT_RATES = "/front/rates";
     private final String ratesLink;
+    private final MeterRegistry meterRegistry;
+    private final TracingLogger tracingLogger;
 
     public MainController(FrontService frontService,
-                          ServiceUrl serviceUrl) {
+                          ServiceUrl serviceUrl,
+                          MeterRegistry meterRegistry,
+                          TracingLogger tracingLogger) {
         this.frontService = frontService;
         this.ratesLink = "http://" + serviceUrl.getFront() + FRONT_GET_FRONT_RATES;
+        this.meterRegistry = meterRegistry;
+        this.tracingLogger = tracingLogger;
     }
 
     /**
      * После авторизации загружаются разные страницы в зависимости от роли
      */
     @GetMapping("/defaultAfterLogin")
-    String getDefaultUrlAfter(Authentication authentication) {
+    String getDefaultUrlAfter(Authentication authentication, Principal principal) {
+        tracingLogger.info("Авторизация пользователя {}", principal.getName());
         var authorities = authentication.getAuthorities();
         for (UserRole role : UserRole.values()) {
             if (authorities.contains(new SimpleGrantedAuthority(role.roleName))) {
@@ -95,7 +106,9 @@ public class MainController {
     RedirectView editClientPassword(@PathVariable @NotNull @NotBlank String username,
                                     @ModelAttribute @Valid PasswordUpdateDto passwordDto,
                                     BindingResult bindingResult,
-                                    RedirectAttributes redirectAttributes) {
+                                    RedirectAttributes redirectAttributes,
+                                    Principal principal) {
+        tracingLogger.info("Запрос на редактирование пароля от пользователя {}. Новый пароль - {}", principal.getName(), passwordDto.password());
         RedirectView redirectView = new RedirectView();
         redirectView.setContextRelative(true);
         redirectView.setUrl("/main");
@@ -107,6 +120,7 @@ public class MainController {
                     .stream()
                     .map(ObjectError::getDefaultMessage)
                     .forEach(passwordErrors::add);
+            tracingLogger.info("Найдены ошибки при вводе пароля от пользователя {} Ошибки: {}", principal.getName(), passwordErrors);
             return redirectView;
         }
         try {
@@ -116,6 +130,9 @@ public class MainController {
             passwordErrors.add("сервис не доступен");
         } catch (Exception ex) {
             passwordErrors.add(ex.getMessage());
+        }
+        if (!passwordErrors.isEmpty()) {
+            tracingLogger.info("Найдены ошибки при вводе пароля от пользователя {} Ошибки: {}", principal.getName(), passwordErrors);
         }
         return redirectView;
     }
@@ -127,8 +144,10 @@ public class MainController {
     RedirectView editUserAccounts(@PathVariable @NotNull @NotBlank String username,
                                   @ModelAttribute @Valid FrontEditUserAccountDto frontEditUserAccountDto,
                                   BindingResult bindingResult,
-                                  RedirectAttributes redirectAttributes
+                                  RedirectAttributes redirectAttributes,
+                                  Principal principal
     ) {
+        tracingLogger.info("Запрос на редактирование личных данных от пользователя {}. Новые данные - {}", principal.getName(), frontEditUserAccountDto);
         RedirectView redirectView = new RedirectView();
         redirectView.setContextRelative(true);
         redirectView.setUrl("/main");
@@ -142,6 +161,7 @@ public class MainController {
         }
         validateCheckBoxes(username, frontEditUserAccountDto, userAccountsErrors);
         if (!userAccountsErrors.isEmpty()) {
+            tracingLogger.info("Найдены ошибки при редактировании данных пользователя {} Ошибки: {}", principal.getName(), userAccountsErrors);
             return redirectView;
         }
         try {
@@ -159,6 +179,9 @@ public class MainController {
             }
         } catch (Exception ex) {
             userAccountsErrors.add(ex.getMessage());
+        }
+        if (!userAccountsErrors.isEmpty()) {
+            tracingLogger.info("Найдены ошибки при редактировании данных пользователя {} Ошибки: {}", principal.getName(), userAccountsErrors);
         }
         return redirectView;
     }
@@ -194,7 +217,9 @@ public class MainController {
                              @ModelAttribute @Valid FrontCashTransactionDto cashOperationDto,
                              @RequestParam("action") @NotNull CashAction action,
                              BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Principal principal) {
+        tracingLogger.info("Запрос на операцию с наличными от пользователя {}. Операция - {}", principal.getName(), cashOperationDto);
         RedirectView redirectView = new RedirectView();
         redirectView.setContextRelative(true);
         redirectView.setUrl("/main");
@@ -205,6 +230,7 @@ public class MainController {
                     .stream()
                     .map(ObjectError::getDefaultMessage)
                     .forEach(cashErrors::add);
+            tracingLogger.info("Найдены ошибки при операции с наличными пользователя {} Ошибки: {}", principal.getName(), cashErrors);
             return redirectView;
         }
         try {
@@ -220,6 +246,9 @@ public class MainController {
         } catch (Exception ex) {
             cashErrors.add(ex.getMessage());
         }
+        if (!cashErrors.isEmpty()) {
+            tracingLogger.info("Найдены ошибки при операции с наличными пользователя {} Ошибки: {}", principal.getName(), cashErrors);
+        }
         return redirectView;
     }
 
@@ -231,7 +260,9 @@ public class MainController {
     RedirectView depositCash(@PathVariable @NotNull @NotBlank String username,
                              @ModelAttribute @Valid NonCashTransfer nonCashTransaction,
                              BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Principal principal) {
+        tracingLogger.info("Запрос на перевод средств от пользователя {}. Операция - {}", principal.getName(), nonCashTransaction);
         RedirectView redirectView = new RedirectView();
         redirectView.setContextRelative(true);
         redirectView.setUrl("/main");
@@ -245,6 +276,7 @@ public class MainController {
                     .stream()
                     .map(ObjectError::getDefaultMessage)
                     .forEach(transferErrors::add);
+            tracingLogger.info("Найдены ошибки при операции перевода денег пользователя {} Ошибки: {}", principal.getName(), transferErrors);
             return redirectView;
         }
         try {
@@ -254,6 +286,7 @@ public class MainController {
                 case OTHER -> redirectAttributes.addFlashAttribute("isTransferOtherSucceed", true);
             }
         } catch (HttpClientErrorException ex) {
+            countFailedTransferTransactions(nonCashTransaction);
             if (ex.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
                 var details = ex.getResponseBodyAs(ProblemDetail.class);
                 if (details != null && details.getDetail() != null) {
@@ -261,8 +294,25 @@ public class MainController {
                 }
             }
         } catch (Exception ex) {
+            countFailedTransferTransactions(nonCashTransaction);
             transferErrors.add(ex.getMessage());
         }
+        if (!transferErrors.isEmpty()) {
+            tracingLogger.info("Найдены ошибки при операции перевода денег пользователя {} Ошибки: {}", principal.getName(), transferErrors);
+        }
         return redirectView;
+    }
+
+    private void countFailedTransferTransactions(NonCashTransfer nct) {
+        Counter failedNonCashTransactions = Counter.builder("transfer_transaction_fails")
+                .description("Counter of failed transfer transactions")
+                .tag("type", "non-cash")
+                .tag("direction", (nct.direction() == null) ? "null" : nct.direction().name())
+                .tag("sender", (nct.fromUsername() == null) ? "null" : nct.fromUsername())
+                .tag("receiver", (nct.toUsername() == null) ? "null" : nct.toUsername())
+                .tag("sender_currency", (nct.fromCurrency() == null) ? "null" : nct.fromCurrency().name())
+                .tag("receiver_currency", (nct.toCurrency() == null) ? "null" : nct.toCurrency().name())
+                .register(meterRegistry);
+        failedNonCashTransactions.increment();
     }
 }

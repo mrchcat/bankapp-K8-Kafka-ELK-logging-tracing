@@ -92,7 +92,9 @@ public class UserServiceImpl implements UserService {
         if (hasNewProperties) {
             client.setUpdatedAt(LocalDateTime.now());
             userRepository.save(client);
-            String message = "Клиент с username " + client.getUsername() + " обновил свои данные";
+            String message = String.format("Клиент с username %s обновил свои данные. Новые данные %s",
+                    client.getUsername(),
+                    dto);
             try {
                 notifications.sendNotification(client, message);
             } catch (Exception ignore) {

@@ -1,0 +1,135 @@
+server:
+  fullnameOverride: prometheus-server
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.internal.com
+  global:
+    scrape_interval: 15s
+serverFiles:
+  alerting_rules.yml:
+   groups:
+     - name: "service down"
+       rules:
+         - alert: InstanceDown
+           expr: up == 0
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Instance {{ $labels.instance }} down"
+
+     - name: CPU-alert
+       rules:
+         - alert: CPUAlert
+           expr: system_cpu_usage>0.8
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "High CPU Usage"
+
+     - name: HighResponseTime
+       rules:
+         - alert: HighResponseTime
+           expr: rate(http_server_requests_seconds_sum[5m]) / rate(http_server_requests_seconds_count[5m]) > 1
+           for: 1m
+           labels:
+             severity: warning
+           annotations:
+             summary: "High response time detected"
+             description: "Instance {{ $labels.instance }}: average response time has exceeded 1 second for the last 1 minute"
+
+     - name: High4xxErrorRate
+       rules:
+         - alert: High4xxErrorRate
+           expr: rate(http_server_requests_seconds_count{status=~"4.."}[5m])/rate(http_server_requests_seconds_count[5m]) > 0.05
+           for: 1m
+           labels:
+             severity: warning
+           annotations:
+             summary: "High 4xx error rate detected"
+             description: "Instance {{ $labels.instance }}: 4xx error rate has exceeded 5%"
+
+     - name: High5xxErrorRate
+       rules:
+         - alert: High5xxErrorRate
+           expr: rate(http_server_requests_seconds_count{status=~"5.."}[5m])/rate(http_server_requests_seconds_count[5m]) > 0.01
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "High 5xx error rate detected"
+             description: "Instance {{ $labels.instance }}: 5xx error rate has exceeded 0,01 error/sec for the last 1 minute"
+
+     - name: LongServerResponse
+       rules:
+         - alert: LongServerResponse
+           expr: histogram_quantile(0.95, rate(http_server_requests_active_seconds_bucket[5m]))>500
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Long server response detected"
+             description: "Instance {{ $labels.instance }}: 95% quantile of server responses is more than 500 ms "
+     - name: LongKafkaResponse
+       rules:
+         - alert: LongKafkaResponse
+           expr: histogram_quantile(0.95, rate(spring_kafka_template_seconds_bucket[5m]))>500
+           for: 1m
+           labels:
+             severity: critical
+           annotations:
+             summary: "Long Kafka response detected"
+             description: "Instance {{ $labels.instance }}: 95% quantile of Kafka responses is more than 500 ms "
+
+  prometheus.yml:
+    scrape_configs:
+      - job_name: 'front'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'front:8080' ]
+            labels:
+              application: 'front'
+      - job_name: 'account'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'account:8080' ]
+            labels:
+              application: 'accounts'
+      - job_name: 'blocker'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'blocker:8080' ]
+            labels:
+              application: 'blocker'
+      - job_name: 'cash'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'cash:8080' ]
+            labels:
+              application: 'cash'
+      - job_name: 'exchange'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'exchange:8080' ]
+            labels:
+              application: 'exchange'
+      - job_name: 'exchange-generator'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'exchange-generator:8080' ]
+            labels:
+              application: 'exchange-generator'
+      - job_name: 'notifications'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'notifications:8080' ]
+            labels:
+              application: 'notifications'
+      - job_name: 'transfer'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: [ 'transfer:8080' ]
+            labels:
+              application: 'transfer'

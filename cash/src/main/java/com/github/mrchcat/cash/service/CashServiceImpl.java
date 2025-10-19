@@ -12,6 +12,7 @@ import com.github.mrchcat.shared.accounts.TransactionConfirmation;
 import com.github.mrchcat.shared.cash.CashTransactionDto;
 import com.github.mrchcat.shared.enums.BankCurrency;
 import com.github.mrchcat.shared.enums.TransactionStatus;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
 import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,10 +34,12 @@ public class CashServiceImpl implements CashService {
     private final Blocker blocker;
     private final Notifications notifications;
     private final Account account;
+    private final TracingLogger tracingLogger;
 
 
     @Override
     public void processCashOperation(CashTransactionDto cashTransactionDto) throws AuthException, ServiceUnavailableException {
+        tracingLogger.info("Обрабатываем операцию с наличными {}",cashTransactionDto);
         BankUserDto client = account.getClient(cashTransactionDto.username(), cashTransactionDto.currency());
         var blockerResponse = blocker.checkCashTransaction(cashTransactionDto);
         if (!blockerResponse.isConfirmed()) {
@@ -180,6 +183,7 @@ public class CashServiceImpl implements CashService {
     }
 
     private void giveMoneyBackFromATM(UUID transactionId) {
+        tracingLogger.info("Возвращаем деньги по транзакции {}",transactionId);
 //        возвращаем деньги обратно клиенту
     }
 }

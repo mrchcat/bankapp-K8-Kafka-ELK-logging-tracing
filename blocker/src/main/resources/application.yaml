@@ -9,13 +9,18 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
 
-management.endpoints.web.exposure.include: info, health
-
-logging:
-  pattern.file: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
-  level:
-    root: ${LOG_LEVEL:DEBUG}
-    org.zalando.logbook: ${LOG_LEVEL:DEBUG}
+management:
+  endpoints.web.exposure.include: info, health, metrics,prometheus
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_ENDPOINT}
+  tracing:
+    sampling:
+      probability: ${ZIPKIN_TRACING_PROBABILITY}
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
 
 application:
   CONFIRM_PROBABILITY: ${CONFIRM_PROBABILITY}

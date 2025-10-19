@@ -1,0 +1,5 @@
+antiAffinity: "soft"
+
+secret:
+  enabled: true
+  password: "admin"

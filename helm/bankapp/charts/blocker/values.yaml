@@ -4,20 +4,26 @@ SPRING_APPLICATION_NAME: bankBlocker
 
 KEYCLOAK_ISSUER_URI: http://keycloak:9080/realms/bankapp
 
-CONFIRM_PROBABILITY: "0.97"
+ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
+ZIPKIN_TRACING_PROBABILITY: 1
+
+KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+KAFKA_SERVICE_LOG_TOPIC: blocker-log
+
+CONFIRM_PROBABILITY: 0.97
 
 LOG_LEVEL: DEBUG
 
-INITIAL_DELAY_SEC: 120
+INITIAL_DELAY_SEC: 10
 
 image:
   repository: mcat1980/bank-blocker
-  tag: "3.0"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "blocker"
 
 service:
   type: ClusterIP

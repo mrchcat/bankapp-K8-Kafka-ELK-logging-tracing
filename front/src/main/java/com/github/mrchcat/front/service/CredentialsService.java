@@ -6,8 +6,10 @@ import com.github.mrchcat.front.dto.UserDetailsDto;
 import com.github.mrchcat.front.mapper.FrontMapper;
 import com.github.mrchcat.front.security.OAuthHeaderGetter;
 import com.github.mrchcat.shared.accounts.UpdatePasswordRequestDto;
+import com.github.mrchcat.shared.utils.log.TracingLogger;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
@@ -24,6 +26,7 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     private final OAuthHeaderGetter oAuthHeaderGetter;
     private final PasswordEncoder encoder;
     private final ServiceUrl serviceUrl;
+    private final TracingLogger logger;
 
     private final String ACCOUNT_SERVICE;
     private final String ACCOUNTS_GET_USER_DETAILS_API = "/credentials";
@@ -32,18 +35,22 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     public CredentialsService(RestClient.Builder restClientBuilder,
                               OAuthHeaderGetter oAuthHeaderGetter,
                               PasswordEncoder encoder,
-                              ServiceUrl serviceUrl) {
+                              ServiceUrl serviceUrl,
+                              MeterRegistry meterRegistry,
+                              TracingLogger logger) {
         this.restClientBuilder = restClientBuilder;
         this.oAuthHeaderGetter = oAuthHeaderGetter;
         this.encoder = encoder;
         this.ACCOUNT_SERVICE = serviceUrl.getAccount();
         this.serviceUrl = serviceUrl;
+        this.logger = logger;
     }
 
     @Override
     @CircuitBreaker(name = "accounts")
     @Retry(name = "accounts")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.debug("Поиск учетных данных пользователя с username = {}", username);
         try {
             var oAuthHeader = oAuthHeaderGetter.getOAuthHeader();
             var response = restClientBuilder.build()
@@ -58,10 +65,14 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
             return FrontMapper.toUserDetails(response);
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                logger.error("Пользователь username = {} не найден", username);
                 throw new UsernameNotFoundException(username + "not found");
+            } else {
+                logger.error("Ошибка при поиске пользователя с username = {}. Описание ошибки: {}", username, ex.getMessage());
             }
             throw ex;
         } catch (Exception e) {
+            logger.error("Ошибка при поиске пользователя с username = {}. Описание ошибки: {}", username, e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -70,6 +81,7 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
     @CircuitBreaker(name = "accounts")
     @Retry(name = "accounts")
     public UserDetails updatePassword(UserDetails user, String newPassword) {
+        logger.debug("Обновление учетных данных пользователя с username = {}", user.getUsername());
         String passwordHash = encoder.encode(newPassword);
         try {
             var oAuthHeader = oAuthHeaderGetter.getOAuthHeader();
@@ -86,10 +98,14 @@ public class CredentialsService implements UserDetailsService, UserDetailsPasswo
             return FrontMapper.toUserDetails(response);
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                logger.error("Ошибка при поиске пользователя с username = {}. Описание ошибки: {}", user.getUsername(), ex.getMessage());
                 throw new UsernameNotFoundException(user + "not found");
+            } else {
+                logger.error("Ошибка при обновлении учетных данных пользователя с username = {}. Описание ошибки: {}", user.getUsername(), ex.getMessage());
             }
             throw ex;
         } catch (Exception e) {
+            logger.error("Ошибка при обновлении учетных данных пользователя с username = {}. Описание ошибки: {}", user.getUsername(), e.getMessage());
             throw new RuntimeException(e);
         }
     }

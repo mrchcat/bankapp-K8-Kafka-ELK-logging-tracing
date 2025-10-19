@@ -2,6 +2,7 @@ package com.github.mrchcat.accounts.log.repository;
 
 import com.github.mrchcat.accounts.log.model.TransactionLogRecord;
 import com.github.mrchcat.shared.enums.TransactionStatus;
+import com.github.mrchcat.shared.utils.trace.ToTrace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ public class LogRepositoryImpl implements LogRepository {
     private final JdbcTemplate jdbc;
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:log","operation:check_transaction"})
     public Boolean existByTransaction(UUID transactionId, TransactionStatus status) {
         String query = """
                 SELECT EXISTS(
@@ -26,6 +28,7 @@ public class LogRepositoryImpl implements LogRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:log","operation:create_log"})
     public void create(TransactionLogRecord record) {
         String query = """
                 INSERT INTO log(transaction_id,action,status,from_account_id,to_account_id,amount_from,amount_to)
@@ -44,6 +47,7 @@ public class LogRepositoryImpl implements LogRepository {
     }
 
     @Override
+    @ToTrace(spanName = "database", tags = {"database:log","operation:check_transaction"})
     public boolean isCorrectStep(UUID transactionId, List<TransactionStatus> statuses) {
         String query = """
                 SELECT status
