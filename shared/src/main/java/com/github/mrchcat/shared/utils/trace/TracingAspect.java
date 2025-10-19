@@ -17,7 +17,7 @@ public class TracingAspect {
     @Around("@annotation(toTrace)")
     public Object trace(ProceedingJoinPoint jp, ToTrace toTrace) throws Throwable {
         String spanName = toTrace.spanName();
-        if(spanName==null||spanName.isBlank()){
+        if (spanName == null || spanName.isBlank()) {
             throw new NullPointerException("span id empty");
         }
         var newSpan = tracer.nextSpan().name(spanName).start();

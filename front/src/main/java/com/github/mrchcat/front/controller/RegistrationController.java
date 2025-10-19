@@ -71,7 +71,7 @@ public class RegistrationController {
         } catch (Exception ex) {
             errors.add(ex.getMessage());
         }
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             tracingLogger.info("Найдены ошибки при регистрации нового клиента пользователем {} Ошибки: {}", principal.getName(), errors);
         }
         return "signup";
